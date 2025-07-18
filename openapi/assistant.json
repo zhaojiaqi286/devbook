@@ -1,0 +1,439 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "ZHIPU AI Assistant API",
+        "description": "ZHIPU AI 助手接口，支持助手对话、能力查询和对话统计。",
+        "license": {
+            "name": "ZHIPU AI 开发者协议和政策",
+            "url": "https://chat.z.ai/legal-agreement/terms-of-service"
+        },
+        "version": "1.0.0",
+        "contact": {
+            "name": "Z.AI 开发者",
+            "url": "https://chat.z.ai/legal-agreement/privacy-policy",
+            "email": "user_feedback@z.ai"
+        }
+    },
+    "tags": [
+        {
+            "name": "assistant",
+            "description": "Assistant API"
+        }
+    ],
+    "servers": [
+        {
+            "url": "https://open.bigmodel.cn/api/",
+            "description": "开放平台服务"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "paths": {
+        "/paas/v4/assistant": {
+            "post": {
+                "tags": [
+                    "assistant"
+                ],
+                "summary": "助手对话",
+                "description": "与AI助手进行对话，支持流式和同步模式。",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AcceptLanguage"
+                    },
+                    {
+                        "name": "stream",
+                        "in": "query",
+                        "description": "是否启用流式响应",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssistantRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "业务处理成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AssistantResponse"
+                                }
+                            },
+                            "text/event-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "description": "流式响应数据"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "请求失败。",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/paas/v4/assistant/list": {
+            "post": {
+                "tags": [
+                    "assistant"
+                ],
+                "summary": "查询助手支持能力",
+                "description": "查询助手支持的功能和能力列表。",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AcceptLanguage"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssistantSupportRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "业务处理成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AssistantSupportResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "请求失败。",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/paas/v4/assistant/conversation/list": {
+            "post": {
+                "tags": [
+                    "assistant"
+                ],
+                "summary": "查询对话使用统计",
+                "description": "查询助手对话的使用统计信息。",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/AcceptLanguage"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConversationUsageRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "业务处理成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConversationUsageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "请求失败。",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "AcceptLanguage": {
+                "name": "Accept-Language",
+                "in": "header",
+                "schema": {
+                    "type": "string",
+                    "description": "HTTP 请求头，用于告知服务器浏览器的首选语言列表，以便服务器返回最符合用户偏好的语言内容。",
+                    "default": "cn",
+                    "enum": [
+                        "en",
+                        "cn"
+                    ]
+                },
+                "required": true
+            }
+        },
+        "schemas": {
+            "AssistantRequest": {
+                "type": "object",
+                "properties": {
+                    "model": {
+                        "type": "string",
+                        "description": "使用的模型名称"
+                    },
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChatCompletionRequestMessage"
+                        },
+                        "description": "对话消息列表"
+                    },
+                    "tools": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "description": "可用工具列表"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "description": "用户ID"
+                    },
+                    "request_id": {
+                        "type": "string",
+                        "description": "请求ID"
+                    }
+                },
+                "required": [
+                    "model",
+                    "messages"
+                ]
+            },
+            "AssistantResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "响应ID"
+                    },
+                    "request_id": {
+                        "type": "string",
+                        "description": "请求ID"
+                    },
+                    "created": {
+                        "type": "integer",
+                        "description": "创建时间戳"
+                    },
+                    "model": {
+                        "type": "string",
+                        "description": "使用的模型"
+                    },
+                    "choices": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "index": {
+                                    "type": "integer"
+                                },
+                                "message": {
+                                    "$ref": "#/components/schemas/ChatCompletionResponseMessage"
+                                },
+                                "finish_reason": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "usage": {
+                        "type": "object",
+                        "properties": {
+                            "prompt_tokens": {
+                                "type": "integer"
+                            },
+                            "completion_tokens": {
+                                "type": "integer"
+                            },
+                            "total_tokens": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            },
+            "AssistantSupportRequest": {
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "description": "用户ID"
+                    }
+                }
+            },
+            "AssistantSupportResponse": {
+                "type": "object",
+                "properties": {
+                    "capabilities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "支持的能力列表"
+                    },
+                    "models": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "支持的模型列表"
+                    }
+                }
+            },
+            "ConversationUsageRequest": {
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "description": "用户ID"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "开始日期"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "结束日期"
+                    }
+                }
+            },
+            "ConversationUsageResponse": {
+                "type": "object",
+                "properties": {
+                    "total_conversations": {
+                        "type": "integer",
+                        "description": "总对话数"
+                    },
+                    "total_messages": {
+                        "type": "integer",
+                        "description": "总消息数"
+                    },
+                    "usage_by_date": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date"
+                                },
+                                "conversations": {
+                                    "type": "integer"
+                                },
+                                "messages": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ChatCompletionRequestMessage": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "description": "当前对话角色，默认为 'assistant'",
+                        "example": "assistant"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "当前对话内容。如果调用函数则为 null，否则返回推理结果。"
+                    },
+                    "tool_calls": {
+                        "type": "array",
+                        "description": "生成的应该被调用的函数名称和参数。",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "ChatCompletionResponseMessage": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "description": "当前对话角色，默认为 'assistant'",
+                        "example": "assistant"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "当前对话内容。如果调用函数则为 null，否则返回推理结果。"
+                    },
+                    "tool_calls": {
+                        "type": "array",
+                        "description": "生成的应该被调用的函数名称和参数。",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "Error": {
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "description": "使用以下格式进行身份验证：Bearer [<your api key>](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)"
+            }
+        }
+    }
+}

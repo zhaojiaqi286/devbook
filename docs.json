@@ -17,10 +17,28 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": ["curl", "python", "javascript", "java", "go", "php"],
+      "languages": [
+        "curl",
+        "python",
+        "javascript",
+        "java",
+        "go",
+        "php"
+      ],
       "defaults": "required"
     },
-    "openapi": "openapi/openapi.json"
+    "openapi": [
+      "openapi/chat.json",
+      "openapi/embedding.json",
+      "openapi/audio.json",
+      "openapi/image.json",
+      "openapi/video.json",
+      "openapi/tools.json",
+      "openapi/file.json",
+      "openapi/batch.json",
+      "openapi/knowledge.json",
+      "openapi/assistant.json"
+    ]
   },
   "navigation": {
     "languages": [
@@ -41,7 +59,7 @@
               {
                 "group": "语言模型",
                 "pages": [
-                  "cn/guide/chat/chat-completions"
+                  "cn/guide/llm/chat-completions"
                 ]
               },
               {
@@ -127,8 +145,12 @@
                 "group": "知识库 API",
                 "pages": [
                   "cn/api/knowledge/knowledge",
-                  "cn/api/knowledge/get-knowledge",
-                  "cn/api/knowledge/capacity"
+                  "cn/api/knowledge/knowledge-edit",
+                  "cn/api/knowledge/knowledge-list",
+                  "cn/api/knowledge/knowledge-detail",
+                  "cn/api/knowledge/knowledge-delete",
+                  "cn/api/knowledge/knowledge-capacity",
+                  "cn/api/knowledge/document-upload"
                 ]
               },
               {
@@ -144,7 +166,7 @@
                   "cn/api/video/get-video-status"
                 ]
               },
-                 {
+              {
                 "group": "智能体 API",
                 "pages": [
                   "cn/api/agents/agents",
@@ -272,8 +294,12 @@
                 "group": "Knowledge API",
                 "pages": [
                   "en/api/knowledge/knowledge",
-                  "en/api/knowledge/get-knowledge",
-                  "en/api/knowledge/capacity"
+                  "en/api/knowledge/knowledge-edit",
+                  "en/api/knowledge/knowledge-list",
+                  "en/api/knowledge/knowledge-detail",
+                  "en/api/knowledge/knowledge-delete",
+                  "en/api/knowledge/knowledge-capacity",
+                  "en/api/knowledge/document-upload"
                 ]
               },
               {
