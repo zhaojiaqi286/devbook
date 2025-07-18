@@ -1007,8 +1007,8 @@
         "tags": [
           "assistant"
         ],
-        "summary": "查询助手支持能力",
-        "description": "查询助手支持的功能和能力列表。",
+        "summary": "查询智能体列表",
+        "description": "根据智能体ID列表查询智能体的详细信息，包括名称、描述、工具、标签等。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1053,8 +1053,8 @@
         "tags": [
           "assistant"
         ],
-        "summary": "查询对话使用统计",
-        "description": "查询助手对话的使用统计信息。",
+        "summary": "查询智能体对话列表",
+        "description": "分页查询指定智能体的对话列表，包括对话ID、创建时间、更新时间和使用统计。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -3566,7 +3566,7 @@
           }
         }
       },
-      "AssistantRequest": {
+      "BaseModelV4Request": {
         "type": "object",
         "properties": {
           "model": {
@@ -3578,22 +3578,53 @@
             "items": {
               "$ref": "#/components/schemas/ChatCompletionRequestMessage"
             },
-            "description": "对话消息列表"
+            "description": "对话消息列表",
+            "minItems": 1,
+            "maxItems": 10
           },
           "tools": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/ChatTool"
             },
-            "description": "可用工具列表"
-          },
-          "user_id": {
-            "type": "string",
-            "description": "用户ID"
+            "description": "工具信息"
           },
           "request_id": {
             "type": "string",
-            "description": "请求ID"
+            "description": "请求任务ID",
+            "minLength": 6,
+            "maxLength": 64
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "是否开启流式输出",
+            "default": false
+          },
+          "do_sample": {
+            "type": "boolean",
+            "description": "是否稳定输出"
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "采样数"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "输出最大词块数"
+          },
+          "smoothing_config": {
+            "$ref": "#/components/schemas/SmoothingConfig",
+            "description": "控制是否开启流式输出平滑策略"
+          },
+          "sensitive_word_check": {
+            "$ref": "#/components/schemas/SensitiveWordCheck",
+            "description": "敏感词检查配置"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "终端用户的唯一ID",
+            "minLength": 6,
+            "maxLength": 128
           }
         },
         "required": [
@@ -3601,133 +3632,469 @@
           "messages"
         ]
       },
+      "ChatAttachments": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "文件ID"
+          }
+        }
+      },
+      "AssistantRequest": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseModelV4Request"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "assistant_id": {
+                "type": "string",
+                "description": "智能体ID"
+              },
+              "conversation_id": {
+                "type": "string",
+                "description": "对话ID"
+              },
+              "attachments": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatAttachments"
+                },
+                "description": "附件列表"
+              },
+              "metadata": {
+                "type": "object",
+                "description": "元数据"
+              },
+              "extra_parameters": {
+                "type": "object",
+                "properties": {
+                  "translate": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "description": "源语言"
+                      },
+                      "to": {
+                        "type": "string",
+                        "description": "目标语言"
+                      }
+                    }
+                  }
+                },
+                "description": "额外参数"
+              }
+            },
+            "required": [
+              "assistant_id"
+            ]
+          }
+        ]
+      },
       "AssistantResponse": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "响应ID"
-          },
           "request_id": {
             "type": "string",
             "description": "请求ID"
           },
-          "created": {
-            "type": "integer",
-            "description": "创建时间戳"
+          "conversation_id": {
+            "type": "string",
+            "description": "对话ID"
+          },
+          "history_id": {
+            "type": "string",
+            "description": "历史记录ID"
+          },
+          "message": {
+            "$ref": "#/components/schemas/AssistantMessage",
+            "description": "助手消息"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "in_progress", "failed"],
+            "description": "响应状态"
+          },
+          "last_error": {
+            "type": "object",
+            "description": "错误信息"
+          },
+          "meta_data": {
+            "type": "object",
+            "description": "元数据"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage",
+            "description": "使用统计"
+          }
+        }
+      },
+      "AssistantMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["assistant"],
+            "description": "消息角色"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object"
+              }
+            ],
+            "description": "消息内容"
+          },
+          "meta_data": {
+            "type": "object",
+            "description": "消息元数据"
           },
           "model": {
             "type": "string",
             "description": "使用的模型"
           },
-          "choices": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "index": {
-                  "type": "integer"
-                },
-                "message": {
-                  "$ref": "#/components/schemas/ChatCompletionResponseMessage"
-                },
-                "finish_reason": {
-                  "type": "string"
+          "status": {
+            "type": "string",
+            "enum": ["completed", "in_progress", "failed"],
+            "description": "消息状态"
+          }
+        }
+      },
+      "Usage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer",
+            "description": "输入token数量"
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "description": "输出token数量"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "description": "总token数量"
+          }
+        }
+      },
+      "ChatTool": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["function", "retrieval", "web_search"],
+            "description": "工具类型"
+          },
+          "function": {
+            "$ref": "#/components/schemas/ChatFunction",
+            "description": "函数工具"
+          },
+          "retrieval": {
+            "type": "object",
+            "description": "检索工具"
+          },
+          "web_search": {
+            "type": "object",
+            "description": "网络搜索工具"
+          }
+        },
+        "required": ["type"]
+      },
+      "ChatFunction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "函数名称",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "description": {
+            "type": "string",
+            "description": "函数描述"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "函数参数，使用JSON Schema格式",
+            "additionalProperties": true
+          }
+        },
+        "required": ["name", "description", "parameters"]
+      },
+      "SmoothingConfig": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "description": "是否启用平滑策略"
+          }
+        }
+      },
+      "SensitiveWordCheck": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "description": "是否启用敏感词检查"
+          }
+        }
+      },
+      "ChatCompletionRequestMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["user", "assistant", "system", "tool"],
+            "description": "消息角色"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object"
                 }
+              }
+            ],
+            "description": "消息内容"
+          },
+          "reasoning_content": {
+            "type": "object",
+            "description": "推理内容"
+          },
+          "audio": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "语音唯一标识"
+              },
+              "data": {
+                "type": "string",
+                "description": "语音base64数据"
+              },
+              "expires_at": {
+                "type": "integer",
+                "description": "生成语音可用于多轮对话的过期时间"
               }
             }
           },
-          "usage": {
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            },
+            "description": "工具调用"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "description": "工具调用ID"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatAttachments"
+            },
+            "description": "附件列表"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "元数据"
+          }
+        },
+        "required": ["role"]
+      },
+      "ToolCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "工具调用ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["function"],
+            "description": "工具类型"
+          },
+          "function": {
             "type": "object",
             "properties": {
-              "prompt_tokens": {
-                "type": "integer"
+              "name": {
+                "type": "string",
+                "description": "函数名称"
               },
-              "completion_tokens": {
-                "type": "integer"
-              },
-              "total_tokens": {
-                "type": "integer"
+              "arguments": {
+                "type": "string",
+                "description": "函数参数JSON字符串"
               }
-            }
+            },
+            "required": ["name", "arguments"]
           }
-        }
+        },
+        "required": ["id", "type", "function"]
       },
       "AssistantSupportRequest": {
         "type": "object",
         "properties": {
-          "user_id": {
-            "type": "string",
-            "description": "用户ID"
+          "assistant_id_list": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "智能体ID列表"
           }
         }
       },
       "AssistantSupportResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/AssistantInfo"
+        },
+        "description": "智能体列表"
+      },
+      "AssistantInfo": {
         "type": "object",
         "properties": {
-          "capabilities": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "支持的能力列表"
+          "assistant_id": {
+            "type": "string",
+            "description": "智能体ID"
           },
-          "models": {
+          "tools": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "支持的模型列表"
+            "description": "支持的工具列表"
+          },
+          "name": {
+            "type": "string",
+            "description": "智能体名称"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "智能体头像URL"
+          },
+          "description": {
+            "type": "string",
+            "description": "智能体描述"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagInfo"
+            },
+            "description": "标签列表"
+          },
+          "status": {
+            "type": "string",
+            "description": "智能体状态"
+          },
+          "starter_prompts": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "启动提示列表"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "更新时间"
+          }
+        }
+      },
+      "TagInfo": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "标签键"
+          },
+          "label": {
+            "type": "string",
+            "description": "标签标签"
           }
         }
       },
       "ConversationUsageRequest": {
         "type": "object",
         "properties": {
-          "user_id": {
+          "assistant_id": {
             "type": "string",
-            "description": "用户ID"
+            "description": "智能体ID"
           },
-          "start_date": {
-            "type": "string",
-            "format": "date",
-            "description": "开始日期"
+          "page": {
+            "type": "integer",
+            "description": "页码",
+            "default": 1,
+            "minimum": 1
           },
-          "end_date": {
-            "type": "string",
-            "format": "date",
-            "description": "结束日期"
+          "page_size": {
+            "type": "integer",
+            "description": "每页大小",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 100
           }
-        }
+        },
+        "required": ["assistant_id"]
       },
       "ConversationUsageResponse": {
         "type": "object",
         "properties": {
-          "total_conversations": {
-            "type": "integer",
-            "description": "总对话数"
+          "assistant_id": {
+            "type": "string",
+            "description": "智能体ID"
           },
-          "total_messages": {
-            "type": "integer",
-            "description": "总消息数"
-          },
-          "usage_by_date": {
+          "conversation_list": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "date": {
-                  "type": "string",
-                  "format": "date"
-                },
-                "conversations": {
-                  "type": "integer"
-                },
-                "messages": {
-                  "type": "integer"
-                }
-              }
-            }
+              "$ref": "#/components/schemas/ConversationInfo"
+            },
+            "description": "对话列表"
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "是否还有更多数据"
+          }
+        }
+      },
+      "ConversationInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "对话ID"
+          },
+          "assistant_id": {
+            "type": "string",
+            "description": "智能体ID"
+          },
+          "create_time": {
+            "type": "string",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "description": "更新时间"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage",
+            "description": "使用统计"
           }
         }
       },
