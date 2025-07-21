@@ -265,11 +265,54 @@
         }
       }
     },
+    "/paas/v4/rerank": {
+      "post": {
+        "tags":["知识库 API"],
+        "summary": "文本重排序",
+        "description": "Rerank 用于文本重排序，通过接收用户的查询文本及候选文本列表，使用模型计算候选文本与查询文本的相关性得分并返回分数。适用于智能问答、信息检索等场景。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RerankRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RerankResponse"
+                }
+              }
+            }
+          },
+         "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }}
+    }
+    },
     "/paas/v4/files": {
       "post": {
         "tags": ["文件 API"],
         "summary": "上传文件",
-        "description": "上传文件到平台，用于微调、知识库或其他AI任务。",
+        "description": "Upload files to the platform for batch, file extraction, or other AI tasks.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -378,95 +421,11 @@
         }
       }
     },
-    "/paas/v4/files/{file_id}": {
-      "get": {
-        "tags": ["文件 API"],
-        "summary": "获取文件信息",
-        "description": "获取指定文件的详细信息和元数据。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "file_id",
-            "in": "path",
-            "required": true,
-            "description": "文件唯一标识符",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FileObject"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["文件 API"],
-        "summary": "删除文件",
-        "description": "永久删除指定文件及其所有关联数据。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "file_id",
-            "in": "path",
-            "required": true,
-            "description": "文件唯一标识符",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FileDeletedResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/paas/v4/files/{file_id}/content": {
       "get": {
         "tags": ["文件 API"],
-        "summary": "下载文件内容",
-        "description": "流式下载文件的实际内容。",
+        "summary": "获取文件内容",
+        "description": "获取文件内容。只支持batch与file-extract文件类型。",
         "parameters": [
           {
             "name": "file_id",
@@ -3188,8 +3147,12 @@
           },
           "purpose": {
             "type": "string",
-            "enum": ["fine-tune", "assistants"],
-            "description": "文件的预期用途"
+            "enum": [
+              "batch",
+              "file-extract",
+              "code-interpreter"
+            ],
+            "description": "文件的预期用途。\nbatch：用于批量任务处理，支持 .jsonl 文件格式，，单个文件大小限制为100 MB，文件数不超过 1000 个。Batch指南。\nfile-extract：用于文档内容抽取，支持的格式包括：pdf、docx、doc、xls、xlsx、ppt、pptx、png、jpg、jpeg、csv，单个文件大小限制为 50 M，图片大小不超过5M，文件数不超过 100 个。\ncode-interpreter：文件上传给代码沙盒CI使用，支持的格式包括：pdf、docx、doc、xls、xlsx、txt、png、jpg、jpeg、csv，单个文件大小限制为 20 M，图片大小不超过5M，文件数不超过 100 个。"
           }
         }
       },
@@ -3479,6 +3442,115 @@
           }
         }
       },
+       "RerankRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "query",
+          "documents"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "要调用的模型编码，默认为rerank。"
+          },
+          "query": {
+            "type": "string",
+            "description": "查询文本，用于与候选文本进行匹配query，最大长度为 4096 字符。"
+          },
+          "top_n": {
+            "type": "integer",
+            "description": "返回得分最高的前 n 条结果，默认0返回所有。"
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "需要打分的候选文本数组,最多容纳 128 条。单条最大长度为 4096 字符。"
+          },
+          "return_documents": {
+            "type": "boolean",
+            "description": "是否返回原始文本，默认值为FALSE。"
+          },
+          "return_raw_scores": {
+            "type": "boolean",
+            "description": "是否返回原始分数。默认 FALSE。"
+          },
+          "request_id": {
+            "type": "string",
+            "description": "由用户端传参，需保证唯一性,用户传空会默认生成"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "终端用户的唯一ID"
+          }
+        }
+      },
+       "RerankResponse": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1732083164
+        },
+        "id": {
+          "type": "string",
+          "example": "20241120141244890ab4ee4af84acf",
+          "description":"智谱 AI 开放平台生成的任务订单号，调用请求结果接口时请使用此订单号"
+        },
+        "request_id": {
+          "type": "string",
+          "example": "1111111111",
+          "description":"用户在客户端请求时提交的任务编号或者平台生成的任务编号"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/RerankResult"
+          }
+        },
+        "usage": {
+          "$ref": "#/components/schemas/RerankUsage"
+        }
+      },
+      "required": ["id", "results", "usage"]
+    },  
+    "RerankResult": {
+      "type": "object",
+      "properties": {
+        "document": {
+          "type": "string",
+          "example": "Washington, D.C. is the capital of the United States.",
+          "description":"原文本"
+        },
+        "index": {
+          "type": "integer",
+          "example": 1
+        },
+        "relevance_score": {
+          "type": "number",
+          "format": "float",
+          "example": 0.99866986
+        }
+      },
+      "required": ["document", "index", "relevance_score"]
+    },
+    "RerankUsage": {
+      "type": "object",
+      "properties": {
+        "prompt_tokens": {
+          "type": "integer",
+          "example": 72
+        },
+        "total_tokens": {
+          "type": "integer",
+          "example": 72
+        }
+      },
+      "required": ["prompt_tokens", "total_tokens"]
+    },
       "AgentRequest": {
         "type": "object",
         "required": ["agent_id", "messages"],
