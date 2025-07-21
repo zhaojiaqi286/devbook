@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Z.AI",
+  "name": "Bigmodel",
   "colors": {
-    "primary": "#141618",
+    "primary": "#134cff",
     "light": "#9fa0a0",
-    "dark": "#141618"
+    "dark": "#134cff"
   },
-  "favicon": "/resource/logo_icon.png",
+  "favicon": "/resource/favicon.svg",
   "appearance": {
     "default": "light",
     "strict": true
@@ -32,9 +32,9 @@
     ]
   },
   "navigation": {
-    "languages": [
+    "versions": [
       {
-        "language": "cn",
+        "version": "简体中文",
         "tabs": [
           {
             "tab": "使用指南",
@@ -240,7 +240,7 @@
         ]
       },
       {
-        "language": "en",
+        "version": "English",
         "tabs": [
           {
             "tab": "Guide",
@@ -315,8 +315,8 @@
     ]
   },
   "logo": {
-    "light": "/resource/logo.png",
-    "dark": "/resource/logo.png",
+    "light": "/resource/dark.svg",
+    "dark": "/resource/light.svg",
     "href": "https://bigmodel.cn/"
   },
   "footer": {
