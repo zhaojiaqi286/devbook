@@ -38,7 +38,6 @@
         "tabs": [
           {
             "tab": "使用指南",
-            "icon": "book",
             "pages": [
               {
                 "group": "开始使用",
@@ -183,12 +182,10 @@
           },
           {
             "tab": "API 文档",
-            "icon": "code",
             "openapi": "openapi/openapi.json"
           },
           {
             "tab": "更新日志",
-            "icon": "code",
             "pages": [
               "cn/update/new-releases",
               "cn/update/feature-updates"
@@ -196,7 +193,6 @@
           },
           {
             "tab": "条款与协议",
-            "icon": "file-text",
             "pages": [
               "cn/terms/user-agreement",
               "cn/terms/privacy-policy",
@@ -205,15 +201,40 @@
               "cn/terms/cancellation-agreement",
               "cn/terms/entity-change-agreement",
               "cn/terms/university-program",
-              "cn/terms/self-discipline-statement",
+              "cn/terms/principle",
               "cn/terms/security-risk-notice"
             ]
           },
           {
             "tab": "常见问题",
-            "icon": "code",
             "pages": [
-              "cn/issue/common-issue"
+              {
+                "group": "账号问题",
+                "pages": [
+                  "cn/faq/registration-login",
+                  "cn/faq/authentication-issues"
+                ]
+              },
+              {
+                "group": "API 调用问题",
+                "pages": [
+                  "cn/faq/api-issues",
+                  "cn/faq/batch-api-issues"
+                ]
+              },
+              {
+                "group": "财务问题",
+                "pages": [
+                  "cn/faq/fee-issues",
+                  "cn/faq/invoice-issues"
+                ]
+              },
+              {
+                "group": "开源模型问题",
+                "pages": [
+                  "cn/faq/business-authorization"
+                ]
+              }
             ]
           }
         ]
@@ -223,7 +244,6 @@
         "tabs": [
           {
             "tab": "Guide",
-            "icon": "book",
             "pages": [
               {
                 "group": "Overview",
@@ -256,14 +276,38 @@
           },
           {
             "tab": "API References",
-            "icon": "code",
             "openapi": "openapi/openapi-en.json"
           },
           {
-            "tab": "常见问题",
-            "icon": "code",
+            "tab": "FAQ",
             "pages": [
-              "en/issue/common-issue"
+              {
+                "group": "Account Issues",
+                "pages": [
+                  "en/faq/registration-login",
+                  "en/faq/authentication-issues"
+                ]
+              },
+              {
+                "group": "API Issues",
+                "pages": [
+                  "en/faq/api-issues",
+                  "en/faq/batch-api-issues"
+                ]
+              },
+              {
+                "group": "Financial Issues",
+                "pages": [
+                  "en/faq/fee-issues",
+                  "en/faq/invoice-issues"
+                ]
+              },
+              {
+                "group": "Open Source Model Issues",
+                "pages": [
+                  "en/faq/business-authorization"
+                ]
+              }
             ]
           }
         ]

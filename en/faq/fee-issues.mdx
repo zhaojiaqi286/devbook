@@ -1,0 +1,114 @@
+---
+title: "Fee Issues"
+description: "Common questions and solutions for Z.AI platform billing"
+---
+
+# Fee Issues
+
+This page summarizes common questions and solutions encountered by users regarding billing when using the Z.AI large model open platform.
+
+## Billing Method
+
+### How does the open platform charge?
+
+**Billing Unit:**
+- Our billing method is based on tokens (image large models are billed according to the number of images produced by the model)
+- Each token represents a basic unit of natural language text, such as "character" or "word"
+
+**Billing Scope:**
+- We bill based on the total number of tokens for your model input and output
+- Vector large model embedding-2 is only billed based on input token quantity
+- If you enable search services, search results as input will also be billed
+
+**Deduction Methods:**
+We support two deduction methods:
+1. **Fee Deduction**: Deduct from your cash balance account based on token usage × model unit price
+2. **Resource Package Deduction**: Deduct from your resource package account based on token usage
+
+**Deduction Order:**
+When deducting, we will first deduct from the resource package account, then from the cash balance account. Model unit prices can be found in product pricing.
+
+## Resource Package Management
+
+### Is there a deduction order for resource packages?
+
+**Deduction Rules:**
+- When you call models, we first deduct from resource package balances that meet the model's applicable scenarios, then deduct from cash account balance
+- When multiple resource packages exist for the same applicable scenario, we will prioritize deducting from the resource package that expires soonest
+
+### Can resource packages be used when the account is in arrears?
+
+Yes, you can use valid resource packages when your account is in arrears.
+
+### Can resource packages be renewed after expiration?
+
+Resource packages do not support extension, renewal, or reactivation after expiration. Please pay attention to resource package expiration times and use them promptly.
+
+## Experience Center
+
+### Does the Experience Center charge fees?
+
+The Experience Center's billing rules are consistent with API calls. Specific model call unit prices can be found in product pricing.
+
+## Consumption Inquiry
+
+### How to view my consumption details?
+
+**Viewing Methods:**
+1. **Financial Overview Page**: View consumption status, including today's consumption amount and consumption statistics for the past 6 months
+2. **Fee Bill Page**: View detailed usage records
+3. **Export Records Page**: Click to download summary bills
+
+**Viewable Information:**
+- Real-time consumption amounts
+- Historical consumption trends
+- Detailed usage records
+- Consumption by model category
+
+## Special Billing
+
+### How are images calculated in tokens?
+
+When calling GLM-4V series image recognition models, a single image consumes approximately 1047 tokens.
+
+### Will there still be charges after deleting the platform's API key?
+
+If an API key is deleted, that API key will no longer be able to successfully call interfaces and will not incur charges.
+
+## Refund Policy
+
+### How to request a refund?
+
+The Bigmodel open platform temporarily does not support any form of refund functionality. Please fully estimate your actual needs and determine the recharge amount. Due to the continuous token consumption characteristics of platform interfaces, consumption accounts generally do not support refunds.
+
+**Special Circumstance Refunds:**
+If you must request a refund due to special circumstances, unconsumed recharge amounts (excluding experience funds, promotional amounts, etc.) can be processed by replying "manual" to contact platform customer service for special applications.
+
+**Refund Process:**
+1. Contact customer service to initiate application
+2. Provide relevant supporting materials
+3. Platform reviews refund matters
+4. Return via original payment method after approval
+
+**Refund Notes:**
+- Once a refund application is initiated, promotional recharge amounts will become invalid when the refund application is approved
+- If your promotional recharge amount has been used and you initiate a full or partial refund for that recharge, we will fully deduct the used promotional recharge amount from the recharge amount during refund
+- Amounts that have been consumed after completing recharge or should be deducted according to relevant product (or service) agreements do not support refunds
+- Invoiced portions of recharge amounts do not support refunds
+
+## Cost Optimization Suggestions
+
+### How to optimize usage costs?
+
+**Cost Optimization Strategies:**
+1. **Choose Appropriate Models**: Select the most cost-effective models based on needs
+2. **Use Resource Packages**: Purchase resource packages in bulk for preferential prices
+3. **Optimize Prompts**: Streamline input content to reduce unnecessary token consumption
+4. **Use Batch API**: Enjoy 50% price discounts for batch processing
+5. **Monitor Usage**: Regularly check consumption details and adjust usage strategies promptly
+
+**Money-Saving Tips:**
+- Avoid duplicate calls
+- Set parameters reasonably
+- Make full use of caching
+- Choose appropriate call methods

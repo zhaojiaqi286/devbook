@@ -1,0 +1,131 @@
+---
+title: "Batch API Issues"
+description: "Common questions and solutions for Z.AI platform Batch API"
+---
+
+# Batch API Issues
+
+This page summarizes common questions and solutions encountered by users when using Z.AI large model open platform Batch API.
+
+## Supported Models
+
+### Which models support Batch API?
+
+**Currently supported models:**
+- GLM-4-Flash
+- GLM-4-Air
+- GLM-3-Turbo
+- Embedding-2
+- Embedding-3
+- GLM-4-0520
+- GLM-4
+- GLM-4-Plus
+- Cogview-3
+- CogVideoX
+- GLM-4V
+
+## Pricing Advantage
+
+### How is Batch API priced?
+
+The price is 50% of the standard API. Refer to product pricing for detailed information.
+
+**Pricing Advantages:**
+- 50% cost reduction
+- Suitable for batch processing scenarios
+- Better cost-effectiveness
+
+## Concurrency Limits
+
+### What are the concurrency limits for Batch API?
+
+Batch API concurrency limits are separate from existing per-model concurrency limits. Batch API introduces two new types of limits:
+
+**File Limits:**
+- A single Batch file contains at most 50,000 requests and does not exceed 100M
+- Vector models (Embedding-2, Embedding-3) Batch file request quantity is limited to no more than 10,000 times
+
+**Queue Limits:**
+Each model has a maximum Batch queue limit. When the request queue limit is reached, please wait for current tasks to complete before submitting new tasks.
+
+| Model | Batch Queue Limit |
+|-------|------------------|
+| GLM-4-Flash | 10 million |
+| GLM-4-Air | 10 million |
+| GLM-3-Turbo | 2 million |
+| Embedding-2 | 2 million |
+| Embedding-3 | 2 million |
+| GLM-4-Plus | 2 million |
+| GLM-4-0520 | 500,000 |
+| GLM-4 | 500,000 |
+| Cogview-3 | 30,000 |
+| CogVideoX | 10,000 |
+| GLM-4V | 10,000 |
+
+## Real-name Authentication Requirements
+
+### How to perform real-name authentication before calling Batch API?
+
+Calling Batch API requires real-name authentication. Please first go to the real-name authentication page to complete personal or enterprise authentication. After successful authentication, you will receive 5 million tokens for free.
+
+**Authentication Steps:**
+1. Visit the real-name authentication page
+2. Choose personal or enterprise authentication
+3. Submit authentication materials
+4. Wait for approval
+5. Receive 5 million tokens reward
+
+## Expiration Handling
+
+### How is Batch expiration handled?
+
+If a Batch cannot be completed in time, the batch will be marked as expired; uncompleted requests in the batch will be canceled. For completed requests in the batch, users can obtain them through files and need to pay for the fees consumed by these requests.
+
+**Expiration Handling Mechanism:**
+- Uncompleted requests are automatically canceled
+- Completed requests can be normally retrieved
+- Billing based on actual consumption
+
+## File Management
+
+### What are the storage limits for Batch files?
+
+**Storage Limits:**
+- Maximum 1000 Batch files can be uploaded
+- The system only retains your files for 30 days
+- Files will be automatically deleted after expiration and cannot be recovered
+
+**Notes:**
+- Please download important results promptly
+- Recommend local backup of important files
+- Pay attention to file expiration time
+
+### How to delete Batch files?
+
+**Deletion Methods:**
+1. Go to the Batch data page for deletion
+2. Delete through API calls
+
+**Deletion Notes:**
+- Cannot be recovered after deletion
+- Confirm no longer needed before deletion
+- Can batch delete multiple files
+
+## Best Practices
+
+### Best practices for using Batch API
+
+**File Preparation:**
+- Reasonably control single file size
+- Ensure correct request format
+- Avoid duplicate requests
+
+**Task Management:**
+- Monitor task status
+- Handle completed tasks promptly
+- Reasonably schedule task submission time
+
+**Cost Optimization:**
+- Fully utilize the 50% price advantage
+- Batch process similar tasks
+- Avoid unnecessary duplicate calls
