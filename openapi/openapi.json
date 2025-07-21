@@ -86,9 +86,7 @@
   "paths": {
     "/paas/v4/chat/completions": {
       "post": {
-        "tags": [
-          "对话 API"
-        ],
+        "tags": ["对话 API"],
         "summary": "创建聊天补全",
         "description": "为聊天对话生成 AI 回复。支持多种应用场景，提供智能对话能力。",
         "parameters": [
@@ -114,6 +112,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/ChatCompletionResponse"
                 }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatCompletionChunk"
+                }
               }
             }
           },
@@ -132,9 +135,7 @@
     },
     "/paas/v4/audio/customization": {
       "post": {
-        "tags": [
-          "音频 API"
-        ],
+        "tags": ["音频 API"],
         "summary": "语音定制",
         "description": "使用高级神经模型进行语音克隆和定制，创建个性化语音模型。",
         "parameters": [
@@ -178,11 +179,9 @@
     },
     "/paas/v4/images/generations": {
       "post": {
-        "tags": [
-          "图像 API"
-        ],
+        "tags": ["图像 API"],
         "summary": "图像生成",
-        "description": "使用 CogView-3-Plus 模型从文本提示生成高质量图像，支持多种风格和尺寸。",
+        "description": "使用 CogView-4 系列模型从文本提示生成高质量图像。CogView-4 适用于图像生成任务，通过对用户文字描述快速、精准的理解，让AI的图像表达更加精确和个性化。支持cogview-4-250304、cogview-4、cogview-3-flash等模型。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -204,7 +203,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ImageResponse"
+                  "$ref": "#/components/schemas/ImageGenerationResponse"
                 }
               }
             }
@@ -224,9 +223,7 @@
     },
     "/paas/v4/embeddings": {
       "post": {
-        "tags": [
-          "嵌入 API"
-        ],
+        "tags": ["嵌入 API"],
         "summary": "文本嵌入",
         "description": "使用 GLM 嵌入模型将文本转换为高维向量表示，用于语义相似性和搜索。支持多语种和多种模型，兼容 OpenAI Embedding API。",
         "parameters": [
@@ -270,9 +267,7 @@
     },
     "/paas/v4/files": {
       "post": {
-        "tags": [
-          "文件 API"
-        ],
+        "tags": ["文件 API"],
         "summary": "上传文件",
         "description": "上传文件到平台，用于微调、知识库或其他AI任务。",
         "parameters": [
@@ -314,9 +309,7 @@
         }
       },
       "get": {
-        "tags": [
-          "文件 API"
-        ],
+        "tags": ["文件 API"],
         "summary": "查询文件列表",
         "description": "获取已上传文件的分页列表，支持按用途和排序过滤。",
         "parameters": [
@@ -337,10 +330,7 @@
             "description": "按用途过滤文件",
             "schema": {
               "type": "string",
-              "enum": [
-                "fine-tune",
-                "assistants"
-              ]
+              "enum": ["fine-tune", "assistants"]
             }
           },
           {
@@ -349,9 +339,7 @@
             "description": "排序方式",
             "schema": {
               "type": "string",
-              "enum": [
-                "created_at"
-              ]
+              "enum": ["created_at"]
             }
           },
           {
@@ -392,9 +380,7 @@
     },
     "/paas/v4/files/{file_id}": {
       "get": {
-        "tags": [
-          "文件 API"
-        ],
+        "tags": ["文件 API"],
         "summary": "获取文件信息",
         "description": "获取指定文件的详细信息和元数据。",
         "parameters": [
@@ -435,9 +421,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "文件 API"
-        ],
+        "tags": ["文件 API"],
         "summary": "删除文件",
         "description": "永久删除指定文件及其所有关联数据。",
         "parameters": [
@@ -480,9 +464,7 @@
     },
     "/paas/v4/files/{file_id}/content": {
       "get": {
-        "tags": [
-          "文件 API"
-        ],
+        "tags": ["文件 API"],
         "summary": "下载文件内容",
         "description": "流式下载文件的实际内容。",
         "parameters": [
@@ -523,9 +505,7 @@
     },
     "/paas/v4/videos/generations": {
       "post": {
-        "tags": [
-          "视频 API"
-        ],
+        "tags": ["视频 API"],
         "summary": "生成视频",
         "description": "通过文本或图像生成视频内容。支持多种视频生成方式，包括文本转视频、图像转视频等。",
         "parameters": [
@@ -590,9 +570,7 @@
     },
     "/paas/v4/async-result/{id}": {
       "get": {
-        "tags": [
-          "视频 API"
-        ],
+        "tags": ["视频 API"],
         "summary": "查询异步结果",
         "description": "查询异步请求的处理结果和状态。",
         "parameters": [
@@ -666,9 +644,7 @@
     },
     "/paas/v4/web_search": {
       "post": {
-        "tags": [
-          "网络搜索 API"
-        ],
+        "tags": ["网络搜索 API"],
         "summary": "网络搜索",
         "description": "Web Search API 是一个专给大模型用的搜索引擎，在传统搜索引擎网页抓取、排序的能力基础上，增强了意图识别能力，返回更适合大模型处理的结果（网页标题、网页URL、网页摘要、网站名称、网站图标等）。支持意图增强检索、结构化输出和多引擎支持。",
         "parameters": [
@@ -712,9 +688,7 @@
     },
     "/paas/v4/audio/speech": {
       "post": {
-        "tags": [
-          "音频 API"
-        ],
+        "tags": ["音频 API"],
         "summary": "文本转语音",
         "description": "使用 GLM-4-Voice 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
         "parameters": [
@@ -758,11 +732,8 @@
       }
     },
     "/paas/v4/audio/transcriptions": {
-      
       "post": {
-        "tags": [
-          "音频 API"
-        ],
+        "tags": ["音频 API"],
         "summary": "语音转文本",
         "description": "使用 GLM ASR 模型将音频文件转录为文本，支持多语言和实时流式转录。",
         "parameters": [
@@ -806,9 +777,7 @@
     },
     "/v1/agents": {
       "post": {
-        "tags": [
-          "Agent API"
-        ],
+        "tags": ["Agent API"],
         "summary": "智能体对话",
         "description": "与智能体进行对话交互。支持同步和流式调用，提供智能体的专业能力。",
         "parameters": [
@@ -852,9 +821,7 @@
     },
     "/v1/agents/async-result": {
       "post": {
-        "tags": [
-          "Agent API"
-        ],
+        "tags": ["Agent API"],
         "summary": "查询异步结果",
         "description": "查询智能体异步任务的处理结果和状态。",
         "parameters": [
@@ -906,9 +873,7 @@
     },
     "/paas/v4/assistant": {
       "post": {
-        "tags": [
-          "智能体 API"
-        ],
+        "tags": ["智能体 API"],
         "summary": "助手对话",
         "description": "与AI助手进行对话，支持流式和同步模式。",
         "parameters": [
@@ -967,9 +932,7 @@
     },
     "/paas/v4/assistant/list": {
       "post": {
-        "tags": [
-          "智能体 API"
-        ],
+        "tags": ["智能体 API"],
         "summary": "查询助手支持能力",
         "description": "查询助手支持的功能和能力列表。",
         "parameters": [
@@ -1013,9 +976,7 @@
     },
     "/paas/v4/assistant/conversation/list": {
       "post": {
-        "tags": [
-          "智能体 API"
-        ],
+        "tags": ["智能体 API"],
         "summary": "查询对话使用统计",
         "description": "查询助手对话的使用统计信息。",
         "parameters": [
@@ -1059,9 +1020,7 @@
     },
     "/paas/v4/batches": {
       "post": {
-        "tags": [
-          "批处理 API"
-        ],
+        "tags": ["批处理 API"],
         "summary": "创建批处理任务",
         "description": "创建一个新的批处理任务。",
         "parameters": [
@@ -1103,9 +1062,7 @@
         }
       },
       "get": {
-        "tags": [
-          "批处理 API"
-        ],
+        "tags": ["批处理 API"],
         "summary": "列出批处理任务",
         "description": "获取批处理任务列表，支持分页。",
         "parameters": [
@@ -1156,9 +1113,7 @@
     },
     "/paas/v4/batches/{batch_id}": {
       "get": {
-        "tags": [
-          "批处理 API"
-        ],
+        "tags": ["批处理 API"],
         "summary": "获取批处理任务详情",
         "description": "根据批处理任务ID获取详细信息。",
         "parameters": [
@@ -1201,9 +1156,7 @@
     },
     "/paas/v4/batches/{batch_id}/cancel": {
       "post": {
-        "tags": [
-          "批处理 API"
-        ],
+        "tags": ["批处理 API"],
         "summary": "取消批处理任务",
         "description": "取消正在运行的批处理任务。",
         "parameters": [
@@ -1246,9 +1199,7 @@
     },
     "/knowledge": {
       "post": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "创建个人知识库",
         "description": "用于创建个人知识库，支持绑定向量化模型、设置名称、描述、背景色和图标。",
         "parameters": [
@@ -1290,9 +1241,7 @@
         }
       },
       "get": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "获取个人知识库列表",
         "description": "获取个人知识库列表，支持分页。",
         "parameters": [
@@ -1344,9 +1293,7 @@
     },
     "/knowledge/{id}": {
       "put": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "编辑个人知识库",
         "description": "用于编辑已经创建好的个人知识库，仅传入要修改的字段。",
         "parameters": [
@@ -1397,9 +1344,7 @@
         }
       },
       "get": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "获取个人知识库详情",
         "description": "根据知识库id获取个人知识库详情。",
         "parameters": [
@@ -1440,9 +1385,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "删除个人知识库",
         "description": "根据知识库id删除个人知识库。",
         "parameters": [
@@ -1485,9 +1428,7 @@
     },
     "/knowledge/capacity": {
       "get": {
-        "tags": [
-          "知识库 API"
-        ],
+        "tags": ["知识库 API"],
         "summary": "获取知识库使用量详情",
         "description": "获取个人知识库的使用量详情，包括字数和字节数。",
         "parameters": [
@@ -1521,9 +1462,7 @@
     },
     "/document/upload_document/{id}": {
       "post": {
-        "tags": [
-          "文档 API"
-        ],
+        "tags": ["文档 API"],
         "summary": "知识库上传文档",
         "description": "向指定知识库上传文档，支持多种切片方式和回调。",
         "parameters": [
@@ -1584,58 +1523,142 @@
           "type": "string",
           "description": "HTTP 请求头，用于告知服务器浏览器的首选语言列表，以便服务器返回最符合用户偏好的语言内容。",
           "default": "cn",
-          "enum": [
-            "en",
-            "cn"
-          ]
+          "enum": ["en", "cn"]
         },
         "required": true
       }
     },
     "schemas": {
       "ChatCompletionRequest": {
-        "required": [
-          "model",
-          "messages"
-        ],
+        "required": ["model", "messages"],
         "type": "object",
         "properties": {
           "model": {
             "type": "string",
-            "description": "要调用的模型代码",
-            "example": "glm-4-32b-0414-128k",
-            "default": "glm-4-32b-0414-128k",
+            "description": "要调用的模型代码。GLM-4系列提供了复杂推理、超长上下文、极快推理速度等多款模型。GLM-4V系列支持视觉理解：GLM-4V-Plus-0111具备卓越的多模态理解能力，可同时处理最多5张图像，并支持视频内容理解；GLM-4V-Flash（免费）专注于高效的单一图像理解。",
+            "example": "glm-4-plus",
+            "default": "glm-4-plus",
             "enum": [
-              "glm-4-32b-0414-128k"
+              "glm-4-plus",
+              "glm-4-air-250414",
+              "glm-4-airx",
+              "glm-4-long",
+              "glm-4-flashx",
+              "glm-4-flashx-250414",
+              "glm-experimental-preview",
+              "glm-z1-air",
+              "glm-z1-airx",
+              "glm-z1-flash",
+              "glm-z1-flashx",
+              "glm-4v-plus-0111",
+              "glm-4v-flash",
+              "glm-4.1v-thinking-flashx",
+              "glm-4.1v-thinking-flash"
             ]
           },
           "messages": {
             "type": "array",
-            "description": "当前对话消息列表作为模型的提示输入，以 JSON 数组格式提供，例如：`{\"role\": \"user\", \"content\": \"Hello\"}`。可能的消息类型包括系统消息、用户消息、助手消息和工具消息。",
+            "description": "当前对话消息列表作为模型的提示输入，以 JSON 数组格式提供，例如：`{\"role\": \"user\", \"content\": \"Hello\"}`。可能的消息类型包括系统消息、用户消息、助手消息和工具消息。对于多模态模型（如 glm-4.1v-thinking-flash 和 glm-4v-plus-0111），content 可以是字符串或对象数组，支持文本、图片和视频内容。",
             "items": {
               "type": "object",
               "properties": {
                 "role": {
                   "type": "string",
-                  "description": "消息作者的角色。可选择：system、user 或 assistant。",
+                  "description": "消息作者的角色。可选择：system、user、assistant 或 tool。",
                   "example": "user",
                   "default": "user",
-                  "enum": [
-                    "user",
-                    "assistant",
-                    "system"
-                  ]
+                  "enum": ["user", "assistant", "system", "tool"]
+                },
+                "tool_call_id": {
+                  "type": "string",
+                  "description": "当角色为 tool 时必须提供，指示此消息对应的工具调用 ID。"
+                },
+                "tool_calls": {
+                  "type": "array",
+                  "description": "当角色为assistant时可选，表示模型生成的工具调用消息。当提供此字段时，content通常为空。",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "工具调用ID"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "工具类型，支持web_search、retrieval、function",
+                        "enum": ["function", "web_search", "retrieval"]
+                      },
+                      "function": {
+                        "type": "object",
+                        "description": "函数调用信息，当type为function时不为空",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "函数名称"
+                          },
+                          "arguments": {
+                            "type": "string",
+                            "description": "函数参数，JSON格式字符串"
+                          }
+                        },
+                        "required": ["name", "arguments"]
+                      }
+                    },
+                    "required": ["id", "type"]
+                  }
                 },
                 "content": {
-                  "type": "string",
-                  "description": "消息内容",
-                  "example": "What opportunities and challenges will the Chinese large model industry face in 2025?"
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "消息文本内容",
+                      "example": "What opportunities and challenges will the Chinese large model industry face in 2025?"
+                    },
+                    {
+                      "type": "array",
+                      "description": "多模态消息内容，支持文本、图片和视频",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "内容类型，可以是文本、图片URL或视频URL",
+                            "enum": ["text", "image_url", "video_url"]
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "当 type 为 text 时的文本内容"
+                          },
+                          "image_url": {
+                            "type": "object",
+                            "description": "当 type 为 image_url 时的图片信息",
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "description": "图片的URL地址或Base64编码。图像大小上传限制为每张图像5M以下，且像素不超过6000*6000。支持jpg、png、jpeg格式。注意：GLM-4V-Flash不支持Base64编码。GLM-4V-Plus-0111最多支持同时处理5张图像。"
+                              }
+                            },
+                            "required": ["url"]
+                          },
+                          "video_url": {
+                            "type": "object",
+                            "description": "当 type 为 video_url 时的视频信息。注意：对于 GLM-4V-Plus-0111，video_url 参数必须在 content 数组的第一个位置。",
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "description": "视频的URL地址。对于 GLM-4V-Plus，视频大小限制为20M以内，视频时长不超过30s。对于其他多模态模型，视频大小限制为200M以内。视频类型：mp4。"
+                              }
+                            },
+                            "required": ["url"]
+                          }
+                        },
+                        "required": ["type"]
+                      }
+                    }
+                  ]
                 }
               },
-              "required": [
-                "role",
-                "content"
-              ]
+              "required": ["role", "content"]
             },
             "minItems": 1,
             "maxItems": 10
@@ -1658,16 +1681,16 @@
           },
           "temperature": {
             "type": "number",
-            "description": "采样温度，控制输出的随机性，必须是范围 `[0.0, 1.0]` 内的正数，默认值为 `0.95`。",
+            "description": "采样温度，控制输出的随机性，必须是范围 `[0.0, 1.0]` 内的正数。对于GLM-4.1v系列默认值为 `0.8`，对于GLM-Z1系列默认值为 `0.75`。值越大，会使输出更随机，更具创造性；值越小，输出会更加稳定或确定。建议根据应用场景调整 top_p 或 temperature 参数，但不要同时调整两个参数。",
             "format": "float",
-            "example": 0.95,
-            "default": 0.95,
+            "example": 0.8,
+            "default": 0.8,
             "minimum": 0.0,
             "maximum": 1.0
           },
           "top_p": {
             "type": "number",
-            "description": "另一种温度采样方法，取值范围为：`[0.0, 1.0]`，默认值为 `0.7`。",
+            "description": "用温度取样的另一种方法，称为核取样。取值范围为：`[0.0, 1.0]`，对于GLM-4.1v系列默认值为 `0.6`，对于GLM-Z1系列默认值为 `0.9`。模型考虑具有 top_p 概率质量的 tokens 的结果。例如：0.1 意味着模型解码器只考虑从前 10% 的概率的候选集中取 tokens。建议根据应用场景调整 top_p 或 temperature 参数，但不要同时调整两个参数。",
             "format": "float",
             "example": 0.7,
             "default": 0.7,
@@ -1676,15 +1699,15 @@
           },
           "max_tokens": {
             "type": "integer",
-            "description": "模型输出的最大令牌数，最大输出为 `4095`，默认值为 `1024`。",
+            "description": "模型输出的最大令牌数，GLM-4.1v系列最大支持16K输出长度，GLM-Z1系列最大支持32K输出长度，建议输入max_tokens不能小于1024。",
             "example": 1024,
             "default": 1024,
             "minimum": 1,
-            "maximum": 4095
+            "maximum": 32768
           },
           "tools": {
             "type": "array",
-            "description": "模型可以调用的工具列表。目前仅支持函数作为工具。使用此参数提供模型可以生成 JSON 输入的函数列表。最多支持 128 个函数。\n",
+            "description": "模型可以调用的工具列表。支持函数调用、知识库检索和网络搜索。使用此参数提供模型可以生成 JSON 输入的函数列表或配置其他工具。最多支持 128 个函数。\n",
             "anyOf": [
               {
                 "items": {
@@ -1695,8 +1718,72 @@
                 "items": {
                   "$ref": "#/components/schemas/RetrievalToolSchema"
                 }
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WebSearchToolSchema"
+                }
               }
             ]
+          },
+          "tool_choice": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": ["auto", "none"],
+                "default": "auto",
+                "description": "用于控制模型选择调用哪个函数的方式，仅在工具类型为function时补充。默认auto，目前仅支持auto。"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["function"],
+                    "description": "指定调用工具的类型"
+                  },
+                  "function": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "要调用的函数名称"
+                      }
+                    },
+                    "required": ["name"]
+                  }
+                },
+                "required": ["type", "function"]
+              }
+            ],
+            "description": "控制模型如何选择工具。auto表示模型可以自行决定是否使用工具；none表示模型不应使用任何工具；也可以指定特定的工具供模型使用。"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "终端用户的唯一ID，协助平台对终端用户的违规行为、生成违法及不良信息或其他滥用行为进行干预。ID长度要求：最少6个字符，最多128个字符。",
+            "minLength": 6,
+            "maxLength": 128
+          },
+          "stop": {
+            "type": "array",
+            "description": "模型遇到stop指定的字符时会停止生成。目前仅支持单个stop词，格式为[\"stop_word1\"]。",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1
+          },
+          "response_format": {
+            "type": "object",
+            "description": "指定模型输出格式，默认为text。{ \"type\": \"text\" }：文本输出模式，模型返回普通的文本输出。{ \"type\": \"json_object\" }：JSON输出模式，模型返回有效的JSON输出。",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["text", "json_object"],
+                "default": "text",
+                "description": "输出格式类型，可选text或json_object"
+              }
+            },
+            "required": ["type"]
           }
         }
       },
@@ -1707,18 +1794,13 @@
           "type": {
             "type": "string",
             "default": "function",
-            "enum": [
-              "function"
-            ]
+            "enum": ["function"]
           },
           "function": {
             "$ref": "#/components/schemas/FunctionObject"
           }
         },
-        "required": [
-          "type",
-          "function"
-        ],
+        "required": ["type", "function"],
         "additionalProperties": false
       },
       "FunctionObject": {
@@ -1739,11 +1821,7 @@
             "$ref": "#/components/schemas/FunctionParameters"
           }
         },
-        "required": [
-          "name",
-          "description",
-          "parameters"
-        ]
+        "required": ["name", "description", "parameters"]
       },
       "FunctionParameters": {
         "type": "object",
@@ -1757,18 +1835,13 @@
           "type": {
             "type": "string",
             "default": "retrieval",
-            "enum": [
-              "retrieval"
-            ]
+            "enum": ["retrieval"]
           },
           "retrieval": {
             "$ref": "#/components/schemas/RetrievalObject"
           }
         },
-        "required": [
-          "type",
-          "retrieval"
-        ],
+        "required": ["type", "retrieval"],
         "additionalProperties": false
       },
       "RetrievalObject": {
@@ -1783,8 +1856,108 @@
             "description": "请求模型的提示模板，包含占位符 `{{ knowledge }}` 和 `{{ question }}` 的自定义请求模板。默认模板：`在文档 `{{ knowledge }}` 中搜索问题 `{{question}}` 的答案。如果找到答案，仅使用文档中的陈述进行回应；如果没有找到答案，使用你自己的知识回答并告知用户信息不来自文档。不要重复问题，直接开始答案。`"
           }
         },
+        "required": ["knowledge_id"]
+      },
+      "WebSearchToolSchema": {
+        "type": "object",
+        "title": "Web Search",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "web_search",
+            "enum": [
+              "web_search"
+            ]
+          },
+          "web_search": {
+            "$ref": "#/components/schemas/WebSearchObject"
+          }
+        },
         "required": [
-          "knowledge_id"
+          "type",
+          "web_search"
+        ],
+        "additionalProperties": false
+      },
+      "WebSearchObject": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "description": "是否启用搜索功能，默认值为 false，启用时设置为 true"
+          },
+          "search_engine": {
+            "type": "string",
+            "description": "搜索引擎类型，默认为 search_std；支持search_std、search_pro、search_pro_sogou、search_pro_quark、search_pro_jina、search_pro_bing。",
+            "enum": [
+              "search_std",
+              "search_pro",
+              "search_pro_sogou",
+              "search_pro_quark",
+              "search_pro_jina",
+              "search_pro_bing"
+            ]
+          },
+          "search_query": {
+            "type": "string",
+            "description": "强制触发搜索"
+          },
+          "search_intent": {
+            "type": "string", 
+            "description": "是否进行搜索意图识别，默认执行搜索意图识别。true：执行搜索意图识别，有搜索意图后执行搜索；false：跳过搜索意图识别，直接执行搜索"
+          },
+          "count": {
+            "type": "integer",
+            "description": "返回结果的条数。可填范围：1-50，最大单次搜索返回50条，默认为10。支持的搜索引擎：search_std、search_pro、search_pro_sogou。对于search_pro_sogou: 可选枚举值，10、20、30、40、50",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "search_domain_filter": {
+            "type": "string",
+            "description": "用于限定搜索结果的范围，仅返回指定白名单域名的内容。白名单：直接输入域名（如 www.example.com）。支持的搜索引擎：search_std、search_pro、search_pro_sogou 、search_pro_Jina"
+          },
+          "search_recency_filter": {
+            "type": "string",
+            "description": "搜索指定时间范围内的网页。默认为noLimit。可填值：oneDay（一天内）、oneWeek（一周内）、oneMonth（一个月内）、oneYear（一年内）、noLimit（不限，默认）。支持的搜索引擎：search_std、search_pro、search_pro_sogou、search_pro_quark",
+            "enum": [
+              "oneDay",
+              "oneWeek",
+              "oneMonth",
+              "oneYear",
+              "noLimit"
+            ]
+          },
+          "content_size": {
+            "type": "string",
+            "description": "控制网页摘要的字数。默认值为medium。medium：返回摘要信息，满足大模型的基础推理需求。high：最大化上下文，信息量较大但内容详细，适合需要信息细节的场景。",
+            "enum": [
+              "medium",
+              "high"
+            ]
+          },
+          "result_sequence": {
+            "type": "string",
+            "description": "指定搜索结果返回的顺序是在模型回复结果之前还是之后，可选值：before、after，默认 after",
+            "enum": [
+              "before",
+              "after"
+            ]
+          },
+          "search_result": {
+            "type": "boolean",
+            "description": "是否返回搜索来源的详细信息，默认值 false"
+          },
+          "require_search": {
+            "type": "boolean",
+            "description": "是否强制搜索结果才返回回答，默认值 false"
+          },
+          "search_prompt": {
+            "type": "string",
+            "description": "用于定制搜索结果处理的Prompt，默认Prompt：\n\n你是一位智能问答专家，具备整合信息的能力，能够进行时间识别、语义理解与矛盾信息清洗处理。\n当前日期是{{current_date}}，请以此时间为唯一基准，参考以下信息，全面、准确地回答用户问题。\n仅提炼有价值的内容用于回答，确保答案具有实时性与权威性，直接陈述答案，无需说明数据来源或内部处理过程。"
+          }
+        },
+        "required": [
+          "search_engine"
         ]
       },
       "ChatCompletionResponse": {
@@ -1843,6 +2016,60 @@
                 "description": "Token 总数"
               }
             }
+          },
+          "content_filter": {
+            "type": "array",
+            "description": "返回内容安全的相关信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "安全生效环节，包括 role = assistant 模型推理，role = user 用户输入，role = history 历史上下文"
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "严重程度 level 0-3，level 0表示最严重，3表示轻微"
+                }
+              }
+            }
+          },
+          "web_search": {
+            "type": "array",
+            "description": "返回与网页搜索相关的信息，使用WebSearchToolSchema时返回",
+            "items": {
+              "type": "object",
+              "properties": {
+                "icon": {
+                  "type": "string",
+                  "description": "来源网站的图标"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "搜索结果的标题"
+                },
+                "link": {
+                  "type": "string",
+                  "description": "搜索结果的网页链接"
+                },
+                "media": {
+                  "type": "string",
+                  "description": "搜索结果网页的媒体来源名称"
+                },
+                "publish_date": {
+                  "type": "string",
+                  "description": "网站发布时间"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "搜索结果网页引用的文本内容"
+                },
+                "refer": {
+                  "type": "string",
+                  "description": "角标序号"
+                }
+              }
+            }
           }
         }
       },
@@ -1855,8 +2082,40 @@
             "example": "assistant"
           },
           "content": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "当前对话文本内容。如果调用函数则为 null，否则返回推理结果。对于GLM-Z1系列模型，返回内容可能包含 <think> 标签内的思考过程，标签外的内容为最终输出。"
+              },
+              {
+                "type": "array", 
+                "description": "多模态回复内容，适用于GLM-4V系列模型",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["text"],
+                      "description": "回复内容类型，目前为文本"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "文本内容"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "string",
+                "nullable": true,
+                "description": "当使用tool_calls时，content可能为null"
+              }
+            ],
+            "description": "当前对话内容。如果调用函数则为 null，否则返回推理结果。对于GLM-Z1系列模型，返回内容可能包含 <think> 标签内的思考过程，标签外的内容为最终输出。对于GLM-4V系列模型，可能返回文本或多模态内容数组。"
+          },
+          "reasoning_content": {
             "type": "string",
-            "description": "当前对话内容。如果调用函数则为 null，否则返回推理结果。"
+            "description": "思维链内容，仅在使用 glm-4.1v-thinking 系列模型时返回。对于 GLM-Z1 系列模型，思考过程会直接在 content 字段中的 <think> 标签中返回。"
           },
           "tool_calls": {
             "type": "array",
@@ -1883,10 +2142,7 @@
                 "description": "生成的函数调用参数的 JSON 格式。调用函数前请验证参数。"
               }
             },
-            "required": [
-              "name",
-              "arguments"
-            ]
+            "required": ["name", "arguments"]
           },
           "id": {
             "type": "string",
@@ -1898,6 +2154,157 @@
           }
         }
       },
+      "ChatCompletionChunk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "任务 ID"
+          },
+          "created": {
+            "type": "integer",
+            "description": "请求创建时间，Unix 时间戳（秒）"
+          },
+          "model": {
+            "type": "string",
+            "description": "模型名称"
+          },
+          "choices": {
+            "type": "array",
+            "description": "模型响应列表",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "description": "结果索引"
+                },
+                "delta": {
+                  "type": "object",
+                  "description": "模型增量返回的文本信息",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "description": "当前对话的角色，目前默认为 assistant（模型）"
+                    },
+                    "content": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "description": "当前对话的文本内容"
+                        },
+                        {
+                          "type": "array",
+                          "description": "当前对话的多模态内容（适用于GLM-4V系列）",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["text"],
+                                "description": "内容类型，目前为文本"
+                              },
+                              "text": {
+                                "type": "string",
+                                "description": "文本内容"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "当使用tool_calls时，content可能为null"
+                        }
+                      ],
+                      "description": "当前对话的内容。对于GLM-4V系列模型，可能以数组形式返回。使用工具调用时可能为null。"
+                    },
+                    "reasoning_content": {
+                      "type": "string",
+                      "description": "思维链内容"
+                    },
+                    "tool_calls": {
+                      "type": "array",
+                      "description": "生成的应该被调用的工具信息，流式返回时会逐步生成",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "index": {
+                            "type": "integer",
+                            "description": "工具调用索引"
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "工具调用的唯一标识符"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "工具类型，目前支持function",
+                            "enum": ["function"]
+                          },
+                          "function": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "函数名称"
+                              },
+                              "arguments": {
+                                "type": "string",
+                                "description": "函数参数，JSON格式字符串"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "finish_reason": {
+                  "type": "string",
+                  "description": "模型推理终止的原因。'stop'表示自然结束或触发stop词，'tool_calls'表示模型命中函数，'length'表示达到token长度限制，'sensitive'表示内容被安全审核接口拦截（用户应判断并决定是否撤回公开内容），'network_error'表示模型推理异常。",
+                  "enum": ["stop", "length", "tool_calls", "sensitive", "network_error"]
+                }
+              }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "description": "本次模型调用的 tokens 数量统计",
+            "properties": {
+              "prompt_tokens": {
+                "type": "integer",
+                "description": "用户输入的 tokens 数量"
+              },
+              "completion_tokens": {
+                "type": "integer",
+                "description": "模型输出的 tokens 数量"
+              },
+              "total_tokens": {
+                "type": "integer",
+                "description": "总 tokens 数量"
+              }
+            }
+          },
+          "content_filter": {
+            "type": "array",
+            "description": "返回内容安全的相关信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "安全生效环节，包括 role = assistant 模型推理，role = user 用户输入，role = history 历史上下文"
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "严重程度 level 0-3，level 0 表示最严重，3 表示轻微"
+                }
+              }
+            }
+          }
+        }
+      },
       "CogVideoX2Request": {
         "allOf": [
           {
@@ -1906,9 +2313,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": [
-                  "cogvideox-2"
-                ]
+                "enum": ["cogvideox-2"]
               },
               "prompt": {
                 "type": "string",
@@ -1918,10 +2323,7 @@
                 "type": "string",
                 "description": "输出模式，默认为 `speed`。\n `quality`：优先质量，生成质量更高。\n`speed`：优先速度，生成时间更快，质量相对较低。",
                 "example": "speed",
-                "enum": [
-                  "speed",
-                  "quality"
-                ]
+                "enum": ["speed", "quality"]
               },
               "with_audio": {
                 "type": "boolean",
@@ -1964,15 +2366,10 @@
                 "type": "integer",
                 "description": "视频帧率（FPS），可选值为 `30` 或 `60`。默认：`30`。",
                 "example": 30,
-                "enum": [
-                  30,
-                  60
-                ]
+                "enum": [30, 60]
               }
             },
-            "required": [
-              "model"
-            ]
+            "required": ["model"]
           },
           {
             "$ref": "#/components/schemas/VideoCommonRequest"
@@ -1987,9 +2384,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": [
-                  "viduq1-text"
-                ]
+                "enum": ["viduq1-text"]
               },
               "prompt": {
                 "type": "string",
@@ -1998,53 +2393,34 @@
               "style": {
                 "type": "string",
                 "description": "风格\n默认：`general`\n可选值：`general`、`anime`\n`general`：通用风格，可以使用提示词控制定义风格。\n`anime`：动漫风格，针对动漫特定视觉效果进行优化。可以使用不同的动漫主题提示词控制风格。",
-                "enum": [
-                  "general",
-                  "anime"
-                ]
+                "enum": ["general", "anime"]
               },
               "duration": {
                 "type": "integer",
                 "description": "视频时长参数。\n默认：`5`，可选：`5`。",
                 "example": 5,
-                "enum": [
-                  5
-                ]
+                "enum": [5]
               },
               "aspect_ratio": {
                 "type": "string",
                 "description": "宽高比\n默认：`16:9`，可选值：`16:9`、`9:16`、`1:1`",
                 "example": "16:9",
-                "enum": [
-                  "16:9",
-                  "9:16",
-                  "1:1"
-                ]
+                "enum": ["16:9", "9:16", "1:1"]
               },
               "size": {
                 "type": "string",
                 "description": "分辨率参数\n默认：`1920x1080`，可选：`1920x1080`",
                 "example": "1920x1080",
-                "enum": [
-                  "1920x1080"
-                ]
+                "enum": ["1920x1080"]
               },
               "movement_amplitude": {
                 "type": "string",
                 "description": "运动幅度\n默认：`auto`，可选值：`auto`、`small`、`medium`、`large`",
                 "example": "auto",
-                "enum": [
-                  "auto",
-                  "small",
-                  "medium",
-                  "large"
-                ]
+                "enum": ["auto", "small", "medium", "large"]
               }
             },
-            "required": [
-              "model",
-              "prompt"
-            ]
+            "required": ["model", "prompt"]
           },
           {
             "$ref": "#/components/schemas/VideoCommonRequest"
@@ -2059,10 +2435,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": [
-                  "viduq1-image",
-                  "vidu2-image"
-                ]
+                "enum": ["viduq1-image", "vidu2-image"]
               },
               "prompt": {
                 "type": "string",
@@ -2093,18 +2466,14 @@
                     "type": "integer",
                     "description": "视频时长参数。\n默认：`5`，可选：`5`。",
                     "example": 5,
-                    "enum": [
-                      5
-                    ]
+                    "enum": [5]
                   },
                   {
                     "title": "viduq2-image",
                     "type": "integer",
                     "description": "视频时长参数。\n默认：`4`，可选：`4`。",
                     "example": 4,
-                    "enum": [
-                      4
-                    ]
+                    "enum": [4]
                   }
                 ]
               },
@@ -2115,9 +2484,7 @@
                     "type": "string",
                     "description": "分辨率参数\n默认：`1920x1080`，可选：`1920x1080`",
                     "example": "1920x1080",
-                    "enum": [
-                      "1920x1080"
-                    ]
+                    "enum": ["1920x1080"]
                   },
                   {
                     "title": "viduq2-image",
@@ -2125,9 +2492,7 @@
                     "description": "分辨率参数\n默认：`1280x720`，可选：`1280x720`",
                     "example": "1280x720",
                     "default": "1280x720",
-                    "enum": [
-                      "1280x720"
-                    ]
+                    "enum": ["1280x720"]
                   }
                 ]
               },
@@ -2135,21 +2500,14 @@
                 "type": "string",
                 "description": "运动幅度\n默认：`auto`，可选值：`auto`、`small`、`medium`、`large`",
                 "example": "auto",
-                "enum": [
-                  "auto",
-                  "small",
-                  "medium",
-                  "large"
-                ]
+                "enum": ["auto", "small", "medium", "large"]
               },
               "with_audio": {
                 "type": "boolean",
                 "description": "为生成的视频添加背景音乐。"
               }
             },
-            "required": [
-              "model"
-            ]
+            "required": ["model"]
           },
           {
             "$ref": "#/components/schemas/VideoCommonRequest"
@@ -2164,10 +2522,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": [
-                  "viduq1-start-end",
-                  "vidu2-start-end"
-                ]
+                "enum": ["viduq1-start-end", "vidu2-start-end"]
               },
               "prompt": {
                 "type": "string",
@@ -2190,18 +2545,14 @@
                     "type": "integer",
                     "description": "视频时长参数。\n默认：`5`，可选：`5`。",
                     "example": 5,
-                    "enum": [
-                      5
-                    ]
+                    "enum": [5]
                   },
                   {
                     "title": "vidu2-start-end",
                     "type": "integer",
                     "description": "视频时长参数。\n默认：`4`，可选：`4`。",
                     "example": 4,
-                    "enum": [
-                      4
-                    ]
+                    "enum": [4]
                   }
                 ]
               },
@@ -2212,9 +2563,7 @@
                     "type": "string",
                     "description": "分辨率参数\n默认：`1920x1080`，可选：`1920x1080`",
                     "example": "1920x1080",
-                    "enum": [
-                      "1920x1080"
-                    ]
+                    "enum": ["1920x1080"]
                   },
                   {
                     "title": "vidu2-start-end",
@@ -2222,9 +2571,7 @@
                     "description": "分辨率参数\n默认：`1280x720`，可选：`1280x720`",
                     "example": "1280x720",
                     "default": "1280x720",
-                    "enum": [
-                      "1280x720"
-                    ]
+                    "enum": ["1280x720"]
                   }
                 ]
               },
@@ -2232,21 +2579,14 @@
                 "type": "string",
                 "description": "运动幅度\n默认：`auto`，可选值：`auto`、`small`、`medium`、`large`",
                 "example": "auto",
-                "enum": [
-                  "auto",
-                  "small",
-                  "medium",
-                  "large"
-                ]
+                "enum": ["auto", "small", "medium", "large"]
               },
               "with_audio": {
                 "type": "boolean",
                 "description": "为生成的视频添加背景音乐。"
               }
             },
-            "required": [
-              "model"
-            ]
+            "required": ["model"]
           },
           {
             "$ref": "#/components/schemas/VideoCommonRequest"
@@ -2261,9 +2601,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": [
-                  "vidu2-reference"
-                ]
+                "enum": ["vidu2-reference"]
               },
               "prompt": {
                 "type": "string",
@@ -2284,48 +2622,33 @@
                 "type": "integer",
                 "description": "视频时长参数。\n默认：`4`，可选：`4`。",
                 "example": 4,
-                "enum": [
-                  4
-                ]
+                "enum": [4]
               },
               "aspect_ratio": {
                 "type": "string",
                 "description": "宽高比\n默认：`16:9`，可选值：`16:9`、`9:16`、`1:1`",
                 "example": "16:9",
-                "enum": [
-                  "16:9",
-                  "9:16",
-                  "1:1"
-                ]
+                "enum": ["16:9", "9:16", "1:1"]
               },
               "size": {
                 "title": "vidu2-reference ",
                 "type": "string",
                 "description": "分辨率参数\n默认：`1280x720`，可选：`1280x720`",
                 "example": "1280x720",
-                "enum": [
-                  "1280x720"
-                ]
+                "enum": ["1280x720"]
               },
               "movement_amplitude": {
                 "type": "string",
                 "description": "运动幅度\n默认：`auto`，可选值：`auto`、`small`、`medium`、`large`",
                 "example": "auto",
-                "enum": [
-                  "auto",
-                  "small",
-                  "medium",
-                  "large"
-                ]
+                "enum": ["auto", "small", "medium", "large"]
               },
               "with_audio": {
                 "type": "boolean",
                 "description": "为生成的视频添加背景音乐。"
               }
             },
-            "required": [
-              "model"
-            ]
+            "required": ["model"]
           },
           {
             "$ref": "#/components/schemas/VideoCommonRequest"
@@ -2407,21 +2730,12 @@
             "type": "string",
             "description": "搜索指定时间范围内的网页。默认为 noLimit。可填值：oneDay（一天内）、oneWeek（一周内）、oneMonth（一个月内）、oneYear（一年内）、noLimit（不限，默认）。支持的搜索引擎：search_std、search_pro、search_pro_Sogou、search_pro_quark",
             "default": "noLimit",
-            "enum": [
-              "oneDay",
-              "oneWeek",
-              "oneMonth",
-              "oneYear",
-              "noLimit"
-            ]
+            "enum": ["oneDay", "oneWeek", "oneMonth", "oneYear", "noLimit"]
           },
           "content_size": {
             "type": "string",
             "description": "控制返回网页内容的长短。medium：返回摘要信息，满足大模型的基础推理需求，满足常规问答任务的信息检索需求。high：最大化上下文，信息量较大但内容详细，适合需要信息细节的场景。支持的搜索引擎：search_std、search_pro、search_pro_Sogou、search_pro_quark",
-            "enum": [
-              "medium",
-              "high"
-            ]
+            "enum": ["medium", "high"]
           },
           "request_id": {
             "type": "string",
@@ -2434,11 +2748,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "search_query",
-          "search_engine",
-          "search_intent"
-        ]
+        "required": ["search_query", "search_engine", "search_intent"]
       },
       "WebSearchResponse": {
         "type": "object",
@@ -2468,11 +2778,7 @@
                 "intent": {
                   "type": "string",
                   "description": "识别的意图类型。SEARCH_ALL = 搜索全网，SEARCH_NONE = 无搜索意图，SEARCH_ALWAYS = 强制搜索模式：当search_intent=false时返回此值",
-                  "enum": [
-                    "SEARCH_ALL",
-                    "SEARCH_NONE", 
-                    "SEARCH_ALWAYS"
-                  ]
+                  "enum": ["SEARCH_ALL", "SEARCH_NONE", "SEARCH_ALWAYS"]
                 },
                 "keywords": {
                   "type": "string",
@@ -2522,11 +2828,7 @@
       },
       "AudioSpeechRequest": {
         "type": "object",
-        "required": [
-          "model",
-          "input",
-          "voice"
-        ],
+        "required": ["model", "input", "voice"],
         "properties": {
           "model": {
             "type": "string",
@@ -2539,24 +2841,12 @@
           },
           "voice": {
             "type": "string",
-            "enum": [
-              "alloy",
-              "echo",
-              "fable",
-              "onyx",
-              "nova",
-              "shimmer"
-            ],
+            "enum": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
             "description": "用于生成音频的语音"
           },
           "response_format": {
             "type": "string",
-            "enum": [
-              "mp3",
-              "opus",
-              "aac",
-              "flac"
-            ],
+            "enum": ["mp3", "opus", "aac", "flac"],
             "default": "mp3",
             "description": "音频输出格式"
           },
@@ -2571,10 +2861,7 @@
       },
       "AudioTranscriptionRequest": {
         "type": "object",
-        "required": [
-          "file",
-          "model"
-        ],
+        "required": ["file", "model"],
         "properties": {
           "file": {
             "type": "string",
@@ -2595,13 +2882,7 @@
           },
           "response_format": {
             "type": "string",
-            "enum": [
-              "json",
-              "text",
-              "srt",
-              "verbose_json",
-              "vtt"
-            ],
+            "enum": ["json", "text", "srt", "verbose_json", "vtt"],
             "default": "json",
             "description": "转录输出格式"
           },
@@ -2620,88 +2901,6 @@
           "text": {
             "type": "string",
             "description": "转录的文本"
-          }
-        }
-      },
-      "ImageGenerationRequest": {
-        "type": "object",
-        "required": [
-          "model",
-          "prompt"
-        ],
-        "properties": {
-          "model": {
-            "type": "string",
-            "description": "要使用的图像生成模型"
-          },
-          "prompt": {
-            "type": "string",
-            "description": "描述所需图像的文本提示"
-          },
-          "n": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10,
-            "default": 1,
-            "description": "要生成的图像数量"
-          },
-          "quality": {
-            "type": "string",
-            "enum": [
-              "standard",
-              "hd"
-            ],
-            "default": "standard",
-            "description": "生成图像的质量"
-          },
-          "response_format": {
-            "type": "string",
-            "enum": [
-              "url",
-              "b64_json"
-            ],
-            "default": "url",
-            "description": "返回生成图像的格式"
-          },
-          "size": {
-            "type": "string",
-            "enum": [
-              "256x256",
-              "512x512",
-              "1024x1024",
-              "1792x1024",
-              "1024x1792"
-            ],
-            "default": "1024x1024",
-            "description": "生成图像的尺寸"
-          },
-          "style": {
-            "type": "string",
-            "enum": [
-              "vivid",
-              "natural"
-            ],
-            "default": "vivid",
-            "description": "生成图像的风格"
-          },
-          "user": {
-            "type": "string",
-            "description": "代表最终用户的唯一标识符"
-          }
-        }
-      },
-      "ImageGenerationResponse": {
-        "type": "object",
-        "properties": {
-          "created": {
-            "type": "integer",
-            "description": "图像生成的Unix时间戳"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ImageObject"
-            }
           }
         }
       },
@@ -2724,10 +2923,7 @@
       },
       "EmbeddingCreateRequest": {
         "type": "object",
-        "required": [
-          "model",
-          "input"
-        ],
+        "required": ["model", "input"],
         "properties": {
           "model": {
             "type": "string",
@@ -2749,10 +2945,7 @@
           },
           "encoding_format": {
             "type": "string",
-            "enum": [
-              "float",
-              "base64"
-            ],
+            "enum": ["float", "base64"],
             "default": "float",
             "description": "返回向量格式，支持 float（默认）或 base64。"
           },
@@ -2777,9 +2970,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "list"
-            ],
+            "enum": ["list"],
             "description": "结果类型，目前为 list。"
           },
           "data": {
@@ -2805,9 +2996,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "embedding"
-            ],
+            "enum": ["embedding"],
             "description": "结果类型，目前为 embedding。"
           },
           "embedding": {
@@ -2839,10 +3028,7 @@
       },
       "FileUploadRequest": {
         "type": "object",
-        "required": [
-          "file",
-          "purpose"
-        ],
+        "required": ["file", "purpose"],
         "properties": {
           "file": {
             "type": "string",
@@ -2851,10 +3037,7 @@
           },
           "purpose": {
             "type": "string",
-            "enum": [
-              "fine-tune",
-              "assistants"
-            ],
+            "enum": ["fine-tune", "assistants"],
             "description": "文件的预期用途"
           }
         }
@@ -2868,9 +3051,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "file"
-            ]
+            "enum": ["file"]
           },
           "bytes": {
             "type": "integer",
@@ -2895,9 +3076,7 @@
         "properties": {
           "object": {
             "type": "string",
-            "enum": [
-              "list"
-            ]
+            "enum": ["list"]
           },
           "data": {
             "type": "array",
@@ -2920,9 +3099,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "file"
-            ]
+            "enum": ["file"]
           },
           "deleted": {
             "type": "boolean",
@@ -2932,10 +3109,7 @@
       },
       "FineTuningJobCreateRequest": {
         "type": "object",
-        "required": [
-          "model",
-          "training_file"
-        ],
+        "required": ["model", "training_file"],
         "properties": {
           "model": {
             "type": "string",
@@ -2989,9 +3163,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "fine_tuning.job"
-            ]
+            "enum": ["fine_tuning.job"]
           },
           "created_at": {
             "type": "integer",
@@ -3055,9 +3227,7 @@
         "properties": {
           "object": {
             "type": "string",
-            "enum": [
-              "list"
-            ]
+            "enum": ["list"]
           },
           "data": {
             "type": "array",
@@ -3080,9 +3250,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "fine_tuning.job"
-            ]
+            "enum": ["fine_tuning.job"]
           },
           "deleted": {
             "type": "boolean",
@@ -3095,9 +3263,7 @@
         "properties": {
           "object": {
             "type": "string",
-            "enum": [
-              "list"
-            ]
+            "enum": ["list"]
           },
           "data": {
             "type": "array",
@@ -3120,9 +3286,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "fine_tuning.job.event"
-            ]
+            "enum": ["fine_tuning.job.event"]
           },
           "created_at": {
             "type": "integer",
@@ -3130,11 +3294,7 @@
           },
           "level": {
             "type": "string",
-            "enum": [
-              "info",
-              "warn",
-              "error"
-            ],
+            "enum": ["info", "warn", "error"],
             "description": "日志级别"
           },
           "message": {
@@ -3160,9 +3320,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "model"
-            ]
+            "enum": ["model"]
           },
           "deleted": {
             "type": "boolean",
@@ -3172,10 +3330,7 @@
       },
       "AgentRequest": {
         "type": "object",
-        "required": [
-          "agent_id",
-          "messages"
-        ],
+        "required": ["agent_id", "messages"],
         "properties": {
           "agent_id": {
             "type": "string",
@@ -3193,18 +3348,12 @@
             "description": "会话消息体列表。",
             "items": {
               "type": "object",
-              "required": [
-                "role",
-                "content"
-              ],
+              "required": ["role", "content"],
               "properties": {
                 "role": {
                   "type": "string",
                   "description": "消息作者的角色。用户输入时 role = user。",
-                  "enum": [
-                    "user",
-                    "assistant"
-                  ],
+                  "enum": ["user", "assistant"],
                   "example": "user"
                 },
                 "content": {
@@ -3212,17 +3361,12 @@
                   "description": "会话消息体内容。",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "type",
-                      "text"
-                    ],
+                    "required": ["type", "text"],
                     "properties": {
                       "type": {
                         "type": "string",
                         "description": "消息内容类型。目前支持 type=text。",
-                        "enum": [
-                          "text"
-                        ],
+                        "enum": ["text"],
                         "example": "text"
                       },
                       "text": {
@@ -3309,11 +3453,7 @@
           "status": {
             "type": "string",
             "description": "任务状态，success/failed/pending",
-            "enum": [
-              "success",
-              "failed",
-              "pending"
-            ]
+            "enum": ["success", "failed", "pending"]
           },
           "choices": {
             "type": "array",
@@ -3386,21 +3526,14 @@
                 "role": {
                   "type": "string",
                   "description": "消息作者的角色。可选择：system、user 或 assistant。",
-                  "enum": [
-                    "user",
-                    "assistant",
-                    "system"
-                  ]
+                  "enum": ["user", "assistant", "system"]
                 },
                 "content": {
                   "type": "string",
                   "description": "消息内容"
                 }
               },
-              "required": [
-                "role",
-                "content"
-              ]
+              "required": ["role", "content"]
             },
             "description": "对话消息列表"
           },
@@ -3420,10 +3553,7 @@
             "description": "请求ID"
           }
         },
-        "required": [
-          "model",
-          "messages"
-        ]
+        "required": ["model", "messages"]
       },
       "AssistantResponse": {
         "type": "object",
@@ -3565,27 +3695,19 @@
           "endpoint": {
             "type": "string",
             "description": "批处理端点",
-            "enum": [
-              "/v4/chat/completions"
-            ]
+            "enum": ["/v4/chat/completions"]
           },
           "completion_window": {
             "type": "string",
             "description": "完成时间窗口",
-            "enum": [
-              "24h"
-            ]
+            "enum": ["24h"]
           },
           "metadata": {
             "type": "object",
             "description": "元数据"
           }
         },
-        "required": [
-          "input_file_id",
-          "endpoint",
-          "completion_window"
-        ]
+        "required": ["input_file_id", "endpoint", "completion_window"]
       },
       "BatchObject": {
         "type": "object",
@@ -3596,9 +3718,7 @@
           },
           "object": {
             "type": "string",
-            "enum": [
-              "batch"
-            ]
+            "enum": ["batch"]
           },
           "endpoint": {
             "type": "string",
@@ -3702,9 +3822,7 @@
         "properties": {
           "object": {
             "type": "string",
-            "enum": [
-              "list"
-            ]
+            "enum": ["list"]
           },
           "data": {
             "type": "array",
@@ -3750,10 +3868,7 @@
             "description": "知识库图标，可选：question, book, seal, wrench, tag, horn, house，默认question"
           }
         },
-        "required": [
-          "embedding_id",
-          "name"
-        ]
+        "required": ["embedding_id", "name"]
       },
       "KnowledgeCreateResponse": {
         "type": "object",
@@ -4030,9 +4145,7 @@
             "description": "请求唯一id"
           }
         },
-        "required": [
-          "files"
-        ]
+        "required": ["files"]
       },
       "DocumentUploadResponse": {
         "type": "object",
@@ -4114,14 +4227,89 @@
           }
         }
       },
+      "CreateImageRequest": {
+        "type": "object",
+        "required": ["model", "prompt"],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "模型编码",
+            "enum": ["cogview-4-250304", "cogview-4", "cogview-3-flash"],
+            "example": "cogview-4-250304"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "所需图像的文本描述",
+            "example": "一只可爱的小猫咪"
+          },
+          "quality": {
+            "type": "string",
+            "description": "生成图像的质量，默认为 standard。hd: 生成更精细、细节更丰富的图像，整体一致性更高，耗时约20秒；standard: 快速生成图像，适合对生成速度有较高要求的场景，耗时约5-10秒。此参数仅支持cogview-4-250304。",
+            "enum": ["hd", "standard"],
+            "default": "standard"
+          },
+          "size": {
+            "type": "string",
+            "description": "图片尺寸，推荐枚举值：1024x1024 (默认), 768x1344, 864x1152, 1344x768, 1152x864, 1440x720, 720x1440。\n自定义参数：长宽均需满足512px-2048px之间，需被16整除，并保证最大像素数不超过2^21px。",
+            "default": "1024x1024",
+            "example": "1024x1024"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "终端用户的唯一ID，协助平台对终端用户的违规行为、生成违法及不良信息或其他滥用行为进行干预。ID长度要求：最少6个字符，最多128个字符。",
+            "minLength": 6,
+            "maxLength": 128
+          }
+        }
+      },
+      "ImageGenerationResponse": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "integer",
+            "description": "请求创建时间，是以秒为单位的Unix时间戳"
+          },
+          "data": {
+            "type": "array",
+            "description": "数组，包含生成的图片URL。目前数组中只包含一张图片。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "description": "图片链接。图片的临时链接有效期为30天，请及时转存图片。"
+                }
+              },
+              "required": ["url"]
+            }
+          },
+          "content_filter": {
+            "type": "array",
+            "description": "返回内容安全的相关信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "安全生效环节，包括 role = assistant 模型推理，role = user 用户输入，role = history 历史上下文",
+                  "enum": ["assistant", "user", "history"]
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "严重程度 level 0-3，level 0表示最严重，3表示轻微",
+                  "minimum": 0,
+                  "maximum": 3
+                }
+              }
+            }
+          }
+        }
+      },
       "BadRequestData": {},
       "UnauthorizedData": {},
       "NotFoundData": {},
       "Error": {
-        "required": [
-          "code",
-          "message"
-        ],
+        "required": ["code", "message"],
         "type": "object",
         "properties": {
           "code": {
