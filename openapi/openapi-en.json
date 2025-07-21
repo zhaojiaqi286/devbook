@@ -2,80 +2,76 @@
   "openapi": "3.0.1",
   "info": {
     "title": "ZHIPU AI API",
-    "description": "ZHIPU AI 接口提供强大的 AI 能力，包括聊天对话、工具调用和视频生成。",
+    "description": "ZHIPU AI interface provides powerful AI capabilities, including chat conversations, tool calls, and video generation.",
     "license": {
-      "name": "ZHIPU AI 开发者协议和政策",
+      "name": "ZHIPU AI Developer Agreement and Policies",
       "url": "https://chat.z.ai/legal-agreement/terms-of-service"
     },
     "version": "1.0.0",
     "contact": {
-      "name": "Z.AI 开发者",
+      "name": "Z.AI Developer",
       "url": "https://chat.z.ai/legal-agreement/privacy-policy",
       "email": "user_feedback@z.ai"
     }
   },
   "tags": [
     {
-      "name": "对话 API",
-      "description": "Chat API"
+      "name": "Chat API",
+      "description": "Chat related endpoints"
     },
     {
-      "name": "嵌入 API",
-      "description": "Embedding API"
+      "name": "Embedding API",
+      "description": "Text embedding endpoints"
     },
     {
-      "name": "音频 API",
-      "description": "Audio API"
+      "name": "Audio API",
+      "description": "Audio processing endpoints"
     },
     {
-      "name": "视频 API",
-      "description": "Video API"
+      "name": "Video API",
+      "description": "Video generation endpoints"
     },
     {
-      "name": "图像 API",
-      "description": "Image API"
+      "name": "Image API",
+      "description": "Image generation endpoints"
     },
     {
-      "name": "网络搜索 API",
-      "description": "Web Search API"
-    },
-    {
-      "name": "工具 API",
-      "description": "Tool API"
+      "name": "Tool API",
+      "description": "Tool invocation endpoints"
     },
     {
       "name": "Agent API",
-      "description": "Agent API"
+      "description": "Agent endpoints"
     },
     {
-      "name": "智能体 API",
-      "description": "Assistant API"
+      "name": "Assistant API",
+      "description": "Assistant endpoints"
     },
     {
-      "name": "文档 API",
-      "description": "Document API"
+      "name": "Document API",
+      "description": "Document processing endpoints"
     },
     {
-      "name": "文件 API",
-      "description": "File API"
+      "name": "File API",
+      "description": "File management endpoints"
     },
     {
-      "name": "知识库 API",
-      "description": "Knowledge API"
+      "name": "Knowledge API",
+      "description": "Knowledge base endpoints"
     },
     {
-      "name": "实时 API",
-      "description": "Realtime API"
+      "name": "Realtime API",
+      "description": "Realtime endpoints"
     },
     {
-      "name": "批处理 API",
-      "description": "Batch API"
+      "name": "Batch API",
+      "description": "Batch processing endpoints"
     }
   ],
   "servers": [
     {
       "url": "https://open.bigmodel.cn/api/",
-      "description": "开放平台服务"
+      "description": "Open Platform Service"
     }
   ],
   "security": [
@@ -87,10 +83,10 @@
     "/paas/v4/chat/completions": {
       "post": {
         "tags": [
-          "对话 API"
+          "Chat API"
         ],
-        "summary": "创建聊天补全",
-        "description": "为聊天对话生成 AI 回复。支持多种应用场景，提供智能对话能力。",
+        "summary": "Create chat completion",
+        "description": "Generate AI responses for chat conversations. Supports multiple application scenarios and provides intelligent dialogue capabilities.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -133,10 +129,10 @@
     "/paas/v4/audio/customization": {
       "post": {
         "tags": [
-          "音频 API"
+          "Audio API"
         ],
-        "summary": "语音定制",
-        "description": "使用高级神经模型进行语音克隆和定制，创建个性化语音模型。",
+        "summary": "Voice customization",
+        "description": "Use advanced neural models for voice cloning and customization to create personalized voice models.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -179,10 +175,10 @@
     "/paas/v4/images/generations": {
       "post": {
         "tags": [
-          "图像 API"
+          "Image API"
         ],
-        "summary": "图像生成",
-        "description": "使用 CogView-3-Plus 模型从文本提示生成高质量图像，支持多种风格和尺寸。",
+        "summary": "Image generation",
+        "description": "Generate high-quality images from text prompts using the CogView-3-Plus model. Supports multiple styles and sizes.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -225,10 +221,10 @@
     "/paas/v4/embeddings": {
       "post": {
         "tags": [
-          "嵌入 API"
+          "Embedding API"
         ],
-        "summary": "文本嵌入",
-        "description": "使用 GLM 嵌入模型将文本转换为高维向量表示，用于语义相似性和搜索。支持多语种和多种模型，兼容 OpenAI Embedding API。",
+        "summary": "Text embedding",
+        "description": "Convert text into high-dimensional vector representations using the GLM embedding model for semantic similarity and search. Supports multiple languages and models, compatible with the OpenAI Embedding API.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -271,10 +267,10 @@
     "/paas/v4/files": {
       "post": {
         "tags": [
-          "文件 API"
+          "File API"
         ],
-        "summary": "上传文件",
-        "description": "上传文件到平台，用于微调、知识库或其他AI任务。",
+        "summary": "Upload file",
+        "description": "Upload files to the platform for fine-tuning, knowledge base, or other AI tasks.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -315,10 +311,10 @@
       },
       "get": {
         "tags": [
-          "文件 API"
+          "File API"
         ],
-        "summary": "查询文件列表",
-        "description": "获取已上传文件的分页列表，支持按用途和排序过滤。",
+        "summary": "List files",
+        "description": "Get a paginated list of uploaded files, with filtering by purpose and sorting options.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -393,10 +389,10 @@
     "/paas/v4/files/{file_id}": {
       "get": {
         "tags": [
-          "文件 API"
+          "File API"
         ],
-        "summary": "获取文件信息",
-        "description": "获取指定文件的详细信息和元数据。",
+        "summary": "Get file info",
+        "description": "Get detailed information and metadata for a specified file.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -436,10 +432,10 @@
       },
       "delete": {
         "tags": [
-          "文件 API"
+          "File API"
         ],
-        "summary": "删除文件",
-        "description": "永久删除指定文件及其所有关联数据。",
+        "summary": "Delete file",
+        "description": "Permanently delete the specified file and all associated data.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -481,10 +477,10 @@
     "/paas/v4/files/{file_id}/content": {
       "get": {
         "tags": [
-          "文件 API"
+          "File API"
         ],
-        "summary": "下载文件内容",
-        "description": "流式下载文件的实际内容。",
+        "summary": "Download file content",
+        "description": "Stream download the actual content of the file.",
         "parameters": [
           {
             "name": "file_id",
@@ -524,10 +520,10 @@
     "/paas/v4/videos/generations": {
       "post": {
         "tags": [
-          "视频 API"
+          "Video API"
         ],
-        "summary": "生成视频",
-        "description": "通过文本或图像生成视频内容。支持多种视频生成方式，包括文本转视频、图像转视频等。",
+        "summary": "Generate video",
+        "description": "Generate video content from text or images. Supports multiple video generation methods, including text-to-video and image-to-video.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -591,10 +587,10 @@
     "/paas/v4/async-result/{id}": {
       "get": {
         "tags": [
-          "视频 API"
+          "Video API"
         ],
-        "summary": "查询异步结果",
-        "description": "查询异步请求的处理结果和状态。",
+        "summary": "Get async result",
+        "description": "Query the result and status of an asynchronous request.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -667,10 +663,10 @@
     "/paas/v4/web_search": {
       "post": {
         "tags": [
-          "网络搜索 API"
+          "Tool API"
         ],
-        "summary": "网络搜索",
-        "description": "Web Search API 是一个专给大模型用的搜索引擎，在传统搜索引擎网页抓取、排序的能力基础上，增强了意图识别能力，返回更适合大模型处理的结果（网页标题、网页URL、网页摘要、网站名称、网站图标等）。支持意图增强检索、结构化输出和多引擎支持。",
+        "summary": "Web search",
+        "description": "Web search service optimized for AI models. Provides structured search results, including web page titles, links, summaries, and more.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -698,7 +694,7 @@
             }
           },
           "default": {
-            "description": "请求失败。可能的错误码：1701-网络搜索并发已达上限，请稍后重试或减少并发请求；1702-系统未找到可用的搜索引擎服务，请检查配置或联系管理员；1703-搜索引擎未返回有效数据，请调整查询条件。",
+            "description": "请求失败。",
             "content": {
               "application/json": {
                 "schema": {
@@ -713,10 +709,10 @@
     "/paas/v4/audio/speech": {
       "post": {
         "tags": [
-          "音频 API"
+          "Audio API"
         ],
-        "summary": "文本转语音",
-        "description": "使用 GLM-4-Voice 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
+        "summary": "Text to Speech",
+        "description": "Use GLM-4-Voice to convert text to natural speech, supporting various voices, emotion control, and tone adjustment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -734,7 +730,7 @@
         },
         "responses": {
           "200": {
-            "description": "业务处理成功",
+            "description": "Request successful",
             "content": {
               "audio/*": {
                 "schema": {
@@ -745,7 +741,7 @@
             }
           },
           "default": {
-            "description": "请求失败。",
+            "description": "Request failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -761,10 +757,10 @@
       
       "post": {
         "tags": [
-          "音频 API"
+          "Audio API"
         ],
-        "summary": "语音转文本",
-        "description": "使用 GLM ASR 模型将音频文件转录为文本，支持多语言和实时流式转录。",
+        "summary": "Speech to Text",
+        "description": "Use GLM ASR model to transcribe audio files to text, supporting multiple languages and real-time streaming transcription.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -804,13 +800,59 @@
         }
       }
     },
+    "/paas/v4/tools": {
+      "post": {
+        "tags": [
+          "Tool API"
+        ],
+        "summary": "Web search (comprehensive)",
+        "description": "Perform a web search and return comprehensive results.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebSearchParamsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebSearchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/agents": {
       "post": {
         "tags": [
           "Agent API"
         ],
-        "summary": "智能体对话",
-        "description": "与智能体进行对话交互。支持同步和流式调用，提供智能体的专业能力。",
+        "summary": "Agent conversation",
+        "description": "Interact with agents for conversation. Supports both synchronous and streaming calls, providing professional agent capabilities.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -855,8 +897,8 @@
         "tags": [
           "Agent API"
         ],
-        "summary": "查询异步结果",
-        "description": "查询智能体异步任务的处理结果和状态。",
+        "summary": "Get agent async result",
+        "description": "Query the result and status of an agent's asynchronous task.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -907,10 +949,10 @@
     "/paas/v4/assistant": {
       "post": {
         "tags": [
-          "智能体 API"
+          "Assistant API"
         ],
-        "summary": "助手对话",
-        "description": "与AI助手进行对话，支持流式和同步模式。",
+        "summary": "Assistant conversation",
+        "description": "Interact with the AI assistant, supporting both streaming and synchronous modes.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -968,10 +1010,10 @@
     "/paas/v4/assistant/list": {
       "post": {
         "tags": [
-          "智能体 API"
+          "Assistant API"
         ],
-        "summary": "查询助手支持能力",
-        "description": "查询助手支持的功能和能力列表。",
+        "summary": "List assistant capabilities",
+        "description": "Query the list of features and capabilities supported by the assistant.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1014,10 +1056,10 @@
     "/paas/v4/assistant/conversation/list": {
       "post": {
         "tags": [
-          "智能体 API"
+          "Assistant API"
         ],
-        "summary": "查询对话使用统计",
-        "description": "查询助手对话的使用统计信息。",
+        "summary": "Get conversation usage stats",
+        "description": "Query usage statistics for assistant conversations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1060,10 +1102,10 @@
     "/paas/v4/batches": {
       "post": {
         "tags": [
-          "批处理 API"
+          "Batch API"
         ],
-        "summary": "创建批处理任务",
-        "description": "创建一个新的批处理任务。",
+        "summary": "Create batch task",
+        "description": "Create a new batch processing task.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1104,10 +1146,10 @@
       },
       "get": {
         "tags": [
-          "批处理 API"
+          "Batch API"
         ],
-        "summary": "列出批处理任务",
-        "description": "获取批处理任务列表，支持分页。",
+        "summary": "List batch tasks",
+        "description": "Get a list of batch processing tasks, with pagination support.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1157,10 +1199,10 @@
     "/paas/v4/batches/{batch_id}": {
       "get": {
         "tags": [
-          "批处理 API"
+          "Batch API"
         ],
-        "summary": "获取批处理任务详情",
-        "description": "根据批处理任务ID获取详细信息。",
+        "summary": "Get batch task details",
+        "description": "Get detailed information for a batch processing task by ID.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1202,10 +1244,10 @@
     "/paas/v4/batches/{batch_id}/cancel": {
       "post": {
         "tags": [
-          "批处理 API"
+          "Batch API"
         ],
-        "summary": "取消批处理任务",
-        "description": "取消正在运行的批处理任务。",
+        "summary": "Cancel batch task",
+        "description": "Cancel a running batch processing task.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1247,10 +1289,10 @@
     "/knowledge": {
       "post": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "创建个人知识库",
-        "description": "用于创建个人知识库，支持绑定向量化模型、设置名称、描述、背景色和图标。",
+        "summary": "Create knowledge base",
+        "description": "Create a personal knowledge base, supporting vector model binding, name, description, background color, and icon settings.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1291,10 +1333,10 @@
       },
       "get": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "获取个人知识库列表",
-        "description": "获取个人知识库列表，支持分页。",
+        "summary": "List knowledge bases",
+        "description": "Get a list of personal knowledge bases, with pagination support.",
         "parameters": [
           {
             "name": "page",
@@ -1345,10 +1387,10 @@
     "/knowledge/{id}": {
       "put": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "编辑个人知识库",
-        "description": "用于编辑已经创建好的个人知识库，仅传入要修改的字段。",
+        "summary": "Edit knowledge base",
+        "description": "Edit an existing personal knowledge base. Only provide fields to be modified.",
         "parameters": [
           {
             "name": "id",
@@ -1398,10 +1440,10 @@
       },
       "get": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "获取个人知识库详情",
-        "description": "根据知识库id获取个人知识库详情。",
+        "summary": "Get knowledge base details",
+        "description": "Get details of a personal knowledge base by ID.",
         "parameters": [
           {
             "name": "id",
@@ -1441,10 +1483,10 @@
       },
       "delete": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "删除个人知识库",
-        "description": "根据知识库id删除个人知识库。",
+        "summary": "Delete knowledge base",
+        "description": "Delete a personal knowledge base by ID.",
         "parameters": [
           {
             "name": "id",
@@ -1486,10 +1528,10 @@
     "/knowledge/capacity": {
       "get": {
         "tags": [
-          "知识库 API"
+          "Knowledge API"
         ],
-        "summary": "获取知识库使用量详情",
-        "description": "获取个人知识库的使用量详情，包括字数和字节数。",
+        "summary": "Get knowledge base usage",
+        "description": "Get usage details of a personal knowledge base, including word and byte counts.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1522,10 +1564,10 @@
     "/document/upload_document/{id}": {
       "post": {
         "tags": [
-          "文档 API"
+          "Document API"
         ],
-        "summary": "知识库上传文档",
-        "description": "向指定知识库上传文档，支持多种切片方式和回调。",
+        "summary": "Upload document to knowledge base",
+        "description": "Upload a document to the specified knowledge base, supporting multiple slicing methods and callbacks.",
         "parameters": [
           {
             "name": "id",
@@ -1602,7 +1644,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "description": "要调用的模型代码",
+            "description": "Model code to call",
             "example": "glm-4-32b-0414-128k",
             "default": "glm-4-32b-0414-128k",
             "enum": [
@@ -1611,13 +1653,13 @@
           },
           "messages": {
             "type": "array",
-            "description": "当前对话消息列表作为模型的提示输入，以 JSON 数组格式提供，例如：`{\"role\": \"user\", \"content\": \"Hello\"}`。可能的消息类型包括系统消息、用户消息、助手消息和工具消息。",
+            "description": "Current conversation message list as model prompt input, provided in JSON array format, for example: `{\"role\": \"user\", \"content\": \"Hello\"}`. Possible message types include system messages, user messages, assistant messages, and tool messages.",
             "items": {
               "type": "object",
               "properties": {
                 "role": {
                   "type": "string",
-                  "description": "消息作者的角色。可选择：system、user 或 assistant。",
+                  "description": "Role of the message author. Options: system, user, or assistant.",
                   "example": "user",
                   "default": "user",
                   "enum": [
@@ -1628,7 +1670,7 @@
                 },
                 "content": {
                   "type": "string",
-                  "description": "消息内容",
+                  "description": "Message content",
                   "example": "What opportunities and challenges will the Chinese large model industry face in 2025?"
                 }
               },
@@ -1642,19 +1684,19 @@
           },
           "request_id": {
             "type": "string",
-            "description": "由用户端传递，需要唯一；用于区分每个请求。如果用户端未提供，平台将默认生成一个。"
+            "description": "Passed by the client, must be unique; used to distinguish each request. If not provided by the client, the platform will generate one by default."
           },
           "do_sample": {
             "type": "boolean",
             "example": true,
             "default": true,
-            "description": "当 do_sample 为 true 时，启用采样策略；当 do_sample 为 false 时，temperature 和 top_p 等采样策略参数将不生效。默认值为 `true`。"
+            "description": "When do_sample is true, sampling strategies are enabled; when do_sample is false, sampling strategy parameters such as temperature and top_p will not take effect. Default value is `true`."
           },
           "stream": {
             "type": "boolean",
             "example": false,
             "default": false,
-            "description": "使用同步调用时，此参数应设置为 false 或省略。表示模型在生成所有内容后一次性返回全部内容。默认值为 false。如果设置为 true，模型将通过标准事件流分块返回生成的内容。当事件流结束时，将返回 `data: [DONE]` 消息。"
+            "description": "When using synchronous calls, this parameter should be set to false or omitted. Indicates that the model returns all content at once after generating all content. Default value is false. If set to true, the model will return generated content in chunks through standard event streams. When the event stream ends, a `data: [DONE]` message will be returned."
           },
           "temperature": {
             "type": "number",
@@ -1667,7 +1709,7 @@
           },
           "top_p": {
             "type": "number",
-            "description": "另一种温度采样方法，取值范围为：`[0.0, 1.0]`，默认值为 `0.7`。",
+            "description": "Another temperature sampling method with a value range of `[0.0, 1.0]`, default value is `0.7`.",
             "format": "float",
             "example": 0.7,
             "default": 0.7,
@@ -1676,7 +1718,7 @@
           },
           "max_tokens": {
             "type": "integer",
-            "description": "模型输出的最大令牌数，最大输出为 `4095`，默认值为 `1024`。",
+            "description": "Maximum number of tokens the model outputs, with a maximum output of `4095` and default value of `1024`.",
             "example": 1024,
             "default": 1024,
             "minimum": 1,
@@ -1684,7 +1726,7 @@
           },
           "tools": {
             "type": "array",
-            "description": "模型可以调用的工具列表。目前仅支持函数作为工具。使用此参数提供模型可以生成 JSON 输入的函数列表。最多支持 128 个函数。\n",
+            "description": "List of tools that the model can call. Currently only functions are supported as tools. Use this parameter to provide a list of functions for which the model can generate JSON input. Supports up to 128 functions.\n",
             "anyOf": [
               {
                 "items": {
@@ -1699,6 +1741,104 @@
             ]
           }
         }
+      },
+      "WebSearchToolSchema": {
+        "type": "object",
+        "title": "Web Search",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "web_search",
+            "enum": [
+              "web_search"
+            ]
+          },
+          "web_search": {
+            "$ref": "#/components/schemas/WebSearchObject"
+          }
+        },
+        "required": [
+          "type",
+          "web_search"
+        ],
+        "additionalProperties": false
+      },
+      "WebSearchObject": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "boolean",
+            "description": "Whether to enable search functionality.\nDefaults to `false`. Set to true to enable."
+          },
+          "search_engine": {
+            "type": "string",
+            "description": "Search engine type.\nDefaults to `search_std`. Supports: `search_std`, `search_pro`, `search_pro_sogou`, `search_pro_quark`, `search_pro_jina`, `search_pro_bing`.",
+            "enum": [
+              "search_std",
+              "search_pro",
+              "search_pro_sogou",
+              "search_pro_quark",
+              "search_pro_jina",
+              "search_pro_bing"
+            ]
+          },
+          "search_query": {
+            "type": "string",
+            "description": "Force trigger search"
+          },
+          "count": {
+            "type": "integer",
+            "description": "返回结果数量\n范围：`1-50`，每次搜索最多 `50` 个结果\n默认为 `10`\n支持的引擎：`search_std`、`search_pro`、`search_pro_sogou`\n对于 `search_pro_sogou`：允许的值为 `10`、`20`、`30`、`40`、`50`",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "search_domain_filter": {
+            "type": "string",
+            "description": "将搜索结果限制为指定的白名单域名。白名单：直接输入域名（例如：www.example.com）\n支持的引擎：`search_std`、`search_pro`、`search_pro_sogou`、`search_pro_Jina`"
+          },
+          "search_recency_filter": {
+            "type": "string",
+            "description": "将搜索限制在特定时间范围内。\n默认为 `noLimit`\n值：\n`oneDay`，一天内\n`oneWeek`，一周内\n`oneMonth`，一个月内\n`oneYear`，一年内\n`noLimit`，无限制（默认）\n支持的引擎：`search_std`、`search_pro`、`search_pro_sogou`、`search_pro_quark`",
+            "enum": [
+              "oneDay",
+              "oneWeek",
+              "oneMonth",
+              "oneYear",
+              "noLimit"
+            ]
+          },
+          "content_size": {
+            "type": "string",
+            "description": "网页摘要的字符数。\n默认为 `medium`\n`medium`：适用于大多数查询的平衡模式。400-600 个字符\n`high`：最大化上下文以获得全面答案，2500 个字符。",
+            "enum": [
+              "medium",
+              "high"
+            ]
+          },
+          "result_sequence": {
+            "type": "string",
+            "description": "指定搜索结果是在模型响应之前还是之后显示。选项：`before`、`after`。默认为 `after`",
+            "enum": [
+              "before",
+              "after"
+            ]
+          },
+          "search_result": {
+            "type": "boolean",
+            "description": "是否在响应中返回搜索结果。\n默认为 `false`"
+          },
+          "require_search": {
+            "type": "boolean",
+            "description": "是否强制基于搜索结果的模型响应。\n默认为 `false`"
+          },
+          "search_prompt": {
+            "type": "string",
+            "description": "自定义搜索结果处理方式的提示词。\n默认提示词：\n`你是一个智能问答专家，具有综合信息、识别时间、理解语义和清理矛盾数据的能力。当前日期是 {{current_date}}。将此作为唯一的时间参考。基于以下信息，为用户的问题提供全面准确的答案。只提取对答案有价值的内容。确保答案及时且权威。直接陈述答案，不要引用数据源或内部流程。`"
+          }
+        },
+        "required": [
+          "search_engine"
+        ]
       },
       "FunctionToolSchema": {
         "type": "object",
@@ -2371,42 +2511,34 @@
         "properties": {
           "search_query": {
             "type": "string",
-            "description": "需要进行搜索的内容，建议搜索 query 不超过 70 个字符。",
-            "maxLength": 70
+            "description": "要搜索的内容。"
           },
           "search_engine": {
             "type": "string",
-            "description": "要调用的搜索引擎编码。目前支持：\nsearch_std：智谱基础版搜索引擎\nsearch_pro：智谱高阶版搜索引擎\nsearch_pro_sogou：搜狗\nsearch_pro_quark：夸克搜索\nsearch_pro_jina：jina.ai搜索\nsearch_pro_bing：必应搜索",
+            "description": "要调用的搜索引擎代码。目前支持：\n`search_std`：Z.AI 基础搜索引擎\n`search_pro`：Z.AI 高级搜索引擎\n`search_pro_sogou`：搜狗搜索引擎\n`search_pro_quark`：夸克搜索引擎\n`search_pro_jina`：jina.ai 搜索引擎\n默认为 `search_std`。",
             "example": "search_std",
+            "default": "search_std",
             "enum": [
               "search_std",
               "search_pro",
               "search_pro_sogou",
               "search_pro_quark",
-              "search_pro_jina",
-              "search_pro_bing"
+              "search_pro_jina"
             ]
-          },
-          "search_intent": {
-            "type": "boolean",
-            "description": "是否进行搜索意图识别，默认不执行搜索意图识别。\ntrue：执行搜索意图识别，有搜索意图后执行搜索\nfalse：跳过搜索意图识别，直接执行搜索",
-            "default": false
           },
           "count": {
             "type": "integer",
-            "description": "返回结果的条数。可填范围：1-50，最大单次搜索返回50条，默认为10。\n支持的搜索引擎：search_pro_sogou、search_std、search_pro\nsearch_pro_sogou: 可选枚举值，10、20、30、40、50",
+            "description": "返回结果的数量\n可填范围：`1-50`，单次搜索最多 `50` 个结果\n默认为 `10`\n支持的搜索引擎：\n`search_pro`、`search_std`、`search_pro_sogou`\n搜狗：可选枚举值为 `10`、`20`、`30`、`40`、`50`。",
             "minimum": 1,
-            "maximum": 50,
-            "default": 10
+            "maximum": 50
           },
           "search_domain_filter": {
             "type": "string",
-            "description": "用于限定搜索结果的范围，仅返回指定白名单域名的内容。\n支持的搜索引擎：search_std、search_pro 、search_pro_sogou"
+            "description": "用于限制搜索结果范围，仅返回指定白名单域名的内容。\n白名单：直接输入域名（例如，`www.example.com`）\n支持的搜索引擎：\n`search_std`、`search_pro`、`search_pro_sogou`、`search_pro_jina`"
           },
           "search_recency_filter": {
             "type": "string",
-            "description": "搜索指定时间范围内的网页。默认为 noLimit。可填值：oneDay（一天内）、oneWeek（一周内）、oneMonth（一个月内）、oneYear（一年内）、noLimit（不限，默认）。支持的搜索引擎：search_std、search_pro、search_pro_Sogou、search_pro_quark",
-            "default": "noLimit",
+            "description": "在指定时间范围内搜索网页。\n默认为 `noLimit`\n可填值：\n`oneDay`：一天内\n`oneWeek`：一周内\n`oneMonth`：一个月内\n`oneYear`：一年内\n`noLimit`：无限制（默认）\n支持的搜索引擎：\n`search_std`、`search_pro`、`search_pro_sogou`、`search_pro_quark`",
             "enum": [
               "oneDay",
               "oneWeek",
@@ -2417,7 +2549,9 @@
           },
           "content_size": {
             "type": "string",
-            "description": "控制返回网页内容的长短。medium：返回摘要信息，满足大模型的基础推理需求，满足常规问答任务的信息检索需求。high：最大化上下文，信息量较大但内容详细，适合需要信息细节的场景。支持的搜索引擎：search_std、search_pro、search_pro_Sogou、search_pro_quark",
+            "description": "网页摘要的字符数。\n默认为 `medium`\n`medium`：适用于大多数查询的平衡模式，400-600 个字符\n`high`：为全面答案最大化上下文，2500 个字符。",
+            "example": "medium",
+            "default": "medium",
             "enum": [
               "medium",
               "high"
@@ -2425,95 +2559,82 @@
           },
           "request_id": {
             "type": "string",
-            "description": "由用户端传递，需要唯一；用于区分每次请求的唯一标识符。如果用户端未提供，平台将默认生成。"
+            "description": "用户提供的用于区分请求的唯一标识符。如果未提供，平台将生成一个。"
           },
           "user_id": {
             "type": "string",
-            "description": "终端用户的唯一ID，帮助平台对终端用户的非法活动、生成非法不当信息或其他滥用行为进行干预。ID长度要求：至少6个字符，最多128个字符。",
-            "minLength": 6,
-            "maxLength": 128
+            "description": "终端用户的唯一 ID，帮助平台干预非法活动、不当内容生成或其他滥用行为。ID 长度：6 到 128 个字符。"
           }
         },
         "required": [
-          "search_query",
-          "search_engine",
-          "search_intent"
+          "search_query"
         ]
       },
       "WebSearchResponse": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "description": "任务 ID"
+            "description": "任务 ID。",
+            "type": "string"
           },
           "created": {
-            "type": "integer",
-            "description": "请求创建时间，是以秒为单位的 Unix 时间戳"
-          },
-          "request_id": {
-            "type": "string",
-            "description": "请求标识符"
+            "description": "请求创建时间，Unix 时间戳（秒）。",
+            "type": "integer"
           },
           "search_intent": {
+            "description": "搜索意图结果。",
             "type": "array",
-            "description": "搜索意图结果",
             "items": {
               "type": "object",
               "properties": {
                 "query": {
                   "type": "string",
-                  "description": "原始搜索query"
+                  "description": "原始搜索查询。"
                 },
                 "intent": {
                   "type": "string",
-                  "description": "识别的意图类型。SEARCH_ALL = 搜索全网，SEARCH_NONE = 无搜索意图，SEARCH_ALWAYS = 强制搜索模式：当search_intent=false时返回此值",
-                  "enum": [
-                    "SEARCH_ALL",
-                    "SEARCH_NONE", 
-                    "SEARCH_ALWAYS"
-                  ]
+                  "description": "识别的意图类型。\n`SEARCH_ALL`：搜索整个网络\n`SEARCH_NONE`：无搜索意图"
                 },
                 "keywords": {
                   "type": "string",
-                  "description": "改写后的搜索关键词"
+                  "description": "重写的搜索关键词。"
                 }
               }
             }
           },
           "search_result": {
+            "description": "搜索结果。",
             "type": "array",
-            "description": "搜索结果",
             "items": {
               "type": "object",
               "properties": {
                 "title": {
                   "type": "string",
-                  "description": "标题"
+                  "description": "标题。"
                 },
                 "content": {
                   "type": "string",
-                  "description": "内容摘要"
+                  "description": "内容摘要。"
                 },
                 "link": {
                   "type": "string",
-                  "description": "结果链接"
+                  "description": "结果链接。"
                 },
                 "media": {
                   "type": "string",
-                  "description": "网站名称"
+                  "description": "网站名称。"
                 },
                 "icon": {
                   "type": "string",
-                  "description": "网站图标"
+                  "description": "网站图标。"
                 },
                 "refer": {
                   "type": "string",
-                  "description": "角标序号"
+                  "description": "索引号。"
                 },
                 "publish_date": {
                   "type": "string",
-                  "description": "网站发布时间"
+                  "description": "网站发布日期。"
                 }
               }
             }
@@ -3170,6 +3291,57 @@
           }
         }
       },
+      "WebSearchParamsRequest": {
+        "type": "object",
+        "properties": {
+          "search_query": {
+            "type": "string",
+            "description": "搜索查询字符串"
+          },
+          "search_engine": {
+            "type": "string",
+            "description": "搜索引擎类型",
+            "enum": [
+              "google",
+              "bing"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "description": "返回结果数量",
+            "default": 10
+          },
+          "search_domain_filter": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "域名过滤器"
+          },
+          "search_recency_filter": {
+            "type": "string",
+            "description": "时间过滤器",
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "year"
+            ]
+          },
+          "content_size": {
+            "type": "string",
+            "description": "内容大小",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ]
+          }
+        },
+        "required": [
+          "search_query"
+        ]
+      },
       "AgentRequest": {
         "type": "object",
         "required": [
@@ -3381,26 +3553,7 @@
           "messages": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "type": "string",
-                  "description": "消息作者的角色。可选择：system、user 或 assistant。",
-                  "enum": [
-                    "user",
-                    "assistant",
-                    "system"
-                  ]
-                },
-                "content": {
-                  "type": "string",
-                  "description": "消息内容"
-                }
-              },
-              "required": [
-                "role",
-                "content"
-              ]
+              "$ref": "#/components/schemas/ChatCompletionRequestMessage"
             },
             "description": "对话消息列表"
           },
