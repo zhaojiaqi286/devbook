@@ -689,7 +689,7 @@
     "/paas/v4/audio/speech": {
       "post": {
         "tags": ["音频 API"],
-        "summary": "文本转语音",
+        "summary": "文本转语音 (Deprecated)",
         "description": "使用 GLM-4-Voice 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
         "parameters": [
           {
@@ -758,6 +758,11 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AudioTranscriptionResponse"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioTranscriptionStreamResponse"
                 }
               }
             }
@@ -1553,12 +1558,13 @@
               "glm-4v-plus-0111",
               "glm-4v-flash",
               "glm-4.1v-thinking-flashx",
-              "glm-4.1v-thinking-flash"
+              "glm-4.1v-thinking-flash",
+              "glm-4-voice"
             ]
           },
           "messages": {
             "type": "array",
-            "description": "当前对话消息列表作为模型的提示输入，以 JSON 数组格式提供，例如：`{\"role\": \"user\", \"content\": \"Hello\"}`。可能的消息类型包括系统消息、用户消息、助手消息和工具消息。对于多模态模型（如 glm-4.1v-thinking-flash 和 glm-4v-plus-0111），content 可以是字符串或对象数组，支持文本、图片和视频内容。",
+            "description": "当前对话消息列表作为模型的提示输入，以 JSON 数组格式提供，例如：`{\"role\": \"user\", \"content\": \"Hello\"}`。可能的消息类型包括系统消息、用户消息、助手消息和工具消息。对于多模态模型（如 glm-4.1v-thinking-flash 和 glm-4v-plus-0111），content 可以是字符串或对象数组，支持文本、图片和视频内容。对于 glm-4-voice 模型，支持语音输入和多轮语音对话。",
             "items": {
               "type": "object",
               "properties": {
@@ -1568,6 +1574,16 @@
                   "example": "user",
                   "default": "user",
                   "enum": ["user", "assistant", "system", "tool"]
+                },
+                "audio": {
+                  "type": "object",
+                  "description": "当角色为 assistant 时，可在使用 glm-4-voice 进行多轮对话时提供，指示此消息对应的音频ID",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "上一轮对话中的音频ID，用于多轮对话"
+                    }
+                  }
                 },
                 "tool_call_id": {
                   "type": "string",
@@ -1616,14 +1632,14 @@
                     },
                     {
                       "type": "array",
-                      "description": "多模态消息内容，支持文本、图片和视频",
+                      "description": "多模态消息内容，支持文本、图片、视频和音频",
                       "items": {
                         "type": "object",
                         "properties": {
                           "type": {
                             "type": "string",
-                            "description": "内容类型，可以是文本、图片URL或视频URL",
-                            "enum": ["text", "image_url", "video_url"]
+                            "description": "内容类型，可以是文本、图片URL、视频URL或音频输入",
+                            "enum": ["text", "image_url", "video_url", "input_audio"]
                           },
                           "text": {
                             "type": "string",
@@ -1639,6 +1655,22 @@
                               }
                             },
                             "required": ["url"]
+                          },
+                          "input_audio": {
+                            "type": "object",
+                            "description": "当 type 为 input_audio 时的音频信息，仅glm-4-voice支持音频输入",
+                            "properties": {
+                              "data": {
+                                "type": "string",
+                                "description": "语音文件的base64编码。音频最长不超过 10 分钟。1s音频=12.5 Tokens，向上取整。"
+                              },
+                              "format": {
+                                "type": "string",
+                                "description": "语音文件的格式，支持wav和mp3",
+                                "enum": ["wav", "mp3"]
+                              }
+                            },
+                            "required": ["data", "format"]
                           },
                           "video_url": {
                             "type": "object",
@@ -2005,7 +2037,7 @@
             "properties": {
               "prompt_tokens": {
                 "type": "integer",
-                "description": "用户输入的 Token 数量"
+                "description": "用户输入的 Token 数量。对于 glm-4-voice，1秒音频=12.5 Tokens，向上取整。"
               },
               "completion_tokens": {
                 "type": "integer",
@@ -2013,7 +2045,61 @@
               },
               "total_tokens": {
                 "type": "integer",
-                "description": "Token 总数"
+                "description": "Token 总数，对于 glm-4-voice 模型，1秒音频=12.5 Tokens，向上取整"
+              }
+            }
+          },
+          "content_filter": {
+            "type": "array",
+            "description": "返回内容安全的相关信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "安全生效环节，包括 role = assistant 模型推理，role = user 用户输入，role = history 历史上下文"
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "严重程度 level 0-3，level 0表示最严重，3表示轻微"
+                }
+              }
+            }
+          },
+          "web_search": {
+            "type": "array",
+            "description": "返回与网页搜索相关的信息，使用WebSearchToolSchema时返回",
+            "items": {
+              "type": "object",
+              "properties": {
+                "icon": {
+                  "type": "string",
+                  "description": "来源网站的图标"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "搜索结果的标题"
+                },
+                "link": {
+                  "type": "string",
+                  "description": "搜索结果的网页链接"
+                },
+                "media": {
+                  "type": "string",
+                  "description": "搜索结果网页的媒体来源名称"
+                },
+                "publish_date": {
+                  "type": "string",
+                  "description": "网站发布时间"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "搜索结果网页引用的文本内容"
+                },
+                "refer": {
+                  "type": "string",
+                  "description": "角标序号"
+                }
               }
             }
           },
@@ -2116,6 +2202,24 @@
           "reasoning_content": {
             "type": "string",
             "description": "思维链内容，仅在使用 glm-4.1v-thinking 系列模型时返回。对于 GLM-Z1 系列模型，思考过程会直接在 content 字段中的 <think> 标签中返回。"
+          },
+          "audio": {
+            "type": "object",
+            "description": "当使用 glm-4-voice 模型时返回的音频内容",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "当前对话的音频内容id，可用于多轮对话输入"
+              },
+              "data": {
+                "type": "string",
+                "description": "当前对话的音频内容base64编码"
+              },
+              "expires_at": {
+                "type": "string",
+                "description": "当前对话的音频内容过期时间"
+              }
+            }
           },
           "tool_calls": {
             "type": "array",
@@ -2284,7 +2388,12 @@
                 "type": "integer",
                 "description": "总 tokens 数量"
               }
-            }
+            },
+            "required": ["name", "arguments"]
+          },
+          "id": {
+            "type": "string",
+            "description": "命中函数的唯一标识符。"
           },
           "content_filter": {
             "type": "array",
@@ -2295,6 +2404,175 @@
                 "role": {
                   "type": "string",
                   "description": "安全生效环节，包括 role = assistant 模型推理，role = user 用户输入，role = history 历史上下文"
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "严重程度 level 0-3，level 0 表示最严重，3 表示轻微"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ChatCompletionChunk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "任务 ID"
+          },
+          "created": {
+            "type": "integer",
+            "description": "请求创建时间，Unix 时间戳（秒）"
+          },
+          "model": {
+            "type": "string",
+            "description": "模型名称"
+          },
+          "choices": {
+            "type": "array",
+            "description": "模型响应列表",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "description": "结果索引"
+                },
+                "delta": {
+                  "type": "object",
+                  "description": "模型增量返回的文本信息",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "description": "当前对话的角色，目前默认为 assistant（模型）"
+                    },
+                    "content": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "description": "当前对话的文本内容"
+                        },
+                        {
+                          "type": "array",
+                          "description": "当前对话的多模态内容（适用于GLM-4V系列）",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["text"],
+                                "description": "内容类型，目前为文本"
+                              },
+                              "text": {
+                                "type": "string",
+                                "description": "文本内容"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "当使用tool_calls时，content可能为null"
+                        }
+                      ],
+                      "description": "当前对话的内容。对于GLM-4V系列模型，可能以数组形式返回。使用工具调用时可能为null。"
+                    },
+                    "audio": {
+                      "type": "object",
+                      "description": "当使用 glm-4-voice 模型时返回的音频内容",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "当前对话的音频内容id，可用于多轮对话输入"
+                        },
+                        "data": {
+                          "type": "string",
+                          "description": "当前对话的音频内容base64编码"
+                        },
+                        "expires_at": {
+                          "type": "string",
+                          "description": "当前对话的音频内容过期时间"
+                        }
+                      }
+                    },
+                    "reasoning_content": {
+                      "type": "string",
+                      "description": "思维链内容"
+                    },
+                    "tool_calls": {
+                      "type": "array",
+                      "description": "生成的应该被调用的工具信息，流式返回时会逐步生成",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "index": {
+                            "type": "integer",
+                            "description": "工具调用索引"
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "工具调用的唯一标识符"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "工具类型，目前支持function",
+                            "enum": ["function"]
+                          },
+                          "function": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "函数名称"
+                              },
+                              "arguments": {
+                                "type": "string",
+                                "description": "函数参数，JSON格式字符串"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "finish_reason": {
+                  "type": "string",
+                  "description": "模型推理终止的原因。'stop'表示自然结束或触发stop词，'tool_calls'表示模型命中函数，'length'表示达到token长度限制，'sensitive'表示内容被安全审核接口拦截（用户应判断并决定是否撤回公开内容），'network_error'表示模型推理异常。",
+                  "enum": ["stop", "length", "tool_calls", "sensitive", "network_error"]
+                }
+              }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "description": "本次模型调用的 tokens 数量统计",
+            "properties": {
+              "prompt_tokens": {
+                "type": "integer",
+                "description": "用户输入的 tokens 数量。对于 glm-4-voice，1秒音频=12.5 Tokens，向上取整。"
+              },
+              "completion_tokens": {
+                "type": "integer",
+                "description": "模型输出的 tokens 数量"
+              },
+              "total_tokens": {
+                "type": "integer",
+                "description": "总 tokens 数量，对于 glm-4-voice 模型，1秒音频=12.5 Tokens，向上取整"
+              }
+            }
+          },
+          "content_filter": {
+            "type": "array",
+            "description": "返回内容安全的相关信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "安全生效环节，包括：role = assistant 模型推理，role = user 用户输入，role = history 历史上下文"
                 },
                 "level": {
                   "type": "integer",
@@ -2866,41 +3144,124 @@
           "file": {
             "type": "string",
             "format": "binary",
-            "description": "要转录的音频文件"
+            "description": "需要转录的音频文件，支持上传的音频文件格式：.wav / .mp3，规格限制：文件大小 ≤ 25 MB、音频时长 ≤ 60 秒"
           },
           "model": {
             "type": "string",
-            "description": "要使用的ASR模型"
-          },
-          "language": {
-            "type": "string",
-            "description": "音频的语言（ISO-639-1格式）"
-          },
-          "prompt": {
-            "type": "string",
-            "description": "可选的文本提示"
-          },
-          "response_format": {
-            "type": "string",
-            "enum": ["json", "text", "srt", "verbose_json", "vtt"],
-            "default": "json",
-            "description": "转录输出格式"
+            "description": "要调用的模型编码",
+            "enum": ["glm-asr"],
+            "default": "glm-asr"
           },
           "temperature": {
             "type": "number",
             "minimum": 0,
             "maximum": 1,
-            "default": 0,
-            "description": "采样温度"
+            "default": 0.95,
+            "description": "采样温度，控制输出的随机性，必须为正数，取值范围是：[0.0,1.0]，默认值为 0.95，值越大，会使输出更随机，更具创造性；值越小，输出会更加稳定或确定，建议您根据应用场景调整 top_p 或 temperature 参数，但不要同时调整两个参数"
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false,
+            "description": "该参数在使用同步调用时应设置为false或省略。表示模型在生成所有内容后一次性返回所有内容。默认值为false。如果设置为true，模型将通过标准Event Stream逐块返回生成的内容。当Event Stream结束时，将返回一个data: [DONE]消息。"
+          },
+          "request_id": {
+            "type": "string",
+            "description": "由用户端传递，需要唯一；用于区分每次请求的唯一标识符。如果用户端未提供，平台将默认生成。"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "终端用户的唯一ID，帮助平台对终端用户的非法活动、生成非法不当信息或其他滥用行为进行干预。ID长度要求：至少6个字符，最多128个字符。"
           }
         }
       },
       "AudioTranscriptionResponse": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "任务 ID"
+          },
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "description": "请求创建时间，是以秒为单位的 Unix 时间戳"
+          },
+          "request_id": {
+            "type": "string",
+            "description": "由用户端传递，需要唯一；用于区分每次请求的唯一标识符。如果用户端未提供，平台将默认生成。"
+          },
+          "model": {
+            "type": "string",
+            "description": "模型名称"
+          },
+          "segments": {
+            "type": "array",
+            "description": "分句ASR内容",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "description": "分句序号"
+                },
+                "start": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "分句开始时间"
+                },
+                "end": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "分句结束时间"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "分句识别内容"
+                }
+              }
+            }
+          },
           "text": {
             "type": "string",
-            "description": "转录的文本"
+            "description": "音频转录的完整内容"
+          }
+        }
+      },
+      "AudioTranscriptionStreamResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "任务 ID"
+          },
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "description": "请求创建时间，是以秒为单位的 Unix 时间戳"
+          },
+          "model": {
+            "type": "string",
+            "description": "模型名称"
+          },
+          "choices": {
+            "type": "array",
+            "description": "当前对话的模型输出内容",
+            "items": {
+              "type": "object"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "音频转录事件类型，transcript.text.delta表示正在转录，transcript.text.done表示转录完成"
+          },
+          "delta": {
+            "type": "string",
+            "description": "模型增量返回的音频转录信息"
+          },
+          "text": {
+            "type": "string",
+            "description": "转录完成时返回的完整文本"
           }
         }
       },
