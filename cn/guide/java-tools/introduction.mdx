@@ -1,0 +1,1110 @@
+---
+title: "Java工具介绍"
+description: "Java SDK和开发工具的使用指南"
+---
+
+# Java工具介绍
+
+Java工具集为开发者提供了完整的Java SDK和相关开发工具，让您能够在Java应用中轻松集成AI能力。
+
+## SDK概览
+
+### 核心功能
+
+我们的Java SDK提供了以下核心功能：
+
+- **模型调用**：支持所有语言模型、视觉模型和多模态模型
+- **智能体集成**：轻松集成和调用智能体
+- **流式响应**：支持实时流式输出
+- **异步支持**：完整的异步编程支持
+- **连接池管理**：高效的HTTP连接池管理
+- **错误处理**：完善的异常处理机制
+- **日志集成**：与主流日志框架集成
+
+### 技术特性
+
+- **Java 8+兼容**：支持Java 8及以上版本
+- **Spring Boot集成**：提供Spring Boot Starter
+- **响应式编程**：支持Reactor和RxJava
+- **序列化支持**：Jackson和Gson序列化支持
+- **线程安全**：所有客户端都是线程安全的
+- **可配置性**：丰富的配置选项
+
+## 安装和配置
+
+### Maven依赖
+
+```xml
+<dependency>
+    <groupId>cn.zhipuai</groupId>
+    <artifactId>zhipuai-java</artifactId>
+    <version>2.0.0</version>
+</dependency>
+
+<!-- Spring Boot Starter（可选）-->
+<dependency>
+    <groupId>cn.zhipuai</groupId>
+    <artifactId>zhipuai-spring-boot-starter</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+### Gradle依赖
+
+```gradle
+implementation 'cn.zhipuai:zhipuai-java:2.0.0'
+
+// Spring Boot Starter（可选）
+implementation 'cn.zhipuai:zhipuai-spring-boot-starter:2.0.0'
+```
+
+### 基础配置
+
+```java
+import cn.zhipuai.ZhipuAI;
+import cn.zhipuai.ZhipuAIConfig;
+
+// 方式1：使用默认配置
+ZhipuAI client = ZhipuAI.builder()
+    .apiKey("your-api-key")
+    .build();
+
+// 方式2：自定义配置
+ZhipuAIConfig config = ZhipuAIConfig.builder()
+    .apiKey("your-api-key")
+    .baseUrl("https://open.bigmodel.cn/api/paas/v4/")
+    .timeout(Duration.ofSeconds(30))
+    .maxRetries(3)
+    .build();
+
+ZhipuAI client = ZhipuAI.create(config);
+```
+
+### Spring Boot配置
+
+```yaml
+# application.yml
+zhipuai:
+  api-key: your-api-key
+  base-url: https://open.bigmodel.cn/api/paas/v4/
+  timeout: 30s
+  max-retries: 3
+  connection-pool:
+    max-connections: 50
+    keep-alive-duration: 5m
+```
+
+```java
+@RestController
+public class ChatController {
+    
+    @Autowired
+    private ZhipuAI zhipuAI;
+    
+    @PostMapping("/chat")
+    public String chat(@RequestBody String message) {
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage(message))
+            .build();
+            
+        ChatCompletionResponse response = zhipuAI.chatCompletion(request);
+        return response.getChoices().get(0).getMessage().getContent();
+    }
+}
+```
+
+## 基础使用
+
+### 简单对话
+
+```java
+import cn.zhipuai.model.chat.*;
+
+public class BasicChatExample {
+    public static void main(String[] args) {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        // 创建对话请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage("你好，请介绍一下自己"))
+            .build();
+        
+        // 发送请求
+        ChatCompletionResponse response = client.chatCompletion(request);
+        
+        // 获取回复
+        String reply = response.getChoices().get(0).getMessage().getContent();
+        System.out.println(reply);
+        
+        // 关闭客户端
+        client.close();
+    }
+}
+```
+
+### 流式对话
+
+```java
+import cn.zhipuai.model.chat.stream.*;
+import java.util.concurrent.CountDownLatch;
+
+public class StreamChatExample {
+    public static void main(String[] args) throws InterruptedException {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage("写一首关于春天的诗"))
+            .stream(true)
+            .build();
+        
+        CountDownLatch latch = new CountDownLatch(1);
+        StringBuilder fullResponse = new StringBuilder();
+        
+        client.streamChatCompletion(request, new StreamChatCompletionListener() {
+            @Override
+            public void onNext(ChatCompletionChunk chunk) {
+                String content = chunk.getChoices().get(0).getDelta().getContent();
+                if (content != null) {
+                    System.out.print(content);
+                    fullResponse.append(content);
+                }
+            }
+            
+            @Override
+            public void onComplete() {
+                System.out.println("\n\n流式输出完成");
+                latch.countDown();
+            }
+            
+            @Override
+            public void onError(Throwable error) {
+                System.err.println("错误：" + error.getMessage());
+                latch.countDown();
+            }
+        });
+        
+        latch.await();
+        client.close();
+    }
+}
+```
+
+### 多轮对话
+
+```java
+import java.util.*;
+
+public class ConversationExample {
+    private final ZhipuAI client;
+    private final List<ChatMessage> conversation;
+    
+    public ConversationExample(String apiKey) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+        this.conversation = new ArrayList<>();
+        
+        // 添加系统消息
+        conversation.add(ChatMessage.systemMessage("你是一个有用的AI助手"));
+    }
+    
+    public String chat(String userInput) {
+        // 添加用户消息
+        conversation.add(ChatMessage.userMessage(userInput));
+        
+        // 创建请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .messages(conversation)
+            .build();
+        
+        // 发送请求
+        ChatCompletionResponse response = client.chatCompletion(request);
+        String aiResponse = response.getChoices().get(0).getMessage().getContent();
+        
+        // 添加AI回复到对话历史
+        conversation.add(ChatMessage.assistantMessage(aiResponse));
+        
+        return aiResponse;
+    }
+    
+    public void clearHistory() {
+        conversation.clear();
+        conversation.add(ChatMessage.systemMessage("你是一个有用的AI助手"));
+    }
+    
+    public static void main(String[] args) {
+        ConversationExample chat = new ConversationExample("your-api-key");
+        
+        System.out.println(chat.chat("你好"));
+        System.out.println(chat.chat("我想了解Java编程"));
+        System.out.println(chat.chat("能给我一个简单的例子吗？"));
+    }
+}
+```
+
+## 高级功能
+
+### 函数调用
+
+```java
+import cn.zhipuai.model.chat.tool.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class FunctionCallingExample {
+    private final ZhipuAI client;
+    private final ObjectMapper objectMapper;
+    
+    public FunctionCallingExample(String apiKey) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+        this.objectMapper = new ObjectMapper();
+    }
+    
+    public void demonstrateFunctionCalling() {
+        // 定义函数
+        FunctionTool weatherTool = FunctionTool.builder()
+            .name("get_weather")
+            .description("获取指定地点的天气信息")
+            .parameters(JsonSchema.builder()
+                .type("object")
+                .addProperty("location", JsonSchema.builder()
+                    .type("string")
+                    .description("地点名称")
+                    .build())
+                .addProperty("date", JsonSchema.builder()
+                    .type("string")
+                    .description("日期，格式为YYYY-MM-DD")
+                    .build())
+                .addRequired("location")
+                .build())
+            .build();
+        
+        // 创建请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage("北京今天天气怎么样？"))
+            .addTool(weatherTool)
+            .toolChoice("auto")
+            .build();
+        
+        // 发送请求
+        ChatCompletionResponse response = client.chatCompletion(request);
+        ChatMessage assistantMessage = response.getChoices().get(0).getMessage();
+        
+        // 检查是否有函数调用
+        if (assistantMessage.getToolCalls() != null && !assistantMessage.getToolCalls().isEmpty()) {
+            ToolCall toolCall = assistantMessage.getToolCalls().get(0);
+            
+            if ("get_weather".equals(toolCall.getFunction().getName())) {
+                try {
+                    // 解析函数参数
+                    JsonNode args = objectMapper.readTree(toolCall.getFunction().getArguments());
+                    String location = args.get("location").asText();
+                    String date = args.has("date") ? args.get("date").asText() : "今天";
+                    
+                    // 调用实际的天气函数
+                    String weatherResult = getWeather(location, date);
+                    
+                    System.out.println("天气信息：" + weatherResult);
+                } catch (Exception e) {
+                    System.err.println("解析函数参数失败：" + e.getMessage());
+                }
+            }
+        }
+    }
+    
+    private String getWeather(String location, String date) {
+        // 模拟天气API调用
+        return String.format("{
+            \"location\": \"%s\",
+            \"date\": \"%s\",
+            \"weather\": \"晴天\",
+            \"temperature\": \"25°C\"
+        }", location, date);
+    }
+}
+```
+
+### 视觉理解
+
+```java
+import cn.zhipuai.model.chat.content.*;
+
+public class VisionExample {
+    public static void main(String[] args) {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        // 创建包含图像的消息
+        ChatMessage message = ChatMessage.builder()
+            .role("user")
+            .addContent(TextContent.of("这张图片里有什么？"))
+            .addContent(ImageUrlContent.of("https://example.com/image.jpg"))
+            .build();
+        
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4v")
+            .addMessage(message)
+            .build();
+        
+        ChatCompletionResponse response = client.chatCompletion(request);
+        System.out.println(response.getChoices().get(0).getMessage().getContent());
+        
+        client.close();
+    }
+}
+```
+
+### 图像生成
+
+```java
+import cn.zhipuai.model.image.*;
+
+public class ImageGenerationExample {
+    public static void main(String[] args) {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        ImageGenerationRequest request = ImageGenerationRequest.builder()
+            .model("cogview-3")
+            .prompt("一只可爱的小猫在花园里玩耍")
+            .size("1024x1024")
+            .quality("standard")
+            .n(1)
+            .build();
+        
+        ImageGenerationResponse response = client.imageGeneration(request);
+        String imageUrl = response.getData().get(0).getUrl();
+        
+        System.out.println("生成的图像URL：" + imageUrl);
+        
+        client.close();
+    }
+}
+```
+
+### 文本嵌入
+
+```java
+import cn.zhipuai.model.embedding.*;
+import java.util.Arrays;
+
+public class EmbeddingExample {
+    public static void main(String[] args) {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        EmbeddingRequest request = EmbeddingRequest.builder()
+            .model("embedding-2")
+            .input(Arrays.asList(
+                "这是第一段文本",
+                "这是第二段文本"
+            ))
+            .build();
+        
+        EmbeddingResponse response = client.embedding(request);
+        
+        for (int i = 0; i < response.getData().size(); i++) {
+            EmbeddingData data = response.getData().get(i);
+            System.out.println("文本" + (i + 1) + "的嵌入向量维度：" + data.getEmbedding().size());
+        }
+        
+        client.close();
+    }
+}
+```
+
+## 异步编程
+
+### CompletableFuture支持
+
+```java
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+public class AsyncExample {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage("你好"))
+            .build();
+        
+        // 异步调用
+        CompletableFuture<ChatCompletionResponse> future = client.chatCompletionAsync(request);
+        
+        // 处理结果
+        future.thenAccept(response -> {
+            String reply = response.getChoices().get(0).getMessage().getContent();
+            System.out.println("异步回复：" + reply);
+        }).exceptionally(throwable -> {
+            System.err.println("异步调用失败：" + throwable.getMessage());
+            return null;
+        });
+        
+        // 等待完成
+        ChatCompletionResponse response = future.get();
+        System.out.println("同步获取结果：" + response.getChoices().get(0).getMessage().getContent());
+        
+        client.close();
+    }
+}
+```
+
+### 并发处理
+
+```java
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+
+public class ConcurrentExample {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        List<String> questions = Arrays.asList(
+            "什么是人工智能？",
+            "Java有什么优势？",
+            "如何学习机器学习？"
+        );
+        
+        // 创建线程池
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        
+        // 并发处理多个请求
+        List<CompletableFuture<String>> futures = questions.stream()
+            .map(question -> CompletableFuture.supplyAsync(() -> {
+                ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("glm-4")
+                    .addMessage(ChatMessage.userMessage(question))
+                    .build();
+                
+                ChatCompletionResponse response = client.chatCompletion(request);
+                return response.getChoices().get(0).getMessage().getContent();
+            }, executor))
+            .collect(Collectors.toList());
+        
+        // 等待所有请求完成
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+            futures.toArray(new CompletableFuture[0])
+        );
+        
+        allFutures.get();
+        
+        // 获取结果
+        for (int i = 0; i < futures.size(); i++) {
+            String answer = futures.get(i).get();
+            System.out.println("问题" + (i + 1) + "的回答：" + answer);
+        }
+        
+        executor.shutdown();
+        client.close();
+    }
+}
+```
+
+### Reactive Streams支持
+
+```java
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
+
+public class ReactiveExample {
+    public static void main(String[] args) {
+        ZhipuAI client = ZhipuAI.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        // 使用Reactor
+        Mono<String> responseMono = Mono.fromFuture(() -> {
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model("glm-4")
+                .addMessage(ChatMessage.userMessage("你好"))
+                .build();
+            
+            return client.chatCompletionAsync(request)
+                .thenApply(response -> response.getChoices().get(0).getMessage().getContent());
+        });
+        
+        // 处理响应
+        responseMono
+            .doOnNext(response -> System.out.println("响应：" + response))
+            .doOnError(error -> System.err.println("错误：" + error.getMessage()))
+            .block(); // 阻塞等待结果
+        
+        client.close();
+    }
+}
+```
+
+## 错误处理
+
+### 异常类型
+
+```java
+import cn.zhipuai.exception.*;
+
+public class ErrorHandlingExample {
+    private final ZhipuAI client;
+    
+    public ErrorHandlingExample(String apiKey) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+    }
+    
+    public String robustChat(String message) {
+        try {
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model("glm-4")
+                .addMessage(ChatMessage.userMessage(message))
+                .build();
+            
+            ChatCompletionResponse response = client.chatCompletion(request);
+            return response.getChoices().get(0).getMessage().getContent();
+            
+        } catch (AuthenticationException e) {
+            return "认证失败，请检查API Key";
+        } catch (RateLimitException e) {
+            return "请求频率过高，请稍后重试";
+        } catch (TimeoutException e) {
+            return "请求超时，请稍后重试";
+        } catch (ApiException e) {
+            return "API错误：" + e.getMessage();
+        } catch (ZhipuAIException e) {
+            return "SDK错误：" + e.getMessage();
+        } catch (Exception e) {
+            return "未知错误：" + e.getMessage();
+        }
+    }
+}
+```
+
+### 重试机制
+
+```java
+import java.time.Duration;
+import java.util.Random;
+
+public class RetryExample {
+    private final ZhipuAI client;
+    private final Random random = new Random();
+    
+    public RetryExample(String apiKey) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+    }
+    
+    public String chatWithRetry(String message, int maxRetries) {
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("glm-4")
+                    .addMessage(ChatMessage.userMessage(message))
+                    .build();
+                
+                ChatCompletionResponse response = client.chatCompletion(request);
+                return response.getChoices().get(0).getMessage().getContent();
+                
+            } catch (RateLimitException | TimeoutException e) {
+                if (attempt < maxRetries - 1) {
+                    // 指数退避
+                    long delay = (long) Math.pow(2, attempt) * 1000 + random.nextInt(1000);
+                    System.out.println("请求失败，" + delay + "ms后重试...");
+                    
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("重试被中断", ie);
+                    }
+                } else {
+                    throw e;
+                }
+            } catch (Exception e) {
+                // 对于其他错误，不重试
+                throw e;
+            }
+        }
+        
+        throw new RuntimeException("重试次数已用完");
+    }
+}
+```
+
+## 性能优化
+
+### 连接池配置
+
+```java
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
+import java.util.concurrent.TimeUnit;
+
+public class PerformanceOptimization {
+    public static ZhipuAI createOptimizedClient(String apiKey) {
+        // 自定义HTTP客户端
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+            .connectionPool(new ConnectionPool(20, 5, TimeUnit.MINUTES))
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build();
+        
+        ZhipuAIConfig config = ZhipuAIConfig.builder()
+            .apiKey(apiKey)
+            .httpClient(httpClient)
+            .maxRetries(3)
+            .retryDelay(Duration.ofSeconds(1))
+            .build();
+        
+        return ZhipuAI.create(config);
+    }
+}
+```
+
+### 批量处理
+
+```java
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+
+public class BatchProcessor {
+    private final ZhipuAI client;
+    private final ExecutorService executor;
+    
+    public BatchProcessor(String apiKey, int threadPoolSize) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+        this.executor = Executors.newFixedThreadPool(threadPoolSize);
+    }
+    
+    public List<String> batchProcessTexts(List<String> texts, int batchSize) {
+        List<String> results = new ArrayList<>();
+        
+        for (int i = 0; i < texts.size(); i += batchSize) {
+            List<String> batch = texts.subList(i, Math.min(i + batchSize, texts.size()));
+            
+            // 为批次中的每个文本创建异步任务
+            List<CompletableFuture<String>> futures = batch.stream()
+                .map(text -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        ChatCompletionRequest request = ChatCompletionRequest.builder()
+                            .model("glm-4")
+                            .addMessage(ChatMessage.userMessage(text))
+                            .build();
+                        
+                        ChatCompletionResponse response = client.chatCompletion(request);
+                        return response.getChoices().get(0).getMessage().getContent();
+                    } catch (Exception e) {
+                        return "处理失败：" + e.getMessage();
+                    }
+                }, executor))
+                .collect(Collectors.toList());
+            
+            // 等待批次完成
+            try {
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
+                
+                for (CompletableFuture<String> future : futures) {
+                    results.add(future.get());
+                }
+                
+                // 批次间添加延迟，避免触发限流
+                if (i + batchSize < texts.size()) {
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("批量处理失败", e);
+            }
+        }
+        
+        return results;
+    }
+    
+    public void shutdown() {
+        executor.shutdown();
+        client.close();
+    }
+}
+```
+
+### 缓存机制
+
+```java
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
+
+public class CachedChatClient {
+    private final ZhipuAI client;
+    private final ConcurrentMap<String, String> cache;
+    
+    public CachedChatClient(String apiKey) {
+        this.client = ZhipuAI.builder().apiKey(apiKey).build();
+        this.cache = new ConcurrentHashMap<>();
+    }
+    
+    public String cachedChat(String message) {
+        String cacheKey = generateCacheKey(message);
+        
+        // 检查缓存
+        String cachedResult = cache.get(cacheKey);
+        if (cachedResult != null) {
+            System.out.println("从缓存返回结果");
+            return cachedResult;
+        }
+        
+        // 调用API
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .addMessage(ChatMessage.userMessage(message))
+            .build();
+        
+        ChatCompletionResponse response = client.chatCompletion(request);
+        String result = response.getChoices().get(0).getMessage().getContent();
+        
+        // 存入缓存
+        cache.put(cacheKey, result);
+        
+        return result;
+    }
+    
+    private String generateCacheKey(String message) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            
+            return hexString.toString();
+        } catch (Exception e) {
+            return message.hashCode() + "";
+        }
+    }
+    
+    public void clearCache() {
+        cache.clear();
+    }
+}
+```
+
+## 实用工具类
+
+### 对话管理器
+
+```java
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class ConversationManager {
+    private final ZhipuAI client;
+    private final String model;
+    private final int maxHistory;
+    private final List<ChatMessage> conversation;
+    
+    public ConversationManager(ZhipuAI client, String model, int maxHistory) {
+        this.client = client;
+        this.model = model;
+        this.maxHistory = maxHistory;
+        this.conversation = new CopyOnWriteArrayList<>();
+    }
+    
+    public void addSystemMessage(String content) {
+        conversation.add(0, ChatMessage.systemMessage(content));
+    }
+    
+    public String chat(String userInput) {
+        // 添加用户消息
+        conversation.add(ChatMessage.userMessage(userInput));
+        
+        // 限制历史长度
+        if (conversation.size() > maxHistory) {
+            // 保留系统消息，删除最旧的对话
+            List<ChatMessage> systemMessages = conversation.stream()
+                .filter(msg -> "system".equals(msg.getRole()))
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            
+            List<ChatMessage> otherMessages = conversation.stream()
+                .filter(msg -> !"system".equals(msg.getRole()))
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            
+            conversation.clear();
+            conversation.addAll(systemMessages);
+            
+            int keepCount = maxHistory - systemMessages.size();
+            if (otherMessages.size() > keepCount) {
+                conversation.addAll(otherMessages.subList(otherMessages.size() - keepCount, otherMessages.size()));
+            } else {
+                conversation.addAll(otherMessages);
+            }
+        }
+        
+        // 调用API
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model(model)
+            .messages(conversation)
+            .build();
+        
+        ChatCompletionResponse response = client.chatCompletion(request);
+        String aiResponse = response.getChoices().get(0).getMessage().getContent();
+        
+        // 添加AI回复到对话历史
+        conversation.add(ChatMessage.assistantMessage(aiResponse));
+        
+        return aiResponse;
+    }
+    
+    public void clearHistory() {
+        List<ChatMessage> systemMessages = conversation.stream()
+            .filter(msg -> "system".equals(msg.getRole()))
+            .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        
+        conversation.clear();
+        conversation.addAll(systemMessages);
+    }
+    
+    public List<ChatMessage> getConversation() {
+        return new ArrayList<>(conversation);
+    }
+}
+```
+
+### 流式输出处理器
+
+```java
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
+
+public class StreamProcessor {
+    private final ZhipuAI client;
+    
+    public StreamProcessor(ZhipuAI client) {
+        this.client = client;
+    }
+    
+    public String streamChat(List<ChatMessage> messages, String model, Consumer<String> onToken) {
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model(model)
+            .messages(messages)
+            .stream(true)
+            .build();
+        
+        StringBuilder fullResponse = new StringBuilder();
+        CountDownLatch latch = new CountDownLatch(1);
+        
+        client.streamChatCompletion(request, new StreamChatCompletionListener() {
+            @Override
+            public void onNext(ChatCompletionChunk chunk) {
+                String content = chunk.getChoices().get(0).getDelta().getContent();
+                if (content != null) {
+                    fullResponse.append(content);
+                    if (onToken != null) {
+                        onToken.accept(content);
+                    }
+                }
+            }
+            
+            @Override
+            public void onComplete() {
+                latch.countDown();
+            }
+            
+            @Override
+            public void onError(Throwable error) {
+                System.err.println("流式处理错误：" + error.getMessage());
+                latch.countDown();
+            }
+        });
+        
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("流式处理被中断", e);
+        }
+        
+        return fullResponse.toString();
+    }
+}
+```
+
+## 最佳实践
+
+### 1. 资源管理
+
+```java
+// 推荐：使用try-with-resources
+try (ZhipuAI client = ZhipuAI.builder().apiKey("your-api-key").build()) {
+    // 使用客户端
+    ChatCompletionResponse response = client.chatCompletion(request);
+    // 客户端会自动关闭
+}
+
+// 或者显式关闭
+ZhipuAI client = ZhipuAI.builder().apiKey("your-api-key").build();
+try {
+    // 使用客户端
+} finally {
+    client.close();
+}
+```
+
+### 2. 配置管理
+
+```java
+// 推荐：使用配置文件
+@Configuration
+public class ZhipuAIConfiguration {
+    
+    @Value("${zhipuai.api-key}")
+    private String apiKey;
+    
+    @Value("${zhipuai.timeout:30s}")
+    private Duration timeout;
+    
+    @Bean
+    public ZhipuAI zhipuAI() {
+        return ZhipuAI.builder()
+            .apiKey(apiKey)
+            .timeout(timeout)
+            .build();
+    }
+}
+```
+
+### 3. 日志记录
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LoggedChatService {
+    private static final Logger logger = LoggerFactory.getLogger(LoggedChatService.class);
+    private final ZhipuAI client;
+    
+    public LoggedChatService(ZhipuAI client) {
+        this.client = client;
+    }
+    
+    public String chat(String message) {
+        logger.info("发送消息：{}", message);
+        
+        try {
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model("glm-4")
+                .addMessage(ChatMessage.userMessage(message))
+                .build();
+            
+            ChatCompletionResponse response = client.chatCompletion(request);
+            String result = response.getChoices().get(0).getMessage().getContent();
+            
+            logger.info("收到回复：{}", result.length() > 100 ? result.substring(0, 100) + "..." : result);
+            return result;
+            
+        } catch (Exception e) {
+            logger.error("聊天请求失败", e);
+            throw e;
+        }
+    }
+}
+```
+
+### 4. 单元测试
+
+```java
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ChatServiceTest {
+    
+    @Mock
+    private ZhipuAI mockClient;
+    
+    @Test
+    public void testChat() {
+        MockitoAnnotations.openMocks(this);
+        
+        // 准备测试数据
+        ChatCompletionResponse mockResponse = ChatCompletionResponse.builder()
+            .addChoice(ChatCompletionChoice.builder()
+                .message(ChatMessage.assistantMessage("测试回复"))
+                .build())
+            .build();
+        
+        when(mockClient.chatCompletion(any(ChatCompletionRequest.class)))
+            .thenReturn(mockResponse);
+        
+        // 执行测试
+        ChatService service = new ChatService(mockClient);
+        String result = service.chat("测试消息");
+        
+        // 验证结果
+        assertEquals("测试回复", result);
+        verify(mockClient, times(1)).chatCompletion(any(ChatCompletionRequest.class));
+    }
+}
+```
+
+## 示例项目
+
+### Spring Boot Web应用
+
+```java
+@RestController
+@RequestMapping("/api/chat")
+public class ChatController {
+    
+    private final ConversationManager conversationManager;
+    
+    public ChatController(ZhipuAI zhipuAI) {
+        this.conversationManager = new ConversationManager(zhipuAI, "glm-4", 20);
+        conversationManager.addSystemMessage("你是一个专业的客服代表");
+    }
+    
+    @PostMapping("/message")
+    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        try {
+            String response = conversationManager.chat(request.getMessage());
+            return ResponseEntity.ok(new ChatResponse(response, true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ChatResponse("服务暂时不可用，请稍后重试", false));
+        }
+    }
+    
+    @PostMapping("/reset")
+    public ResponseEntity<Void> resetConversation() {
+        conversationManager.clearHistory();
+        conversationManager.addSystemMessage("你是一个专业的客服代表");
+        return ResponseEntity.ok().build();
+    }
+}
+
+record ChatRequest(String message) {}
+record ChatResponse(String message, boolean success) {}
+```
+
+通过这些工具和示例，您可以在Java应用中快速集成AI能力。记住要遵循最佳实践，确保代码的可靠性、可维护性和性能。

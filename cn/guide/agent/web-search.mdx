@@ -1,0 +1,316 @@
+---
+title: "网络搜索"
+description: "为智能体集成网络搜索能力"
+---
+
+# 网络搜索
+
+网络搜索是智能体获取实时信息的重要能力，让AI能够访问最新的网络内容，提供准确、及时的信息服务。
+
+## 功能特性
+
+### 实时信息获取
+- 获取最新新闻和资讯
+- 查询实时数据（股价、天气等）
+- 搜索最新的技术文档
+- 获取当前事件信息
+
+### 多搜索引擎支持
+- 智谱自研搜索引擎
+- Bing搜索
+- 搜狗搜索
+- 夸克搜索
+- Jina AI搜索
+
+### 智能结果处理
+- 自动筛选相关内容
+- 去重和排序
+- 内容摘要提取
+- 来源标注
+
+## 使用方式
+
+### 基础搜索
+
+```bash
+curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "glm-4-plus",
+    "messages": [
+      {
+        "role": "user",
+        "content": "请搜索最新的人工智能发展趋势"
+      }
+    ],
+    "tools": [
+      {
+        "type": "web_search",
+        "web_search": {
+          "enable": true
+        }
+      }
+    ]
+  }'
+```
+
+### 指定搜索引擎
+
+```bash
+curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "glm-4-plus",
+    "messages": [
+      {
+        "role": "user",
+        "content": "搜索关于量子计算的最新研究"
+      }
+    ],
+    "tools": [
+      {
+        "type": "web_search",
+        "web_search": {
+          "enable": true,
+          "search_engine": "bing"
+        }
+      }
+    ]
+  }'
+```
+
+### Python示例
+
+```python
+import requests
+import json
+
+def search_with_ai(query, api_key):
+    url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    data = {
+        "model": "glm-4-plus",
+        "messages": [
+            {
+                "role": "user",
+                "content": query
+            }
+        ],
+        "tools": [
+            {
+                "type": "web_search",
+                "web_search": {
+                    "enable": True,
+                    "search_engine": "zhipu",
+                    "search_result_count": 5
+                }
+            }
+        ]
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+# 使用示例
+result = search_with_ai("2024年AI发展报告", "your_api_key")
+print(json.dumps(result, indent=2, ensure_ascii=False))
+```
+
+## 配置参数
+
+### 搜索引擎选择
+
+| 引擎 | 标识符 | 特点 |
+|------|--------|------|
+| 智谱自研 | zhipu | 中文优化，速度快 |
+| Bing | bing | 全球覆盖，结果丰富 |
+| 搜狗 | sogou | 中文搜索优化 |
+| 夸克 | quark | 移动端优化 |
+| Jina AI | jina | AI优化搜索 |
+
+### 搜索参数
+
+```json
+{
+  "type": "web_search",
+  "web_search": {
+    "enable": true,
+    "search_engine": "zhipu",
+    "search_result_count": 5,
+    "search_timeout": 10,
+    "language": "zh-CN"
+  }
+}
+```
+
+## 应用场景
+
+### 新闻资讯助手
+
+```python
+def news_assistant(topic, api_key):
+    query = f"请搜索关于{topic}的最新新闻，并总结主要内容"
+    return search_with_ai(query, api_key)
+
+# 获取科技新闻
+news = news_assistant("人工智能", "your_api_key")
+```
+
+### 市场研究
+
+```python
+def market_research(company, api_key):
+    query = f"搜索{company}公司的最新财报和市场表现"
+    return search_with_ai(query, api_key)
+
+# 研究特定公司
+research = market_research("特斯拉", "your_api_key")
+```
+
+### 技术文档查询
+
+```python
+def tech_docs_search(technology, api_key):
+    query = f"搜索{technology}的最新技术文档和教程"
+    return search_with_ai(query, api_key)
+
+# 查询技术文档
+docs = tech_docs_search("React 18", "your_api_key")
+```
+
+## 最佳实践
+
+### 1. 搜索查询优化
+
+```python
+# 好的查询示例
+queries = [
+    "2024年人工智能发展趋势报告",
+    "OpenAI GPT-4最新功能更新",
+    "中国新能源汽车销量数据2024"
+]
+
+# 避免的查询示例
+bad_queries = [
+    "AI",  # 太宽泛
+    "怎么办",  # 缺乏具体信息
+    "好不好"  # 主观性太强
+]
+```
+
+### 2. 结果处理
+
+```python
+def process_search_result(result):
+    # 提取搜索结果
+    if 'choices' in result and len(result['choices']) > 0:
+        content = result['choices'][0]['message']['content']
+        
+        # 检查是否包含搜索结果
+        if '搜索结果' in content or '根据搜索' in content:
+            return {
+                'success': True,
+                'content': content,
+                'has_search_results': True
+            }
+    
+    return {
+        'success': False,
+        'content': '未找到相关搜索结果',
+        'has_search_results': False
+    }
+```
+
+### 3. 错误处理
+
+```python
+def safe_search(query, api_key, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            result = search_with_ai(query, api_key)
+            return process_search_result(result)
+        except requests.exceptions.RequestException as e:
+            if attempt == max_retries - 1:
+                return {
+                    'success': False,
+                    'error': f'搜索失败: {str(e)}'
+                }
+            time.sleep(2 ** attempt)  # 指数退避
+```
+
+## 性能优化
+
+### 1. 缓存机制
+
+```python
+import time
+from functools import lru_cache
+
+@lru_cache(maxsize=100)
+def cached_search(query, api_key):
+    return search_with_ai(query, api_key)
+
+# 使用缓存
+result = cached_search("AI发展趋势", "your_api_key")
+```
+
+### 2. 异步处理
+
+```python
+import asyncio
+import aiohttp
+
+async def async_search(query, api_key):
+    url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    data = {
+        "model": "glm-4-plus",
+        "messages": [{"role": "user", "content": query}],
+        "tools": [{
+            "type": "web_search",
+            "web_search": {"enable": True}
+        }]
+    }
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, json=data) as response:
+            return await response.json()
+
+# 并发搜索
+async def batch_search(queries, api_key):
+    tasks = [async_search(query, api_key) for query in queries]
+    return await asyncio.gather(*tasks)
+```
+
+## 注意事项
+
+### 使用限制
+- 搜索频率限制：避免过于频繁的搜索请求
+- 内容长度限制：搜索结果会受到模型上下文长度限制
+- 语言支持：不同搜索引擎对语言的支持程度不同
+
+### 数据准确性
+- 搜索结果的时效性和准确性依赖于搜索引擎
+- 建议对重要信息进行多源验证
+- 注意区分事实信息和观点性内容
+
+### 合规使用
+- 遵守搜索引擎的使用条款
+- 尊重网站的robots.txt规则
+- 避免搜索敏感或违法内容
+
+<Warning>
+网络搜索功能会消耗额外的tokens，请合理使用以控制成本。建议在必要时才启用搜索功能。
+</Warning>

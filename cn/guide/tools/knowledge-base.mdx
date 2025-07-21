@@ -1,0 +1,736 @@
+---
+title: "知识库工具"
+description: "智能体知识库功能详细介绍"
+---
+
+# 知识库工具
+
+知识库工具为智能体提供了强大的文档检索和知识问答能力，让AI助手能够基于企业或个人的专有知识库回答问题。
+
+## 功能特性
+
+### 多格式文档支持
+- PDF文档
+- Word文档（.doc, .docx）
+- Excel表格（.xls, .xlsx）
+- PowerPoint演示文稿（.ppt, .pptx）
+- 纯文本文件（.txt）
+- Markdown文件（.md）
+- HTML网页
+- CSV数据文件
+
+### 智能文档处理
+- 自动文档解析
+- 内容分块和索引
+- 语义向量化
+- 关键信息提取
+- 多语言支持
+
+### 高效检索能力
+- 语义相似度搜索
+- 关键词精确匹配
+- 混合检索策略
+- 上下文理解
+- 相关性排序
+
+## 基础用法
+
+### 创建知识库
+
+```python
+from zhipuai import ZhipuAI
+
+client = ZhipuAI(api_key="your_api_key")
+
+# 创建知识库
+knowledge_base = client.knowledge.create(
+    name="企业知识库",
+    description="包含公司政策、流程文档和常见问题解答",
+    embedding_model="text-embedding-3"
+)
+
+kb_id = knowledge_base.id
+print(f"知识库创建成功，ID: {kb_id}")
+```
+
+### 上传文档
+
+```python
+# 上传单个文档
+with open("company_policy.pdf", "rb") as file:
+    document = client.knowledge.documents.create(
+        knowledge_base_id=kb_id,
+        file=file,
+        filename="公司政策手册.pdf",
+        metadata={
+            "department": "人力资源",
+            "version": "2024.1",
+            "category": "政策文档"
+        }
+    )
+
+print(f"文档上传成功，ID: {document.id}")
+```
+
+### 批量上传文档
+
+```python
+import os
+
+def upload_documents_batch(kb_id, folder_path):
+    """批量上传文件夹中的文档"""
+    uploaded_docs = []
+    
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        
+        if os.path.isfile(file_path):
+            try:
+                with open(file_path, "rb") as file:
+                    document = client.knowledge.documents.create(
+                        knowledge_base_id=kb_id,
+                        file=file,
+                        filename=filename
+                    )
+                uploaded_docs.append(document)
+                print(f"上传成功: {filename}")
+            except Exception as e:
+                print(f"上传失败 {filename}: {e}")
+    
+    return uploaded_docs
+
+# 使用示例
+uploaded = upload_documents_batch(kb_id, "./documents")
+```
+
+### 知识库检索
+
+```python
+# 基础检索
+results = client.knowledge.search(
+    knowledge_base_id=kb_id,
+    query="公司的年假政策是什么？",
+    top_k=5
+)
+
+for result in results:
+    print(f"相关度: {result.score:.3f}")
+    print(f"内容: {result.content}")
+    print(f"来源: {result.metadata.get('filename', '未知')}")
+    print(f"页码: {result.metadata.get('page', 'N/A')}")
+    print("-" * 50)
+```
+
+### 智能问答
+
+```python
+# 基于知识库的问答
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "请详细说明公司的休假制度"}
+    ],
+    tools=[
+        {
+            "type": "retrieval",
+            "retrieval": {
+                "knowledge_id": kb_id,
+                "top_k": 5
+            }
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## 高级功能
+
+### 多模态检索
+
+```python
+# 图文混合检索
+response = client.chat.completions.create(
+    model="glm-4v-plus",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "这个图表显示了什么信息？"},
+                {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}
+            ]
+        }
+    ],
+    tools=[
+        {
+            "type": "retrieval",
+            "retrieval": {
+                "knowledge_id": kb_id,
+                "search_type": "multimodal"
+            }
+        }
+    ]
+)
+```
+
+### 增量更新
+
+```python
+# 更新文档
+def update_document(kb_id, doc_id, new_file_path):
+    """更新知识库中的文档"""
+    # 删除旧文档
+    client.knowledge.documents.delete(
+        knowledge_base_id=kb_id,
+        document_id=doc_id
+    )
+    
+    # 上传新文档
+    with open(new_file_path, "rb") as file:
+        new_document = client.knowledge.documents.create(
+            knowledge_base_id=kb_id,
+            file=file,
+            filename=os.path.basename(new_file_path)
+        )
+    
+    return new_document
+
+# 增量同步
+def sync_knowledge_base(kb_id, source_folder):
+    """同步知识库与源文件夹"""
+    # 获取知识库中的文档列表
+    existing_docs = client.knowledge.documents.list(knowledge_base_id=kb_id)
+    existing_files = {doc.filename: doc.id for doc in existing_docs}
+    
+    # 扫描源文件夹
+    for filename in os.listdir(source_folder):
+        file_path = os.path.join(source_folder, filename)
+        
+        if os.path.isfile(file_path):
+            file_mtime = os.path.getmtime(file_path)
+            
+            if filename in existing_files:
+                # 检查文件是否有更新
+                doc_info = client.knowledge.documents.get(
+                    knowledge_base_id=kb_id,
+                    document_id=existing_files[filename]
+                )
+                
+                if file_mtime > doc_info.created_at:
+                    print(f"更新文档: {filename}")
+                    update_document(kb_id, existing_files[filename], file_path)
+            else:
+                # 新文档，直接上传
+                print(f"新增文档: {filename}")
+                with open(file_path, "rb") as file:
+                    client.knowledge.documents.create(
+                        knowledge_base_id=kb_id,
+                        file=file,
+                        filename=filename
+                    )
+```
+
+### 查询扩展
+
+```python
+def expand_query(original_query):
+    """查询扩展，生成相关查询词"""
+    expansion_prompt = f"""
+    原始查询：{original_query}
+    
+    请生成3-5个相关的查询词或短语，用于扩展搜索范围：
+    1. 同义词或近义词
+    2. 相关概念
+    3. 更具体的表述
+    4. 更广泛的表述
+    
+    请以JSON格式返回：{{"expanded_queries": ["查询1", "查询2", ...]}}
+    """
+    
+    response = client.chat.completions.create(
+        model="glm-4-flash",
+        messages=[{"role": "user", "content": expansion_prompt}],
+        response_format={"type": "json_object"}
+    )
+    
+    import json
+    result = json.loads(response.choices[0].message.content)
+    return result.get("expanded_queries", [])
+
+# 使用扩展查询进行检索
+def enhanced_search(kb_id, query, top_k=10):
+    """增强检索，使用查询扩展"""
+    # 扩展查询
+    expanded_queries = expand_query(query)
+    all_queries = [query] + expanded_queries
+    
+    all_results = []
+    for q in all_queries:
+        results = client.knowledge.search(
+            knowledge_base_id=kb_id,
+            query=q,
+            top_k=top_k // len(all_queries)
+        )
+        all_results.extend(results)
+    
+    # 去重和重新排序
+    unique_results = {}
+    for result in all_results:
+        key = result.content[:100]  # 使用内容前100字符作为去重键
+        if key not in unique_results or result.score > unique_results[key].score:
+            unique_results[key] = result
+    
+    # 按相关度排序
+    sorted_results = sorted(unique_results.values(), key=lambda x: x.score, reverse=True)
+    return sorted_results[:top_k]
+```
+
+## 应用场景
+
+### 企业客服系统
+
+```python
+class CustomerServiceBot:
+    def __init__(self, api_key, kb_id):
+        self.client = ZhipuAI(api_key=api_key)
+        self.kb_id = kb_id
+    
+    def answer_question(self, question, conversation_history=None):
+        """回答客户问题"""
+        messages = []
+        
+        # 添加系统提示
+        system_prompt = """
+        你是一个专业的客服助手。请基于知识库中的信息回答用户问题。
+        
+        回答要求：
+        1. 准确、专业、友好
+        2. 如果知识库中没有相关信息，请诚实说明
+        3. 提供具体的解决方案或指导
+        4. 必要时提供相关文档的引用
+        """
+        messages.append({"role": "system", "content": system_prompt})
+        
+        # 添加对话历史
+        if conversation_history:
+            messages.extend(conversation_history)
+        
+        # 添加当前问题
+        messages.append({"role": "user", "content": question})
+        
+        # 调用模型
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=messages,
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 5
+                    }
+                }
+            ]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+bot = CustomerServiceBot("your_api_key", kb_id)
+answer = bot.answer_question("如何申请退款？")
+print(answer)
+```
+
+### 技术文档助手
+
+```python
+class TechnicalDocAssistant:
+    def __init__(self, api_key, kb_id):
+        self.client = ZhipuAI(api_key=api_key)
+        self.kb_id = kb_id
+    
+    def generate_code_example(self, api_description):
+        """根据API描述生成代码示例"""
+        prompt = f"""
+        基于技术文档，为以下API生成完整的代码示例：
+        
+        API描述：{api_description}
+        
+        请提供：
+        1. 完整的代码示例
+        2. 参数说明
+        3. 返回值说明
+        4. 错误处理
+        5. 使用注意事项
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 8
+                    }
+                }
+            ]
+        )
+        
+        return response.choices[0].message.content
+    
+    def explain_error(self, error_message):
+        """解释错误信息并提供解决方案"""
+        prompt = f"""
+        用户遇到了以下错误：
+        
+        错误信息：{error_message}
+        
+        请基于技术文档提供：
+        1. 错误原因分析
+        2. 详细的解决步骤
+        3. 预防措施
+        4. 相关文档链接
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 6
+                    }
+                }
+            ]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+tech_assistant = TechnicalDocAssistant("your_api_key", kb_id)
+code_example = tech_assistant.generate_code_example("用户认证API")
+print(code_example)
+```
+
+### 学习辅导系统
+
+```python
+class LearningAssistant:
+    def __init__(self, api_key, kb_id):
+        self.client = ZhipuAI(api_key=api_key)
+        self.kb_id = kb_id
+    
+    def create_study_plan(self, topic, level, duration):
+        """创建学习计划"""
+        prompt = f"""
+        请基于教学资料为学生创建学习计划：
+        
+        主题：{topic}
+        水平：{level}
+        时长：{duration}
+        
+        请提供：
+        1. 详细的学习路径
+        2. 每个阶段的学习目标
+        3. 推荐的学习资源
+        4. 练习题和项目建议
+        5. 评估方法
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 10
+                    }
+                }
+            ]
+        )
+        
+        return response.choices[0].message.content
+    
+    def answer_homework(self, question, provide_hints=True):
+        """回答作业问题"""
+        if provide_hints:
+            prompt = f"""
+            学生问题：{question}
+            
+            请提供学习指导，而不是直接答案：
+            1. 分析问题的关键点
+            2. 提供解题思路和方法
+            3. 给出相关的概念解释
+            4. 推荐进一步学习的资源
+            
+            避免直接给出答案，重点是引导学生思考。
+            """
+        else:
+            prompt = f"""
+            学生问题：{question}
+            
+            请基于教学资料提供详细解答：
+            1. 完整的解答过程
+            2. 相关概念说明
+            3. 类似问题的解法
+            4. 常见错误提醒
+            """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 6
+                    }
+                }
+            ]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+learning_assistant = LearningAssistant("your_api_key", kb_id)
+study_plan = learning_assistant.create_study_plan("机器学习", "初级", "3个月")
+print(study_plan)
+```
+
+## 性能优化
+
+### 批量处理
+
+```python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+class BatchProcessor:
+    def __init__(self, api_key, kb_id, max_workers=5):
+        self.client = ZhipuAI(api_key=api_key)
+        self.kb_id = kb_id
+        self.max_workers = max_workers
+    
+    def batch_search(self, queries):
+        """批量搜索"""
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = []
+            for query in queries:
+                future = executor.submit(
+                    self.client.knowledge.search,
+                    knowledge_base_id=self.kb_id,
+                    query=query,
+                    top_k=5
+                )
+                futures.append((query, future))
+            
+            results = {}
+            for query, future in futures:
+                try:
+                    results[query] = future.result()
+                except Exception as e:
+                    results[query] = {"error": str(e)}
+            
+            return results
+    
+    def batch_qa(self, questions):
+        """批量问答"""
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = []
+            for question in questions:
+                future = executor.submit(self._single_qa, question)
+                futures.append((question, future))
+            
+            results = {}
+            for question, future in futures:
+                try:
+                    results[question] = future.result()
+                except Exception as e:
+                    results[question] = {"error": str(e)}
+            
+            return results
+    
+    def _single_qa(self, question):
+        """单个问答"""
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": question}],
+            tools=[
+                {
+                    "type": "retrieval",
+                    "retrieval": {
+                        "knowledge_id": self.kb_id,
+                        "top_k": 5
+                    }
+                }
+            ]
+        )
+        return response.choices[0].message.content
+
+# 使用示例
+processor = BatchProcessor("your_api_key", kb_id)
+questions = [
+    "公司的休假政策是什么？",
+    "如何申请加班费？",
+    "员工培训计划有哪些？"
+]
+results = processor.batch_qa(questions)
+for question, answer in results.items():
+    print(f"Q: {question}")
+    print(f"A: {answer}")
+    print("-" * 50)
+```
+
+### 缓存机制
+
+```python
+import hashlib
+import json
+from functools import wraps
+from datetime import datetime, timedelta
+
+class KnowledgeCache:
+    def __init__(self, cache_duration_hours=24):
+        self.cache = {}
+        self.cache_duration = timedelta(hours=cache_duration_hours)
+    
+    def _generate_key(self, kb_id, query, top_k):
+        """生成缓存键"""
+        content = f"{kb_id}_{query}_{top_k}"
+        return hashlib.md5(content.encode()).hexdigest()
+    
+    def get(self, kb_id, query, top_k):
+        """获取缓存"""
+        key = self._generate_key(kb_id, query, top_k)
+        if key in self.cache:
+            cached_data, timestamp = self.cache[key]
+            if datetime.now() - timestamp < self.cache_duration:
+                return cached_data
+            else:
+                del self.cache[key]
+        return None
+    
+    def set(self, kb_id, query, top_k, data):
+        """设置缓存"""
+        key = self._generate_key(kb_id, query, top_k)
+        self.cache[key] = (data, datetime.now())
+    
+    def clear_expired(self):
+        """清理过期缓存"""
+        now = datetime.now()
+        expired_keys = []
+        for key, (data, timestamp) in self.cache.items():
+            if now - timestamp >= self.cache_duration:
+                expired_keys.append(key)
+        
+        for key in expired_keys:
+            del self.cache[key]
+
+# 带缓存的知识库搜索
+class CachedKnowledgeSearch:
+    def __init__(self, api_key, cache_duration_hours=24):
+        self.client = ZhipuAI(api_key=api_key)
+        self.cache = KnowledgeCache(cache_duration_hours)
+    
+    def search(self, kb_id, query, top_k=5):
+        """带缓存的搜索"""
+        # 尝试从缓存获取
+        cached_result = self.cache.get(kb_id, query, top_k)
+        if cached_result:
+            return cached_result
+        
+        # 执行搜索
+        results = self.client.knowledge.search(
+            knowledge_base_id=kb_id,
+            query=query,
+            top_k=top_k
+        )
+        
+        # 缓存结果
+        self.cache.set(kb_id, query, top_k, results)
+        return results
+    
+    def clear_cache(self):
+        """清理缓存"""
+        self.cache.clear_expired()
+
+# 使用示例
+cached_search = CachedKnowledgeSearch("your_api_key")
+results = cached_search.search(kb_id, "公司政策", top_k=5)
+```
+
+## 最佳实践
+
+### 文档质量
+
+1. **内容准确性**：确保文档内容准确、最新
+2. **结构清晰**：使用标题、段落、列表等结构化元素
+3. **语言规范**：使用标准的语言表达
+4. **信息完整**：提供完整的上下文信息
+
+### 分块策略
+
+```python
+# 自定义分块参数
+document = client.knowledge.documents.create(
+    knowledge_base_id=kb_id,
+    file=file,
+    filename="document.pdf",
+    chunk_strategy={
+        "chunk_size": 1000,  # 分块大小
+        "chunk_overlap": 200,  # 重叠大小
+        "separator": "\n\n"  # 分隔符
+    }
+)
+```
+
+### 检索优化
+
+1. **查询优化**：使用清晰、具体的查询语句
+2. **结果筛选**：根据相关度阈值筛选结果
+3. **多轮检索**：结合上下文进行多轮检索
+4. **结果重排**：根据业务逻辑重新排序
+
+### 监控和维护
+
+```python
+def monitor_knowledge_base(kb_id):
+    """监控知识库状态"""
+    # 获取知识库信息
+    kb_info = client.knowledge.get(knowledge_base_id=kb_id)
+    
+    # 统计文档数量
+    documents = client.knowledge.documents.list(knowledge_base_id=kb_id)
+    
+    # 检查文档状态
+    processing_docs = [doc for doc in documents if doc.status == "processing"]
+    failed_docs = [doc for doc in documents if doc.status == "failed"]
+    
+    print(f"知识库状态: {kb_info.status}")
+    print(f"文档总数: {len(documents)}")
+    print(f"处理中: {len(processing_docs)}")
+    print(f"失败: {len(failed_docs)}")
+    
+    if failed_docs:
+        print("失败的文档:")
+        for doc in failed_docs:
+            print(f"  - {doc.filename}: {doc.error_message}")
+
+# 定期监控
+monitor_knowledge_base(kb_id)
+```
+
+<Tip>
+建议定期更新知识库内容，删除过时文档，确保信息的准确性和时效性。
+</Tip>
+
+<Warning>
+上传的文档应该符合版权要求，避免包含敏感或机密信息。建议在上传前进行内容审查。
+</Warning>

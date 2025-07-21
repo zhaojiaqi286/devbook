@@ -1,0 +1,728 @@
+---
+title: "Python工具介绍"
+description: "Python SDK和开发工具的使用指南"
+---
+
+# Python工具介绍
+
+Python工具集为开发者提供了完整的Python SDK和相关开发工具，让您能够轻松地在Python应用中集成AI能力。
+
+## SDK概览
+
+### 核心功能
+
+我们的Python SDK提供了以下核心功能：
+
+- **模型调用**：支持所有语言模型、视觉模型和多模态模型
+- **智能体集成**：轻松集成和调用智能体
+- **流式响应**：支持实时流式输出
+- **异步支持**：完整的异步编程支持
+- **错误处理**：完善的错误处理和重试机制
+- **日志记录**：详细的调用日志和调试信息
+
+### 支持的模型
+
+```python
+# 支持的模型类型
+MODEL_TYPES = {
+    "language": ["glm-4", "glm-4-plus", "glm-4-long", "glm-4-flash"],
+    "vision": ["glm-4v", "glm-4v-plus"],
+    "embedding": ["embedding-2", "embedding-3"],
+    "image_generation": ["cogview-3", "cogview-3-plus"],
+    "video_generation": ["cogvideox"]
+}
+```
+
+## 安装和配置
+
+### 安装SDK
+
+```bash
+# 使用pip安装
+pip install zhipuai
+
+# 或者从源码安装
+git clone https://github.com/zhipuai/zhipuai-python.git
+cd zhipuai-python
+pip install -e .
+```
+
+### 环境配置
+
+```python
+import os
+from zhipuai import ZhipuAI
+
+# 方式1：环境变量配置
+os.environ["ZHIPUAI_API_KEY"] = "your-api-key"
+client = ZhipuAI()
+
+# 方式2：直接传入API Key
+client = ZhipuAI(api_key="your-api-key")
+
+# 方式3：配置文件
+client = ZhipuAI.from_config("config.json")
+```
+
+### 配置文件示例
+
+```json
+{
+  "api_key": "your-api-key",
+  "base_url": "https://open.bigmodel.cn/api/paas/v4/",
+  "timeout": 30,
+  "max_retries": 3,
+  "retry_delay": 1.0
+}
+```
+
+## 基础使用
+
+### 简单对话
+
+```python
+from zhipuai import ZhipuAI
+
+client = ZhipuAI(api_key="your-api-key")
+
+# 基础对话
+response = client.chat.completions.create(
+    model="glm-4",
+    messages=[
+        {"role": "user", "content": "你好，请介绍一下自己"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 流式对话
+
+```python
+# 流式响应
+stream = client.chat.completions.create(
+    model="glm-4",
+    messages=[
+        {"role": "user", "content": "写一首关于春天的诗"}
+    ],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end="")
+```
+
+### 多轮对话
+
+```python
+# 维护对话历史
+conversation = [
+    {"role": "system", "content": "你是一个有用的AI助手"}
+]
+
+def chat_with_ai(user_input):
+    conversation.append({"role": "user", "content": user_input})
+    
+    response = client.chat.completions.create(
+        model="glm-4",
+        messages=conversation
+    )
+    
+    ai_response = response.choices[0].message.content
+    conversation.append({"role": "assistant", "content": ai_response})
+    
+    return ai_response
+
+# 使用示例
+print(chat_with_ai("你好"))
+print(chat_with_ai("我想了解Python编程"))
+print(chat_with_ai("能给我一个简单的例子吗？"))
+```
+
+## 高级功能
+
+### 函数调用
+
+```python
+import json
+
+# 定义函数
+def get_weather(location, date=None):
+    """获取天气信息"""
+    # 模拟天气API调用
+    return {
+        "location": location,
+        "date": date or "今天",
+        "weather": "晴天",
+        "temperature": "25°C"
+    }
+
+# 函数描述
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "获取指定地点的天气信息",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "地点名称"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "日期，格式为YYYY-MM-DD"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+# 调用带函数的对话
+response = client.chat.completions.create(
+    model="glm-4",
+    messages=[
+        {"role": "user", "content": "北京今天天气怎么样？"}
+    ],
+    tools=tools,
+    tool_choice="auto"
+)
+
+# 处理函数调用
+if response.choices[0].message.tool_calls:
+    tool_call = response.choices[0].message.tool_calls[0]
+    function_name = tool_call.function.name
+    function_args = json.loads(tool_call.function.arguments)
+    
+    if function_name == "get_weather":
+        result = get_weather(**function_args)
+        print(f"天气信息：{result}")
+```
+
+### 视觉理解
+
+```python
+# 图像理解
+response = client.chat.completions.create(
+    model="glm-4v",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "这张图片里有什么？"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "https://example.com/image.jpg"
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 图像生成
+
+```python
+# 图像生成
+response = client.images.generations(
+    model="cogview-3",
+    prompt="一只可爱的小猫在花园里玩耍",
+    size="1024x1024",
+    quality="standard",
+    n=1
+)
+
+image_url = response.data[0].url
+print(f"生成的图像URL：{image_url}")
+```
+
+### 文本嵌入
+
+```python
+# 文本嵌入
+response = client.embeddings.create(
+    model="embedding-2",
+    input=[
+        "这是第一段文本",
+        "这是第二段文本"
+    ]
+)
+
+for i, embedding in enumerate(response.data):
+    print(f"文本{i+1}的嵌入向量维度：{len(embedding.embedding)}")
+```
+
+## 异步编程
+
+### 异步客户端
+
+```python
+import asyncio
+from zhipuai import AsyncZhipuAI
+
+async def async_chat_example():
+    client = AsyncZhipuAI(api_key="your-api-key")
+    
+    response = await client.chat.completions.create(
+        model="glm-4",
+        messages=[
+            {"role": "user", "content": "你好"}
+        ]
+    )
+    
+    print(response.choices[0].message.content)
+    await client.close()
+
+# 运行异步函数
+asyncio.run(async_chat_example())
+```
+
+### 并发处理
+
+```python
+async def process_multiple_requests():
+    client = AsyncZhipuAI(api_key="your-api-key")
+    
+    # 并发处理多个请求
+    tasks = []
+    questions = [
+        "什么是人工智能？",
+        "Python有什么优势？",
+        "如何学习机器学习？"
+    ]
+    
+    for question in questions:
+        task = client.chat.completions.create(
+            model="glm-4",
+            messages=[{"role": "user", "content": question}]
+        )
+        tasks.append(task)
+    
+    # 等待所有请求完成
+    responses = await asyncio.gather(*tasks)
+    
+    for i, response in enumerate(responses):
+        print(f"问题{i+1}的回答：{response.choices[0].message.content}")
+    
+    await client.close()
+
+asyncio.run(process_multiple_requests())
+```
+
+## 错误处理
+
+### 异常类型
+
+```python
+from zhipuai import (
+    ZhipuAIError,
+    APIError,
+    RateLimitError,
+    AuthenticationError,
+    TimeoutError
+)
+
+def robust_chat(message):
+    try:
+        response = client.chat.completions.create(
+            model="glm-4",
+            messages=[{"role": "user", "content": message}]
+        )
+        return response.choices[0].message.content
+        
+    except AuthenticationError:
+        return "认证失败，请检查API Key"
+    except RateLimitError:
+        return "请求频率过高，请稍后重试"
+    except TimeoutError:
+        return "请求超时，请稍后重试"
+    except APIError as e:
+        return f"API错误：{e.message}"
+    except ZhipuAIError as e:
+        return f"SDK错误：{e}"
+    except Exception as e:
+        return f"未知错误：{e}"
+```
+
+### 重试机制
+
+```python
+import time
+import random
+
+def chat_with_retry(message, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model="glm-4",
+                messages=[{"role": "user", "content": message}]
+            )
+            return response.choices[0].message.content
+            
+        except (RateLimitError, TimeoutError) as e:
+            if attempt < max_retries - 1:
+                # 指数退避
+                delay = (2 ** attempt) + random.uniform(0, 1)
+                print(f"请求失败，{delay:.2f}秒后重试...")
+                time.sleep(delay)
+            else:
+                raise e
+        except Exception as e:
+            # 对于其他错误，不重试
+            raise e
+```
+
+## 性能优化
+
+### 连接池配置
+
+```python
+import httpx
+
+# 自定义HTTP客户端
+httpx_client = httpx.Client(
+    limits=httpx.Limits(
+        max_keepalive_connections=20,
+        max_connections=100
+    ),
+    timeout=30.0
+)
+
+client = ZhipuAI(
+    api_key="your-api-key",
+    http_client=httpx_client
+)
+```
+
+### 批量处理
+
+```python
+def batch_process_texts(texts, batch_size=10):
+    """批量处理文本"""
+    results = []
+    
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        
+        # 为批次中的每个文本创建请求
+        batch_results = []
+        for text in batch:
+            try:
+                response = client.chat.completions.create(
+                    model="glm-4",
+                    messages=[{"role": "user", "content": text}]
+                )
+                batch_results.append(response.choices[0].message.content)
+            except Exception as e:
+                batch_results.append(f"处理失败：{e}")
+        
+        results.extend(batch_results)
+        
+        # 批次间添加延迟，避免触发限流
+        time.sleep(1)
+    
+    return results
+```
+
+### 缓存机制
+
+```python
+import hashlib
+import json
+from functools import wraps
+
+# 简单的内存缓存
+cache = {}
+
+def cache_response(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # 创建缓存键
+        cache_key = hashlib.md5(
+            json.dumps([args, kwargs], sort_keys=True).encode()
+        ).hexdigest()
+        
+        if cache_key in cache:
+            print("从缓存返回结果")
+            return cache[cache_key]
+        
+        result = func(*args, **kwargs)
+        cache[cache_key] = result
+        return result
+    
+    return wrapper
+
+@cache_response
+def cached_chat(message):
+    response = client.chat.completions.create(
+        model="glm-4",
+        messages=[{"role": "user", "content": message}]
+    )
+    return response.choices[0].message.content
+```
+
+## 实用工具
+
+### 对话管理器
+
+```python
+class ConversationManager:
+    def __init__(self, client, model="glm-4", max_history=10):
+        self.client = client
+        self.model = model
+        self.max_history = max_history
+        self.conversation = []
+    
+    def add_system_message(self, content):
+        """添加系统消息"""
+        self.conversation.insert(0, {"role": "system", "content": content})
+    
+    def chat(self, user_input):
+        """进行对话"""
+        # 添加用户消息
+        self.conversation.append({"role": "user", "content": user_input})
+        
+        # 限制历史长度
+        if len(self.conversation) > self.max_history:
+            # 保留系统消息，删除最旧的对话
+            system_msgs = [msg for msg in self.conversation if msg["role"] == "system"]
+            other_msgs = [msg for msg in self.conversation if msg["role"] != "system"]
+            self.conversation = system_msgs + other_msgs[-(self.max_history - len(system_msgs)):]
+        
+        # 调用API
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.conversation
+        )
+        
+        ai_response = response.choices[0].message.content
+        self.conversation.append({"role": "assistant", "content": ai_response})
+        
+        return ai_response
+    
+    def clear_history(self):
+        """清除对话历史"""
+        system_msgs = [msg for msg in self.conversation if msg["role"] == "system"]
+        self.conversation = system_msgs
+
+# 使用示例
+manager = ConversationManager(client)
+manager.add_system_message("你是一个Python编程专家")
+
+print(manager.chat("什么是装饰器？"))
+print(manager.chat("能给我一个例子吗？"))
+```
+
+### 流式输出处理器
+
+```python
+class StreamProcessor:
+    def __init__(self, client):
+        self.client = client
+    
+    def stream_chat(self, messages, model="glm-4", callback=None):
+        """流式对话处理"""
+        stream = self.client.chat.completions.create(
+            model=model,
+            messages=messages,
+            stream=True
+        )
+        
+        full_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                full_response += content
+                
+                if callback:
+                    callback(content, full_response)
+                else:
+                    print(content, end="", flush=True)
+        
+        print()  # 换行
+        return full_response
+
+# 使用示例
+def on_token_received(token, full_text):
+    # 可以在这里实现实时处理逻辑
+    print(token, end="", flush=True)
+
+processor = StreamProcessor(client)
+response = processor.stream_chat(
+    messages=[{"role": "user", "content": "写一个Python函数来计算斐波那契数列"}],
+    callback=on_token_received
+)
+```
+
+## 最佳实践
+
+### 1. API Key管理
+
+```python
+# 推荐：使用环境变量
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+api_key = os.getenv("ZHIPUAI_API_KEY")
+
+# 避免：硬编码API Key
+# api_key = "your-api-key"  # 不推荐
+```
+
+### 2. 错误处理
+
+```python
+# 推荐：详细的错误处理
+try:
+    response = client.chat.completions.create(...)
+except RateLimitError:
+    # 处理限流
+    pass
+except AuthenticationError:
+    # 处理认证错误
+    pass
+except Exception as e:
+    # 处理其他错误
+    logging.error(f"Unexpected error: {e}")
+```
+
+### 3. 资源管理
+
+```python
+# 推荐：使用上下文管理器
+with ZhipuAI(api_key="your-api-key") as client:
+    response = client.chat.completions.create(...)
+# 客户端会自动关闭
+```
+
+### 4. 日志记录
+
+```python
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def logged_chat(message):
+    logger.info(f"发送消息：{message}")
+    
+    try:
+        response = client.chat.completions.create(
+            model="glm-4",
+            messages=[{"role": "user", "content": message}]
+        )
+        
+        result = response.choices[0].message.content
+        logger.info(f"收到回复：{result[:100]}...")  # 只记录前100个字符
+        return result
+        
+    except Exception as e:
+        logger.error(f"请求失败：{e}")
+        raise
+```
+
+## 示例项目
+
+### 智能客服机器人
+
+```python
+class CustomerServiceBot:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+        self.conversation_manager = ConversationManager(self.client)
+        
+        # 设置系统角色
+        self.conversation_manager.add_system_message(
+            "你是一个专业的客服代表，友好、耐心、专业地回答用户问题。"
+        )
+    
+    def handle_customer_query(self, query):
+        """处理客户查询"""
+        return self.conversation_manager.chat(query)
+    
+    def reset_conversation(self):
+        """重置对话"""
+        self.conversation_manager.clear_history()
+
+# 使用示例
+bot = CustomerServiceBot("your-api-key")
+print(bot.handle_customer_query("我想了解你们的产品"))
+print(bot.handle_customer_query("价格是多少？"))
+```
+
+### 文档问答系统
+
+```python
+class DocumentQA:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+        self.documents = []
+    
+    def add_document(self, content, title=""):
+        """添加文档"""
+        self.documents.append({
+            "title": title,
+            "content": content
+        })
+    
+    def search_documents(self, query):
+        """搜索相关文档"""
+        # 简单的关键词匹配（实际应用中可以使用更复杂的检索算法）
+        relevant_docs = []
+        for doc in self.documents:
+            if any(keyword.lower() in doc["content"].lower() for keyword in query.split()):
+                relevant_docs.append(doc)
+        return relevant_docs
+    
+    def answer_question(self, question):
+        """回答问题"""
+        relevant_docs = self.search_documents(question)
+        
+        if not relevant_docs:
+            return "抱歉，我在文档中没有找到相关信息。"
+        
+        # 构建上下文
+        context = "\n\n".join([
+            f"文档：{doc['title']}\n内容：{doc['content']}"
+            for doc in relevant_docs[:3]  # 最多使用3个文档
+        ])
+        
+        prompt = f"""基于以下文档内容回答问题：
+
+{context}
+
+问题：{question}
+
+请基于上述文档内容给出准确的回答。如果文档中没有相关信息，请明确说明。"""
+        
+        response = self.client.chat.completions.create(
+            model="glm-4",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+qa_system = DocumentQA("your-api-key")
+qa_system.add_document(
+    "Python是一种高级编程语言，具有简洁的语法和强大的功能。",
+    "Python介绍"
+)
+print(qa_system.answer_question("什么是Python？"))
+```
+
+通过这些工具和示例，您可以快速开始使用Python SDK构建强大的AI应用。记住要遵循最佳实践，确保代码的可靠性和可维护性。

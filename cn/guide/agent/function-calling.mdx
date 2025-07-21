@@ -1,0 +1,651 @@
+---
+title: "函数调用"
+description: "让智能体调用外部函数和API"
+---
+
+# 函数调用
+
+函数调用（Function Calling）是智能体与外部系统交互的核心能力，允许AI模型调用预定义的函数来执行特定任务，如查询数据库、调用API、执行计算等。
+
+## 功能特性
+
+### 结构化输出
+- 自动生成符合函数签名的参数
+- 支持复杂的数据类型（对象、数组等）
+- 参数验证和类型检查
+
+### 多函数支持
+- 同时定义多个可调用函数
+- 智能选择合适的函数
+- 支持函数链式调用
+
+### 灵活集成
+- 支持REST API调用
+- 数据库查询
+- 文件操作
+- 第三方服务集成
+
+## 基础用法
+
+### 定义函数
+
+```python
+import json
+import requests
+
+def get_weather(location: str, unit: str = "celsius") -> dict:
+    """
+    获取指定地点的天气信息
+    
+    Args:
+        location: 地点名称
+        unit: 温度单位，celsius或fahrenheit
+    
+    Returns:
+        包含天气信息的字典
+    """
+    # 这里是示例，实际应该调用真实的天气API
+    return {
+        "location": location,
+        "temperature": 25,
+        "unit": unit,
+        "description": "晴朗",
+        "humidity": 60
+    }
+
+def calculate_tip(bill_amount: float, tip_percentage: float = 15.0) -> dict:
+    """
+    计算小费
+    
+    Args:
+        bill_amount: 账单金额
+        tip_percentage: 小费百分比
+    
+    Returns:
+        包含小费计算结果的字典
+    """
+    tip_amount = bill_amount * (tip_percentage / 100)
+    total_amount = bill_amount + tip_amount
+    
+    return {
+        "bill_amount": bill_amount,
+        "tip_percentage": tip_percentage,
+        "tip_amount": round(tip_amount, 2),
+        "total_amount": round(total_amount, 2)
+    }
+```
+
+### 函数描述格式
+
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "get_weather",
+    "description": "获取指定地点的天气信息",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "地点名称，如北京、上海等"
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["celsius", "fahrenheit"],
+          "description": "温度单位",
+          "default": "celsius"
+        }
+      },
+      "required": ["location"]
+    }
+  }
+}
+```
+
+### API调用示例
+
+```bash
+curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "glm-4-plus",
+    "messages": [
+      {
+        "role": "user",
+        "content": "北京今天天气怎么样？"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "获取指定地点的天气信息",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "地点名称"
+              },
+              "unit": {
+                "type": "string",
+                "enum": ["celsius", "fahrenheit"],
+                "default": "celsius"
+              }
+            },
+            "required": ["location"]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  }'
+```
+
+## 完整的Python实现
+
+```python
+import json
+import requests
+from typing import Dict, List, Any
+
+class FunctionCallingAgent:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+        self.functions = {}
+        
+    def register_function(self, func, description: dict):
+        """注册可调用函数"""
+        self.functions[description['function']['name']] = {
+            'func': func,
+            'description': description
+        }
+    
+    def call_function(self, name: str, arguments: dict) -> Any:
+        """执行函数调用"""
+        if name not in self.functions:
+            raise ValueError(f"未找到函数: {name}")
+        
+        func = self.functions[name]['func']
+        try:
+            return func(**arguments)
+        except Exception as e:
+            return {"error": str(e)}
+    
+    def chat_with_functions(self, messages: List[Dict], max_iterations: int = 5):
+        """支持函数调用的对话"""
+        current_messages = messages.copy()
+        
+        for iteration in range(max_iterations):
+            # 准备工具描述
+            tools = [func_info['description'] for func_info in self.functions.values()]
+            
+            # 调用API
+            response = self._call_api(current_messages, tools)
+            
+            if not response or 'choices' not in response:
+                break
+                
+            choice = response['choices'][0]
+            message = choice['message']
+            current_messages.append(message)
+            
+            # 检查是否需要调用函数
+            if message.get('tool_calls'):
+                # 执行函数调用
+                for tool_call in message['tool_calls']:
+                    function_name = tool_call['function']['name']
+                    function_args = json.loads(tool_call['function']['arguments'])
+                    
+                    # 调用函数
+                    function_result = self.call_function(function_name, function_args)
+                    
+                    # 添加函数结果到消息历史
+                    current_messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call['id'],
+                        "content": json.dumps(function_result, ensure_ascii=False)
+                    })
+            else:
+                # 没有函数调用，对话结束
+                break
+        
+        return current_messages
+    
+    def _call_api(self, messages: List[Dict], tools: List[Dict]) -> Dict:
+        """调用智谱AI API"""
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        
+        data = {
+            "model": "glm-4-plus",
+            "messages": messages,
+            "tools": tools,
+            "tool_choice": "auto"
+        }
+        
+        response = requests.post(self.base_url, headers=headers, json=data)
+        return response.json()
+
+# 使用示例
+agent = FunctionCallingAgent("your_api_key")
+
+# 注册天气函数
+weather_description = {
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "description": "获取指定地点的天气信息",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "type": "string",
+                    "description": "地点名称"
+                },
+                "unit": {
+                    "type": "string",
+                    "enum": ["celsius", "fahrenheit"],
+                    "default": "celsius"
+                }
+            },
+            "required": ["location"]
+        }
+    }
+}
+
+agent.register_function(get_weather, weather_description)
+
+# 注册小费计算函数
+tip_description = {
+    "type": "function",
+    "function": {
+        "name": "calculate_tip",
+        "description": "计算小费和总金额",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "bill_amount": {
+                    "type": "number",
+                    "description": "账单金额"
+                },
+                "tip_percentage": {
+                    "type": "number",
+                    "description": "小费百分比",
+                    "default": 15.0
+                }
+            },
+            "required": ["bill_amount"]
+        }
+    }
+}
+
+agent.register_function(calculate_tip, tip_description)
+
+# 进行对话
+messages = [
+    {"role": "user", "content": "北京今天天气怎么样？另外帮我算一下200元账单15%的小费是多少？"}
+]
+
+result = agent.chat_with_functions(messages)
+print(json.dumps(result, indent=2, ensure_ascii=False))
+```
+
+## 高级应用场景
+
+### 1. 数据库查询
+
+```python
+import sqlite3
+
+def query_database(sql: str, params: list = None) -> dict:
+    """
+    执行数据库查询
+    
+    Args:
+        sql: SQL查询语句
+        params: 查询参数
+    
+    Returns:
+        查询结果
+    """
+    try:
+        conn = sqlite3.connect('example.db')
+        cursor = conn.cursor()
+        
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        
+        results = cursor.fetchall()
+        columns = [description[0] for description in cursor.description]
+        
+        conn.close()
+        
+        return {
+            "success": True,
+            "data": [dict(zip(columns, row)) for row in results],
+            "count": len(results)
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+# 函数描述
+db_query_description = {
+    "type": "function",
+    "function": {
+        "name": "query_database",
+        "description": "执行数据库查询",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "sql": {
+                    "type": "string",
+                    "description": "SQL查询语句"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "查询参数列表"
+                }
+            },
+            "required": ["sql"]
+        }
+    }
+}
+```
+
+### 2. 文件操作
+
+```python
+import os
+import json
+from datetime import datetime
+
+def read_file(file_path: str, encoding: str = "utf-8") -> dict:
+    """
+    读取文件内容
+    
+    Args:
+        file_path: 文件路径
+        encoding: 文件编码
+    
+    Returns:
+        文件内容和元信息
+    """
+    try:
+        with open(file_path, 'r', encoding=encoding) as f:
+            content = f.read()
+        
+        stat = os.stat(file_path)
+        
+        return {
+            "success": True,
+            "content": content,
+            "size": stat.st_size,
+            "modified_time": datetime.fromtimestamp(stat.st_mtime).isoformat()
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+def write_file(file_path: str, content: str, encoding: str = "utf-8") -> dict:
+    """
+    写入文件内容
+    
+    Args:
+        file_path: 文件路径
+        content: 文件内容
+        encoding: 文件编码
+    
+    Returns:
+        操作结果
+    """
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        with open(file_path, 'w', encoding=encoding) as f:
+            f.write(content)
+        
+        return {
+            "success": True,
+            "message": f"文件已保存到 {file_path}",
+            "size": len(content.encode(encoding))
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+```
+
+### 3. API集成
+
+```python
+import requests
+from typing import Optional
+
+def call_external_api(url: str, method: str = "GET", 
+                     headers: Optional[dict] = None,
+                     data: Optional[dict] = None) -> dict:
+    """
+    调用外部API
+    
+    Args:
+        url: API地址
+        method: HTTP方法
+        headers: 请求头
+        data: 请求数据
+    
+    Returns:
+        API响应结果
+    """
+    try:
+        if headers is None:
+            headers = {}
+        
+        if method.upper() == "GET":
+            response = requests.get(url, headers=headers, params=data)
+        elif method.upper() == "POST":
+            response = requests.post(url, headers=headers, json=data)
+        elif method.upper() == "PUT":
+            response = requests.put(url, headers=headers, json=data)
+        elif method.upper() == "DELETE":
+            response = requests.delete(url, headers=headers)
+        else:
+            return {"success": False, "error": f"不支持的HTTP方法: {method}"}
+        
+        return {
+            "success": True,
+            "status_code": response.status_code,
+            "data": response.json() if response.headers.get('content-type', '').startswith('application/json') else response.text
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+```
+
+## 最佳实践
+
+### 1. 函数设计原则
+
+```python
+# 好的函数设计
+def get_user_info(user_id: int, include_profile: bool = True) -> dict:
+    """
+    获取用户信息
+    
+    Args:
+        user_id: 用户ID
+        include_profile: 是否包含详细资料
+    
+    Returns:
+        用户信息字典
+    """
+    # 清晰的参数类型
+    # 合理的默认值
+    # 详细的文档说明
+    pass
+
+# 避免的设计
+def get_data(id, type=None, options={}):
+    # 参数类型不明确
+    # 可变默认参数
+    # 缺乏文档
+    pass
+```
+
+### 2. 错误处理
+
+```python
+def safe_function_call(func_name: str, arguments: dict) -> dict:
+    """
+    安全的函数调用包装器
+    """
+    try:
+        # 参数验证
+        if not isinstance(arguments, dict):
+            return {"error": "参数必须是字典类型"}
+        
+        # 调用函数
+        result = call_function(func_name, arguments)
+        
+        # 结果验证
+        if result is None:
+            return {"error": "函数返回空值"}
+        
+        return {"success": True, "result": result}
+        
+    except TypeError as e:
+        return {"error": f"参数类型错误: {str(e)}"}
+    except ValueError as e:
+        return {"error": f"参数值错误: {str(e)}"}
+    except Exception as e:
+        return {"error": f"函数执行失败: {str(e)}"}
+```
+
+### 3. 性能优化
+
+```python
+import functools
+import time
+
+# 缓存装饰器
+def cache_result(ttl_seconds=300):
+    def decorator(func):
+        cache = {}
+        
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            key = str(args) + str(sorted(kwargs.items()))
+            now = time.time()
+            
+            if key in cache:
+                result, timestamp = cache[key]
+                if now - timestamp < ttl_seconds:
+                    return result
+            
+            result = func(*args, **kwargs)
+            cache[key] = (result, now)
+            return result
+        
+        return wrapper
+    return decorator
+
+# 使用缓存
+@cache_result(ttl_seconds=600)
+def expensive_api_call(endpoint: str) -> dict:
+    # 耗时的API调用
+    response = requests.get(endpoint)
+    return response.json()
+```
+
+## 安全考虑
+
+### 1. 输入验证
+
+```python
+def validate_sql_query(sql: str) -> bool:
+    """
+    验证SQL查询的安全性
+    """
+    # 禁止的关键词
+    forbidden_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER']
+    
+    sql_upper = sql.upper()
+    for keyword in forbidden_keywords:
+        if keyword in sql_upper:
+            return False
+    
+    return True
+
+def secure_query_database(sql: str, params: list = None) -> dict:
+    """
+    安全的数据库查询
+    """
+    if not validate_sql_query(sql):
+        return {"error": "不允许执行修改数据的SQL语句"}
+    
+    return query_database(sql, params)
+```
+
+### 2. 权限控制
+
+```python
+class SecureFunctionAgent:
+    def __init__(self, api_key: str, user_permissions: set):
+        self.api_key = api_key
+        self.user_permissions = user_permissions
+        self.functions = {}
+    
+    def register_function(self, func, description: dict, required_permission: str = None):
+        """
+        注册需要权限的函数
+        """
+        self.functions[description['function']['name']] = {
+            'func': func,
+            'description': description,
+            'permission': required_permission
+        }
+    
+    def call_function(self, name: str, arguments: dict) -> Any:
+        """
+        带权限检查的函数调用
+        """
+        if name not in self.functions:
+            return {"error": "函数不存在"}
+        
+        func_info = self.functions[name]
+        required_permission = func_info.get('permission')
+        
+        if required_permission and required_permission not in self.user_permissions:
+            return {"error": f"权限不足，需要权限: {required_permission}"}
+        
+        return func_info['func'](**arguments)
+```
+
+<Warning>
+函数调用功能强大但需要谨慎使用。确保：
+1. 对所有输入进行验证
+2. 实施适当的权限控制
+3. 避免执行危险操作
+4. 记录所有函数调用日志
+</Warning>
+
+<Tip>
+建议从简单的只读函数开始，逐步增加复杂性。先确保基础功能稳定可靠，再添加写入和修改操作。
+</Tip>

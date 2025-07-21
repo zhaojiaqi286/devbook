@@ -1,0 +1,656 @@
+---
+title: "代码执行"
+description: "让智能体具备代码编写和执行能力"
+---
+
+# 代码执行
+
+代码执行（Code Interpreter）是智能体的高级能力之一，让AI能够编写、执行和调试代码，进行数据分析、可视化、数学计算等复杂任务。
+
+## 功能特性
+
+### 多语言支持
+- Python（主要支持）
+- JavaScript/Node.js
+- Shell脚本
+- SQL查询
+- R语言（数据分析）
+
+### 丰富的库支持
+- 数据处理：pandas, numpy
+- 可视化：matplotlib, seaborn, plotly
+- 机器学习：scikit-learn, tensorflow
+- 网络请求：requests, urllib
+- 文件处理：openpyxl, PyPDF2
+
+### 安全执行环境
+- 沙箱隔离
+- 资源限制
+- 超时控制
+- 危险操作拦截
+
+## 基础用法
+
+### 启用代码执行
+
+```bash
+curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "glm-4-plus",
+    "messages": [
+      {
+        "role": "user",
+        "content": "请帮我分析这组数据：[1, 5, 3, 8, 2, 9, 4, 7, 6]，计算平均值、中位数和标准差"
+      }
+    ],
+    "tools": [
+      {
+        "type": "code_interpreter",
+        "code_interpreter": {
+          "sandbox": "auto"
+        }
+      }
+    ]
+  }'
+```
+
+### Python示例
+
+```python
+import requests
+import json
+
+class CodeInterpreterAgent:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+        self.conversation_history = []
+    
+    def execute_code_task(self, task_description: str) -> dict:
+        """
+        执行代码任务
+        """
+        message = {
+            "role": "user",
+            "content": task_description
+        }
+        
+        self.conversation_history.append(message)
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        
+        data = {
+            "model": "glm-4-plus",
+            "messages": self.conversation_history,
+            "tools": [
+                {
+                    "type": "code_interpreter",
+                    "code_interpreter": {
+                        "sandbox": "auto"
+                    }
+                }
+            ]
+        }
+        
+        response = requests.post(self.base_url, headers=headers, json=data)
+        result = response.json()
+        
+        if 'choices' in result:
+            assistant_message = result['choices'][0]['message']
+            self.conversation_history.append(assistant_message)
+            return self._parse_response(assistant_message)
+        
+        return {"error": "API调用失败"}
+    
+    def _parse_response(self, message: dict) -> dict:
+        """
+        解析响应消息
+        """
+        response_data = {
+            "content": message.get('content', ''),
+            "code_blocks": [],
+            "outputs": [],
+            "files": []
+        }
+        
+        # 解析工具调用结果
+        if 'tool_calls' in message:
+            for tool_call in message['tool_calls']:
+                if tool_call['type'] == 'code_interpreter':
+                    code_info = {
+                        "code": tool_call.get('code_interpreter', {}).get('input', ''),
+                        "language": "python"
+                    }
+                    response_data['code_blocks'].append(code_info)
+        
+        return response_data
+
+# 使用示例
+agent = CodeInterpreterAgent("your_api_key")
+
+# 数据分析任务
+result = agent.execute_code_task("""
+请分析以下销售数据，并生成可视化图表：
+
+月份: ['1月', '2月', '3月', '4月', '5月', '6月']
+销售额: [120000, 135000, 148000, 162000, 158000, 175000]
+
+请计算：
+1. 总销售额
+2. 平均月销售额
+3. 增长趋势
+4. 生成折线图和柱状图
+""")
+
+print(json.dumps(result, indent=2, ensure_ascii=False))
+```
+
+## 应用场景
+
+### 1. 数据分析
+
+```python
+def analyze_sales_data():
+    task = """
+    我有一份销售数据需要分析，请帮我：
+    
+    1. 读取CSV文件数据
+    2. 清理和预处理数据
+    3. 计算关键指标（总销售额、平均值、增长率）
+    4. 生成趋势图表
+    5. 识别销售高峰和低谷
+    
+    数据格式：
+    日期,产品,销售额,数量
+    2024-01-01,产品A,1200,10
+    2024-01-02,产品B,1500,12
+    ...
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 执行分析
+analysis_result = analyze_sales_data()
+```
+
+### 2. 数学计算
+
+```python
+def solve_math_problem():
+    task = """
+    请解决以下数学问题：
+    
+    1. 计算函数 f(x) = x³ - 2x² + x - 1 在区间 [-2, 3] 的根
+    2. 绘制函数图像
+    3. 计算函数的导数和二阶导数
+    4. 找出极值点
+    5. 计算定积分 ∫[-1,2] f(x)dx
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 解决数学问题
+math_result = solve_math_problem()
+```
+
+### 3. 图像处理
+
+```python
+def process_image():
+    task = """
+    请帮我处理一张图片：
+    
+    1. 加载图片文件
+    2. 调整图片大小为 800x600
+    3. 应用高斯模糊效果
+    4. 转换为灰度图
+    5. 检测边缘
+    6. 保存处理后的图片
+    
+    请使用PIL或OpenCV库完成这些操作。
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 处理图像
+image_result = process_image()
+```
+
+### 4. 网络爬虫
+
+```python
+def web_scraping_task():
+    task = """
+    请帮我编写一个网络爬虫：
+    
+    1. 爬取某个新闻网站的标题和链接
+    2. 清理和格式化数据
+    3. 保存为CSV文件
+    4. 统计关键词频率
+    5. 生成词云图
+    
+    请使用requests和BeautifulSoup库，并注意遵守robots.txt规则。
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 执行爬虫任务
+scraping_result = web_scraping_task()
+```
+
+## 高级功能
+
+### 1. 文件上传和处理
+
+```python
+class FileProcessingAgent(CodeInterpreterAgent):
+    def upload_and_process_file(self, file_path: str, processing_instructions: str):
+        """
+        上传文件并进行处理
+        """
+        # 读取文件内容
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+        
+        # 构建任务描述
+        task = f"""
+        我上传了一个文件：{file_path}
+        
+        请按照以下要求处理：
+        {processing_instructions}
+        
+        文件内容已经可以通过相应的库读取。
+        """
+        
+        return self.execute_code_task(task)
+
+# 使用示例
+file_agent = FileProcessingAgent("your_api_key")
+
+result = file_agent.upload_and_process_file(
+    "sales_data.xlsx",
+    """
+    1. 读取Excel文件的所有工作表
+    2. 合并数据并清理
+    3. 计算每月销售总额
+    4. 生成销售趋势图
+    5. 导出处理后的数据为CSV
+    """
+)
+```
+
+### 2. 机器学习模型
+
+```python
+def build_ml_model():
+    task = """
+    请帮我构建一个机器学习模型：
+    
+    数据：房价预测数据集
+    特征：面积、房间数、位置、年份等
+    目标：预测房价
+    
+    步骤：
+    1. 加载和探索数据
+    2. 数据预处理（缺失值、异常值、特征工程）
+    3. 特征选择和缩放
+    4. 训练多个模型（线性回归、随机森林、XGBoost）
+    5. 模型评估和比较
+    6. 超参数调优
+    7. 生成预测结果和可视化
+    
+    请使用scikit-learn库。
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 构建模型
+ml_result = build_ml_model()
+```
+
+### 3. 自动化报告生成
+
+```python
+def generate_automated_report():
+    task = """
+    请生成一份自动化数据分析报告：
+    
+    1. 读取多个数据源（CSV、Excel、数据库）
+    2. 数据质量检查和清理
+    3. 描述性统计分析
+    4. 趋势分析和预测
+    5. 异常检测
+    6. 生成图表和可视化
+    7. 创建HTML报告
+    8. 导出为PDF
+    
+    报告应包括：
+    - 执行摘要
+    - 数据概览
+    - 关键指标
+    - 趋势分析
+    - 建议和结论
+    """
+    
+    agent = CodeInterpreterAgent("your_api_key")
+    return agent.execute_code_task(task)
+
+# 生成报告
+report_result = generate_automated_report()
+```
+
+## 错误处理和调试
+
+### 1. 代码错误处理
+
+```python
+class RobustCodeAgent(CodeInterpreterAgent):
+    def execute_with_retry(self, task: str, max_retries: int = 3):
+        """
+        带重试机制的代码执行
+        """
+        for attempt in range(max_retries):
+            try:
+                result = self.execute_code_task(task)
+                
+                # 检查是否有错误
+                if self._has_execution_error(result):
+                    if attempt < max_retries - 1:
+                        # 添加错误修复指令
+                        fix_instruction = """
+                        上面的代码执行出现了错误，请分析错误原因并修复代码。
+                        请确保：
+                        1. 导入所需的库
+                        2. 处理可能的异常
+                        3. 验证数据格式
+                        4. 使用正确的语法
+                        """
+                        
+                        task = task + "\n\n" + fix_instruction
+                        continue
+                
+                return result
+                
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    return {"error": f"执行失败: {str(e)}"}
+                
+        return {"error": "达到最大重试次数"}
+    
+    def _has_execution_error(self, result: dict) -> bool:
+        """
+        检查执行结果是否有错误
+        """
+        content = result.get('content', '')
+        return 'error' in content.lower() or 'exception' in content.lower()
+
+# 使用示例
+robust_agent = RobustCodeAgent("your_api_key")
+
+result = robust_agent.execute_with_retry("""
+请分析这个数据集并生成可视化：
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 创建示例数据
+data = {
+    'month': ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    'sales': [100, 120, 140, 110, 160]
+}
+
+df = pd.DataFrame(data)
+print(df.describe())
+
+# 生成图表
+plt.figure(figsize=(10, 6))
+plt.plot(df['month'], df['sales'], marker='o')
+plt.title('Monthly Sales Trend')
+plt.xlabel('Month')
+plt.ylabel('Sales')
+plt.show()
+""")
+```
+
+### 2. 代码安全检查
+
+```python
+class SecureCodeAgent(CodeInterpreterAgent):
+    def __init__(self, api_key: str):
+        super().__init__(api_key)
+        self.dangerous_patterns = [
+            r'import\s+os',
+            r'import\s+subprocess',
+            r'exec\s*\(',
+            r'eval\s*\(',
+            r'__import__',
+            r'open\s*\(',
+            r'file\s*\(',
+            r'input\s*\(',
+            r'raw_input\s*\('
+        ]
+    
+    def is_code_safe(self, code: str) -> tuple[bool, list]:
+        """
+        检查代码安全性
+        """
+        import re
+        
+        violations = []
+        for pattern in self.dangerous_patterns:
+            if re.search(pattern, code, re.IGNORECASE):
+                violations.append(f"检测到潜在危险操作: {pattern}")
+        
+        return len(violations) == 0, violations
+    
+    def execute_code_task(self, task_description: str) -> dict:
+        """
+        安全的代码执行
+        """
+        # 添加安全提示
+        safe_task = f"""
+        {task_description}
+        
+        请注意：
+        1. 不要使用文件系统操作
+        2. 不要执行系统命令
+        3. 不要使用eval或exec函数
+        4. 只使用安全的数据处理库
+        """
+        
+        return super().execute_code_task(safe_task)
+
+# 使用安全代理
+secure_agent = SecureCodeAgent("your_api_key")
+
+result = secure_agent.execute_code_task("""
+请创建一个数据可视化仪表板，包含：
+1. 销售趋势图
+2. 产品分布饼图
+3. 地区销售对比柱状图
+4. 关键指标卡片
+
+使用matplotlib和seaborn库。
+""")
+```
+
+## 性能优化
+
+### 1. 代码缓存
+
+```python
+import hashlib
+import pickle
+import os
+from datetime import datetime, timedelta
+
+class CachedCodeAgent(CodeInterpreterAgent):
+    def __init__(self, api_key: str, cache_dir: str = "./code_cache"):
+        super().__init__(api_key)
+        self.cache_dir = cache_dir
+        os.makedirs(cache_dir, exist_ok=True)
+    
+    def _get_cache_key(self, task: str) -> str:
+        """
+        生成缓存键
+        """
+        return hashlib.md5(task.encode()).hexdigest()
+    
+    def execute_code_task(self, task_description: str) -> dict:
+        """
+        带缓存的代码执行
+        """
+        cache_key = self._get_cache_key(task_description)
+        cache_file = os.path.join(self.cache_dir, f"{cache_key}.pkl")
+        
+        # 检查缓存
+        if os.path.exists(cache_file):
+            cache_time = datetime.fromtimestamp(os.path.getmtime(cache_file))
+            if datetime.now() - cache_time < timedelta(hours=1):
+                with open(cache_file, 'rb') as f:
+                    return pickle.load(f)
+        
+        # 执行任务
+        result = super().execute_code_task(task_description)
+        
+        # 保存到缓存
+        with open(cache_file, 'wb') as f:
+            pickle.dump(result, f)
+        
+        return result
+```
+
+### 2. 批量处理
+
+```python
+class BatchCodeAgent(CodeInterpreterAgent):
+    def execute_batch_tasks(self, tasks: list[str]) -> list[dict]:
+        """
+        批量执行代码任务
+        """
+        results = []
+        
+        for i, task in enumerate(tasks):
+            print(f"执行任务 {i+1}/{len(tasks)}")
+            try:
+                result = self.execute_code_task(task)
+                results.append(result)
+            except Exception as e:
+                results.append({"error": str(e)})
+        
+        return results
+    
+    def execute_pipeline(self, pipeline_tasks: list[dict]) -> dict:
+        """
+        执行数据处理管道
+        """
+        pipeline_result = {
+            "steps": [],
+            "final_output": None,
+            "success": True
+        }
+        
+        context = ""
+        
+        for step in pipeline_tasks:
+            step_name = step.get('name', 'Unnamed Step')
+            step_task = step.get('task', '')
+            
+            # 添加上下文
+            full_task = context + "\n\n" + step_task
+            
+            try:
+                result = self.execute_code_task(full_task)
+                pipeline_result["steps"].append({
+                    "name": step_name,
+                    "result": result,
+                    "success": True
+                })
+                
+                # 更新上下文
+                context += f"\n\n# {step_name} 已完成\n"
+                
+            except Exception as e:
+                pipeline_result["steps"].append({
+                    "name": step_name,
+                    "error": str(e),
+                    "success": False
+                })
+                pipeline_result["success"] = False
+                break
+        
+        return pipeline_result
+
+# 使用示例
+batch_agent = BatchCodeAgent("your_api_key")
+
+# 定义数据分析管道
+pipeline = [
+    {
+        "name": "数据加载",
+        "task": "加载销售数据并进行初步探索"
+    },
+    {
+        "name": "数据清理",
+        "task": "清理数据，处理缺失值和异常值"
+    },
+    {
+        "name": "特征工程",
+        "task": "创建新特征，进行数据转换"
+    },
+    {
+        "name": "可视化分析",
+        "task": "生成各种图表和可视化"
+    },
+    {
+        "name": "报告生成",
+        "task": "生成分析报告和结论"
+    }
+]
+
+# 执行管道
+pipeline_result = batch_agent.execute_pipeline(pipeline)
+print(json.dumps(pipeline_result, indent=2, ensure_ascii=False))
+```
+
+## 最佳实践
+
+### 1. 代码组织
+- 将复杂任务分解为小步骤
+- 使用清晰的变量名和注释
+- 实施错误处理和验证
+- 保持代码的可读性和可维护性
+
+### 2. 性能考虑
+- 避免不必要的重复计算
+- 使用适当的数据结构
+- 优化算法复杂度
+- 合理使用内存
+
+### 3. 安全措施
+- 验证输入数据
+- 避免执行危险操作
+- 限制资源使用
+- 记录执行日志
+
+<Warning>
+代码执行功能强大但需要谨慎使用。确保：
+1. 在安全的环境中运行
+2. 限制执行时间和资源
+3. 避免执行恶意代码
+4. 定期备份重要数据
+</Warning>
+
+<Tip>
+建议从简单的数据分析任务开始，逐步尝试更复杂的功能。充分利用Python的丰富生态系统，但要注意库的兼容性和安全性。
+</Tip>

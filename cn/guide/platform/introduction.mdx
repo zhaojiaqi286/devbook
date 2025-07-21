@@ -1,0 +1,459 @@
+---
+title: "平台能力简介"
+description: "智谱AI平台的核心功能和服务概览"
+---
+
+# 智谱AI平台能力简介
+
+智谱AI平台为开发者和企业提供了全面的人工智能服务，涵盖大语言模型、多模态AI、智能体开发等多个领域。本文将介绍平台的核心能力和特色功能。
+
+## 平台概览
+
+### 核心定位
+
+智谱AI平台致力于成为：
+- **技术领先**：基于自主研发的GLM系列模型
+- **开放易用**：提供简单易用的API接口
+- **生态完整**：覆盖从模型到应用的全链路
+- **安全可靠**：企业级的安全保障和服务质量
+
+### 服务架构
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    应用层                                │
+├─────────────────────────────────────────────────────────┤
+│  智能体开发  │  多模态应用  │  企业解决方案  │  开发工具   │
+├─────────────────────────────────────────────────────────┤
+│                    能力层                                │
+├─────────────────────────────────────────────────────────┤
+│  语言理解    │  图像生成    │  代码生成      │  知识问答   │
+│  文本生成    │  视频生成    │  函数调用      │  数据分析   │
+├─────────────────────────────────────────────────────────┤
+│                    模型层                                │
+├─────────────────────────────────────────────────────────┤
+│  GLM-4系列   │  CogView     │  CogVideo      │  CodeGeeX   │
+├─────────────────────────────────────────────────────────┤
+│                    基础设施层                            │
+├─────────────────────────────────────────────────────────┤
+│  计算资源    │  存储服务    │  网络服务      │  安全保障   │
+└─────────────────────────────────────────────────────────┘
+```
+
+## 核心能力
+
+### 1. 大语言模型服务
+
+#### GLM-4系列模型
+
+**GLM-4-Plus**
+- 最强性能的旗舰模型
+- 支持128K上下文长度
+- 优秀的推理和创作能力
+- 适用于复杂任务处理
+
+**GLM-4-0520**
+- 平衡性能和成本
+- 快速响应能力
+- 适用于大多数应用场景
+- 高性价比选择
+
+**GLM-4-Air**
+- 轻量级模型
+- 超快响应速度
+- 适用于实时交互
+- 成本优化方案
+
+**GLM-4-Flash**
+- 极速推理模型
+- 毫秒级响应
+- 适用于高并发场景
+- 最优成本效益
+
+#### 特色功能
+
+```python
+# 多轮对话
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "什么是人工智能？"},
+        {"role": "assistant", "content": "人工智能是..."},
+        {"role": "user", "content": "它有哪些应用？"}
+    ]
+)
+
+# 长文本处理
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": f"请总结这篇长文档：{long_document}"}
+    ]
+)
+
+# 结构化输出
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "分析这个商业案例"}
+    ],
+    response_format={"type": "json_object"}
+)
+```
+
+### 2. 多模态AI能力
+
+#### 视觉理解
+
+**GLM-4V系列**
+- 图像理解和分析
+- 图文混合对话
+- OCR文字识别
+- 图表数据提取
+
+```python
+# 图像分析
+response = client.chat.completions.create(
+    model="glm-4v-plus",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "这张图片显示了什么？"},
+                {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}
+            ]
+        }
+    ]
+)
+```
+
+#### 图像生成
+
+**CogView系列**
+- 文本到图像生成
+- 多种艺术风格
+- 高分辨率输出
+- 批量生成支持
+
+```python
+# 图像生成
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="一只可爱的熊猫在竹林中玩耍，水彩画风格",
+    size="1024x1024",
+    quality="standard",
+    n=1
+)
+```
+
+#### 视频生成
+
+**CogVideoX**
+- 文本到视频生成
+- 图像到视频转换
+- 多种分辨率支持
+- 自定义时长控制
+
+```python
+# 视频生成
+response = client.videos.generations(
+    model="cogvideox",
+    prompt="海边日落，海浪轻拍沙滩，宁静美好",
+    image_url="https://example.com/image.jpg",  # 可选的起始图像
+    duration=5  # 视频时长（秒）
+)
+```
+
+### 3. 代码生成能力
+
+#### CodeGeeX系列
+
+**代码生成**
+- 多语言代码生成
+- 代码补全和优化
+- 代码解释和注释
+- 代码转换和重构
+
+```python
+# 代码生成
+response = client.chat.completions.create(
+    model="codegeex-4",
+    messages=[
+        {
+            "role": "user",
+            "content": "用Python写一个快速排序算法"
+        }
+    ]
+)
+
+# 代码解释
+response = client.chat.completions.create(
+    model="codegeex-4",
+    messages=[
+        {
+            "role": "user",
+            "content": f"请解释这段代码的功能：\n{code_snippet}"
+        }
+    ]
+)
+```
+
+**支持语言**
+- Python、Java、JavaScript
+- C++、C#、Go
+- Rust、Swift、Kotlin
+- SQL、HTML、CSS
+- 以及更多编程语言
+
+### 4. 智能体开发
+
+#### 核心组件
+
+**函数调用（Function Calling）**
+```python
+# 定义工具函数
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "获取指定城市的天气信息",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "城市名称"
+                    }
+                },
+                "required": ["city"]
+            }
+        }
+    }
+]
+
+# 使用工具
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[{"role": "user", "content": "北京今天天气怎么样？"}],
+    tools=tools,
+    tool_choice="auto"
+)
+```
+
+**网络搜索**
+```python
+# 启用网络搜索
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "最新的人工智能发展趋势是什么？"}
+    ],
+    tools=[{"type": "web_search"}]
+)
+```
+
+**代码执行**
+```python
+# 代码解释器
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "帮我分析这个数据集并生成可视化图表"}
+    ],
+    tools=[{"type": "code_interpreter"}]
+)
+```
+
+**文档检索**
+```python
+# 知识库检索
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "根据公司文档，我们的退款政策是什么？"}
+    ],
+    tools=[{
+        "type": "retrieval",
+        "retrieval": {"knowledge_id": "kb_xxx"}
+    }]
+)
+```
+
+## 平台特色
+
+### 1. 开发者友好
+
+#### 多语言SDK支持
+
+```python
+# Python SDK
+from zhipuai import ZhipuAI
+client = ZhipuAI(api_key="your_api_key")
+```
+
+```javascript
+// JavaScript SDK
+import { ZhipuAI } from 'zhipuai';
+const client = new ZhipuAI({ apiKey: 'your_api_key' });
+```
+
+```java
+// Java SDK
+import com.zhipu.oapi.ClientV4;
+ClientV4 client = new ClientV4.Builder("your_api_key").build();
+```
+
+#### 丰富的文档和示例
+
+- 详细的API文档
+- 代码示例和教程
+- 最佳实践指南
+- 社区支持和讨论
+
+### 2. 企业级服务
+
+#### 安全保障
+
+- **数据安全**：端到端加密传输
+- **隐私保护**：严格的数据处理规范
+- **访问控制**：细粒度的权限管理
+- **合规认证**：符合行业安全标准
+
+#### 服务质量
+
+- **高可用性**：99.9%的服务可用性
+- **低延迟**：毫秒级响应时间
+- **弹性扩展**：自动负载均衡
+- **监控告警**：实时服务状态监控
+
+### 3. 灵活定价
+
+#### 按需付费
+
+```
+模型类型          输入价格        输出价格
+GLM-4-Plus       ¥0.1/1K tokens  ¥0.1/1K tokens
+GLM-4-0520       ¥0.05/1K tokens ¥0.05/1K tokens
+GLM-4-Air        ¥0.01/1K tokens ¥0.01/1K tokens
+GLM-4-Flash      ¥0.001/1K tokens ¥0.001/1K tokens
+```
+
+#### 套餐服务
+
+- **免费额度**：新用户免费体验
+- **开发者套餐**：适合个人开发者
+- **企业套餐**：适合团队和企业
+- **定制服务**：大客户专属方案
+
+## 应用场景
+
+### 1. 内容创作
+
+- **文章写作**：新闻、博客、营销文案
+- **创意设计**：广告创意、品牌故事
+- **多媒体内容**：图片、视频、音频
+- **个性化内容**：定制化的内容生成
+
+### 2. 智能客服
+
+- **自动问答**：常见问题自动回复
+- **情感分析**：客户情绪识别和处理
+- **多轮对话**：复杂问题的深入交流
+- **知识库集成**：企业知识的智能检索
+
+### 3. 教育培训
+
+- **个性化学习**：根据学习者特点定制内容
+- **智能辅导**：作业批改和学习指导
+- **知识问答**：学科知识的智能解答
+- **内容生成**：教学材料和练习题生成
+
+### 4. 企业办公
+
+- **文档处理**：自动摘要、翻译、格式转换
+- **数据分析**：报表生成、趋势分析
+- **会议助手**：会议记录、要点提取
+- **邮件助手**：邮件撰写、回复建议
+
+### 5. 软件开发
+
+- **代码生成**：根据需求自动生成代码
+- **代码审查**：代码质量检查和优化建议
+- **文档生成**：API文档、技术文档自动生成
+- **测试用例**：自动生成测试代码和用例
+
+## 开始使用
+
+### 1. 注册账号
+
+1. 访问 [智谱AI开放平台](https://bigmodel.cn)
+2. 点击"注册"创建账号
+3. 完成邮箱验证
+4. 实名认证（企业用户需要企业认证）
+
+### 2. 获取API密钥
+
+1. 登录控制台
+2. 进入"API密钥"页面
+3. 点击"创建新密钥"
+4. 复制并安全保存密钥
+
+### 3. 快速开始
+
+```python
+# 安装SDK
+pip install zhipuai
+
+# 第一个API调用
+from zhipuai import ZhipuAI
+
+client = ZhipuAI(api_key="your_api_key")
+
+response = client.chat.completions.create(
+    model="glm-4-flash",
+    messages=[
+        {"role": "user", "content": "你好，智谱AI！"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 4. 探索更多功能
+
+- 查看[API文档](/api-reference)
+- 尝试[代码示例](/examples)
+- 加入[开发者社区](/community)
+- 参与[技术讨论](/forum)
+
+## 技术支持
+
+### 文档资源
+
+- **API参考**：完整的API接口文档
+- **SDK指南**：各语言SDK使用指南
+- **最佳实践**：应用开发最佳实践
+- **常见问题**：FAQ和故障排除
+
+### 社区支持
+
+- **开发者论坛**：技术讨论和经验分享
+- **GitHub仓库**：开源项目和代码示例
+- **技术博客**：最新技术动态和教程
+- **在线活动**：技术分享会和培训
+
+### 商务支持
+
+- **在线客服**：7×24小时在线支持
+- **技术顾问**：专业技术咨询服务
+- **定制开发**：企业级定制解决方案
+- **培训服务**：团队技术培训和指导
+
+<Tip>
+建议从免费额度开始体验平台功能，熟悉API接口后再根据实际需求选择合适的付费套餐。
+</Tip>
+
+<Warning>
+请妥善保管API密钥，不要在公开代码库中暴露密钥信息。建议使用环境变量或配置文件来管理密钥。
+</Warning>

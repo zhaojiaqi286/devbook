@@ -41,30 +41,142 @@
             "icon": "book",
             "pages": [
               {
-                "group": "概览",
+                "group": "开始使用",
                 "pages": [
-                  "cn/guide/GLM-4-Plus",
-                  "cn/guide/overview/pricing"
+                  "cn/guide/start/bigmodel-introduction",
+                  "cn/guide/start/quick-start",
+                  "cn/guide/start/model-overview",
+                  "cn/guide/start/api-usage"
                 ]
               },
               {
-                "group": "语言模型",
+                "group": "模型介绍",
                 "pages": [
-                  "cn/guide/llm/chat-completions"
+                  {
+                    "group": "语言模型",
+                    "pages": [
+                      "cn/guide/Models/Language/GLM-4-PLUS",
+                      "cn/guide/Models/Language/GLM-4-Air-250414",
+                      "cn/guide/Models/Language/GLM-4-AirX",
+                      "cn/guide/Models/Language/GLM-4-Long",
+                      "cn/guide/Models/Language/GLM-4-FlashX-250414"
+                    ]
+                  },
+                  {
+                    "group": "推理模型",
+                    "pages": [
+                      "cn/guide/Models/Inference/GLM-Z1-Air",
+                      "cn/guide/Models/Inference/GLM-Z1-AirX",
+                      "cn/guide/Models/Inference/GLM-Z1-FlashX"
+                    ]
+                  },
+                  {
+                    "group": "视觉理解模型",
+                    "pages": [
+                      "cn/guide/Models/VisualUnderstanding/GLM-4V-Plus-0111"
+                    ]
+                  },
+                  {
+                    "group": "视觉推理模型",
+                    "pages": [
+                      "cn/guide/Models/VisualInference/GLM-4.1V-Thinking"
+                    ]
+                  },
+                  {
+                    "group": "图像生成模型",
+                    "pages": [
+                      "cn/guide/Models/ImageGeneration/CogView-4"
+                    ]
+                  },
+                  {
+                    "group": "视频生成模型",
+                    "pages": [
+                      "cn/guide/Models/VideoGeneration/CogVideoX-2",
+                      "cn/guide/Models/VideoGeneration/ViduQ1",
+                      "cn/guide/Models/VideoGeneration/Vidu2"
+                    ]
+                  },
+                  {
+                    "group": "音视频模型",
+                    "pages": [
+                      "cn/guide/Models/SoundandVideo/GLM-Realtime",
+                      "cn/guide/Models/SoundandVideo/GLM-4-Voice",
+                      "cn/guide/Models/SoundandVideo/GLM-ASR"
+                    ]
+                  },
+                  {
+                    "group": "免费模型",
+                    "pages": [
+                      "cn/guide/Models/Free/GLM-4.1V-Thinking-Flash",
+                      "cn/guide/Models/Free/GLM-4-Flash-250414",
+                      "cn/guide/Models/Free/GLM-4V-Flash",
+                      "cn/guide/Models/Free/GLM-Z1-Flash",
+                      "cn/guide/Models/Free/CogView-3-Flash",
+                      "cn/guide/Models/Free/CogVideoX-Flash"
+                    ]
+                  }
                 ]
               },
               {
-                "group": "工具",
+                "group": "智能体开发",
                 "pages": [
-                  "cn/guide/tools/web-search"
+                  "cn/guide/agent/introduction",
+                  "cn/guide/agent/web-search",
+                  "cn/guide/agent/function-calling",
+                  "cn/guide/agent/retrieval",
+                  "cn/guide/agent/code-interpreter",
+                  "cn/guide/agent/drawing",
+                  "cn/guide/agent/json-mode"
                 ]
               },
               {
-                "group": "视频生成",
+                "group": "Prompt工程",
                 "pages": [
-                  "cn/guide/video/cogvideox-2",
-                  "cn/guide/video/vidu-q1",
-                  "cn/guide/video/vidu2"
+                  "cn/guide/prompt/introduction",
+                  "cn/guide/prompt/best-practices",
+                  "cn/guide/prompt/examples",
+                  "cn/guide/prompt/optimization",
+                  "cn/guide/prompt/troubleshooting",
+                  "cn/guide/prompt/advanced-techniques"
+                ]
+              },
+              {
+                "group": "平台能力",
+                "pages": [
+                  "cn/guide/platform/introduction",
+                  "cn/guide/platform/batch-api",
+                  "cn/guide/platform/fine-tuning",
+                  "cn/guide/platform/knowledge-base"
+                ]
+              },
+              {
+                "group": "开发工具",
+                "pages": [
+                  "cn/guide/tools/document-management",
+                  "cn/guide/tools/web-search",
+                  "cn/guide/tools/function-calling",
+                  "cn/guide/tools/knowledge-base",
+                  "cn/guide/tools/drawing",
+                  "cn/guide/tools/code-interpreter",
+                  "cn/guide/tools/json-mode"
+                ]
+              },
+              {
+                "group": "智能体开发工具",
+                "pages": [
+                  "cn/guide/agent-dev-tools/introduction"
+                ]
+              },
+              {
+                "group": "Python工具",
+                "pages": [
+                  "cn/guide/python-tools/introduction"
+                ]
+              },
+              {
+                "group": "Java工具",
+                "pages": [
+                  "cn/guide/java-tools/introduction"
                 ]
               }
             ]
@@ -78,7 +190,23 @@
             "tab": "更新日志",
             "icon": "code",
             "pages": [
-              "cn/update/update-log"
+              "cn/update/new-releases",
+              "cn/update/feature-updates"
+            ]
+          },
+          {
+            "tab": "条款与协议",
+            "icon": "file-text",
+            "pages": [
+              "cn/terms/user-agreement",
+              "cn/terms/privacy-policy",
+              "cn/terms/service-agreement",
+              "cn/terms/recharge-agreement",
+              "cn/terms/cancellation-agreement",
+              "cn/terms/entity-change-agreement",
+              "cn/terms/university-program",
+              "cn/terms/self-discipline-statement",
+              "cn/terms/security-risk-notice"
             ]
           },
           {

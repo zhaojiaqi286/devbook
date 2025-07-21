@@ -1,0 +1,108 @@
+---
+title: "快速上手"
+description: "快速开始使用智谱AI开放平台"
+---
+
+# 快速上手
+
+本指南将帮助您快速开始使用智谱AI开放平台的各项功能。
+
+## 第一步：注册账号
+
+1. 访问 [智谱AI开放平台](https://bigmodel.cn/)
+2. 点击注册按钮创建您的账号
+3. 完成邮箱验证和实名认证
+
+## 第二步：获取API Key
+
+1. 登录您的账号
+2. 进入控制台
+3. 在API管理页面创建新的API Key
+4. 妥善保存您的API Key，请勿泄露给他人
+
+<Warning>
+API Key 是您访问智谱AI服务的凭证，请务必保密。如果泄露，请立即重新生成。
+</Warning>
+
+## 第三步：选择合适的模型
+
+根据您的需求选择合适的模型：
+
+- **GLM-4-Plus**：最强大的通用模型，适合复杂任务
+- **GLM-4-Air**：轻量级模型，响应速度快
+- **GLM-4-Long**：长文本处理专用模型
+- **GLM-4-FlashX**：超快响应模型
+
+## 第四步：发起第一次API调用
+
+### 使用curl
+
+```bash
+curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "glm-4-plus",
+    "messages": [
+      {
+        "role": "user",
+        "content": "你好，请介绍一下你自己"
+      }
+    ]
+  }'
+```
+
+### 使用Python
+
+```python
+import requests
+import json
+
+url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+data = {
+    "model": "glm-4-plus",
+    "messages": [
+        {
+            "role": "user",
+            "content": "你好，请介绍一下你自己"
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+## 第五步：探索更多功能
+
+- **工具调用**：让模型使用外部工具，如网络搜索
+- **视频生成**：使用CogVideoX等模型生成视频内容
+- **图像理解**：上传图片让模型进行分析
+- **知识库**：创建专属知识库，提升回答准确性
+
+## 常见问题
+
+### 如何查看API使用量？
+
+在控制台的使用统计页面可以查看详细的API调用记录和费用统计。
+
+### 如何处理API错误？
+
+请参考我们的[常见问题](/cn/issue/common-issue)页面，或查看API文档中的错误码说明。
+
+### 如何优化API调用成本？
+
+- 选择合适的模型：根据任务复杂度选择对应的模型
+- 控制输入长度：避免不必要的长文本输入
+- 使用缓存：对于重复的请求可以使用缓存机制
+
+## 下一步
+
+- 查看[模型概况](/cn/guide/start/model-overview)了解各个模型的详细信息
+- 学习[调用方式](/cn/guide/start/api-usage)掌握更多API使用技巧
+- 探索[语言模型](/cn/guide/llm/chat-completions)的高级功能

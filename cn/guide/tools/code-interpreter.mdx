@@ -1,0 +1,844 @@
+---
+title: "代码解释器"
+description: "智能体代码执行和分析功能详细介绍"
+---
+
+# 代码解释器
+
+代码解释器为智能体提供了强大的代码执行和分析能力，支持多种编程语言的代码运行、调试和结果分析，让AI助手能够帮助用户解决编程问题。
+
+## 功能特性
+
+### 多语言支持
+- Python（主要支持）
+- JavaScript/Node.js
+- R语言
+- SQL查询
+- Shell脚本
+- Markdown渲染
+
+### 代码执行能力
+- 实时代码运行
+- 错误诊断和调试
+- 结果可视化
+- 数据分析和处理
+- 图表生成
+
+### 安全沙箱环境
+- 隔离执行环境
+- 资源限制控制
+- 安全权限管理
+- 超时保护机制
+
+## 基础用法
+
+### Python代码执行
+
+```python
+from zhipuai import ZhipuAI
+
+client = ZhipuAI(api_key="your_api_key")
+
+# 基础代码执行
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {
+            "role": "user",
+            "content": "请帮我计算斐波那契数列的前10项，并绘制图表"
+        }
+    ],
+    tools=[
+        {
+            "type": "code_interpreter"
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 数据分析任务
+
+```python
+# 数据分析示例
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {
+            "role": "user",
+            "content": """
+            我有一组销售数据，请帮我分析：
+            
+            sales_data = {
+                'month': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                'revenue': [10000, 12000, 11500, 13000, 14500, 16000],
+                'costs': [6000, 7000, 6800, 7500, 8200, 8800]
+            }
+            
+            请计算每月利润，绘制收入、成本和利润的趋势图，并给出分析结论。
+            """
+        }
+    ],
+    tools=[
+        {
+            "type": "code_interpreter"
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 文件处理和分析
+
+```python
+# 文件上传和分析
+with open("data.csv", "rb") as file:
+    file_response = client.files.create(
+        file=file,
+        purpose="assistants"
+    )
+
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {
+            "role": "user",
+            "content": f"请分析这个CSV文件的数据，文件ID: {file_response.id}"
+        }
+    ],
+    tools=[
+        {
+            "type": "code_interpreter"
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## 高级应用场景
+
+### 数据科学助手
+
+```python
+class DataScienceAssistant:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def analyze_dataset(self, data_description, analysis_requirements):
+        """分析数据集"""
+        prompt = f"""
+        数据描述：{data_description}
+        分析需求：{analysis_requirements}
+        
+        请执行以下数据分析任务：
+        1. 数据探索性分析（EDA）
+        2. 数据清洗和预处理
+        3. 统计分析和可视化
+        4. 模式识别和洞察发现
+        5. 生成分析报告
+        
+        请使用Python代码实现，包含详细的注释和解释。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def build_ml_model(self, problem_type, data_info, target_variable):
+        """构建机器学习模型"""
+        prompt = f"""
+        问题类型：{problem_type}
+        数据信息：{data_info}
+        目标变量：{target_variable}
+        
+        请构建一个机器学习模型：
+        1. 数据预处理和特征工程
+        2. 模型选择和训练
+        3. 模型评估和优化
+        4. 结果可视化
+        5. 模型解释和建议
+        
+        请提供完整的Python代码实现。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def create_dashboard(self, data_source, dashboard_requirements):
+        """创建数据仪表板"""
+        prompt = f"""
+        数据源：{data_source}
+        仪表板需求：{dashboard_requirements}
+        
+        请创建一个交互式数据仪表板：
+        1. 数据加载和处理
+        2. 关键指标计算
+        3. 多种图表类型展示
+        4. 交互式筛选功能
+        5. 响应式布局设计
+        
+        使用Python的Plotly或Streamlit库实现。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+data_assistant = DataScienceAssistant("your_api_key")
+analysis = data_assistant.analyze_dataset(
+    "电商平台用户行为数据，包含用户ID、访问时间、页面浏览、购买记录等",
+    "分析用户购买行为模式，识别高价值客户，预测用户流失风险"
+)
+print(analysis)
+```
+
+### 算法学习助手
+
+```python
+class AlgorithmTutor:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def explain_algorithm(self, algorithm_name, difficulty_level="intermediate"):
+        """解释算法原理"""
+        prompt = f"""
+        算法名称：{algorithm_name}
+        难度级别：{difficulty_level}
+        
+        请详细解释这个算法：
+        1. 算法原理和思想
+        2. 时间和空间复杂度分析
+        3. Python代码实现（带详细注释）
+        4. 实际应用场景
+        5. 优缺点分析
+        6. 相关算法比较
+        
+        请提供可运行的代码示例和测试用例。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def solve_coding_problem(self, problem_description, constraints=None):
+        """解决编程问题"""
+        constraints_text = f"\n约束条件：{constraints}" if constraints else ""
+        
+        prompt = f"""
+        问题描述：{problem_description}{constraints_text}
+        
+        请解决这个编程问题：
+        1. 问题分析和解题思路
+        2. 算法设计和选择
+        3. 代码实现（多种解法）
+        4. 复杂度分析
+        5. 测试用例验证
+        6. 优化建议
+        
+        请提供完整的Python解决方案。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def visualize_algorithm(self, algorithm_name, input_data):
+        """算法可视化"""
+        prompt = f"""
+        算法：{algorithm_name}
+        输入数据：{input_data}
+        
+        请创建这个算法的可视化演示：
+        1. 算法执行步骤的动态展示
+        2. 数据结构变化过程
+        3. 关键操作的高亮显示
+        4. 性能指标的实时更新
+        5. 交互式参数调整
+        
+        使用matplotlib或plotly创建动画效果。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+algo_tutor = AlgorithmTutor("your_api_key")
+explanation = algo_tutor.explain_algorithm("快速排序", "beginner")
+print(explanation)
+```
+
+### 代码调试助手
+
+```python
+class CodeDebugger:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def debug_code(self, code, error_message=None, expected_behavior=None):
+        """调试代码"""
+        debug_info = ""
+        if error_message:
+            debug_info += f"\n错误信息：{error_message}"
+        if expected_behavior:
+            debug_info += f"\n期望行为：{expected_behavior}"
+        
+        prompt = f"""
+        需要调试的代码：
+        ```python
+        {code}
+        ```
+        {debug_info}
+        
+        请帮助调试这段代码：
+        1. 分析代码逻辑和结构
+        2. 识别潜在的错误和问题
+        3. 提供修复建议和改进方案
+        4. 重写正确的代码
+        5. 添加错误处理和边界检查
+        6. 提供测试用例验证
+        
+        请执行代码验证修复效果。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def optimize_performance(self, code, performance_requirements):
+        """性能优化"""
+        prompt = f"""
+        原始代码：
+        ```python
+        {code}
+        ```
+        
+        性能要求：{performance_requirements}
+        
+        请优化代码性能：
+        1. 性能瓶颈分析
+        2. 算法复杂度优化
+        3. 数据结构改进
+        4. 内存使用优化
+        5. 并行处理可能性
+        6. 缓存策略应用
+        
+        请提供优化后的代码并进行性能对比测试。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def code_review(self, code, review_criteria=None):
+        """代码审查"""
+        criteria = review_criteria or [
+            "代码可读性",
+            "性能效率",
+            "错误处理",
+            "安全性",
+            "可维护性",
+            "最佳实践"
+        ]
+        
+        criteria_text = "、".join(criteria)
+        
+        prompt = f"""
+        代码审查：
+        ```python
+        {code}
+        ```
+        
+        审查标准：{criteria_text}
+        
+        请进行全面的代码审查：
+        1. 代码质量评估
+        2. 潜在问题识别
+        3. 改进建议
+        4. 最佳实践应用
+        5. 重构建议
+        6. 测试覆盖率分析
+        
+        请提供详细的审查报告和改进后的代码。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+debugger = CodeDebugger("your_api_key")
+buggy_code = """
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# 计算前20项
+for i in range(20):
+    print(f"F({i}) = {fibonacci(i)}")
+"""
+
+debug_result = debugger.debug_code(
+    buggy_code,
+    error_message="运行速度太慢",
+    expected_behavior="快速计算斐波那契数列"
+)
+print(debug_result)
+```
+
+### 数据可视化专家
+
+```python
+class DataVisualizationExpert:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def create_chart(self, data_description, chart_type, customization=None):
+        """创建图表"""
+        custom_text = f"\n定制要求：{customization}" if customization else ""
+        
+        prompt = f"""
+        数据描述：{data_description}
+        图表类型：{chart_type}
+        {custom_text}
+        
+        请创建专业的数据可视化图表：
+        1. 数据准备和处理
+        2. 图表设计和布局
+        3. 颜色搭配和样式
+        4. 交互功能添加
+        5. 标题和标签优化
+        6. 响应式设计
+        
+        使用matplotlib、seaborn或plotly库实现。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def create_infographic(self, topic, data_points, style="modern"):
+        """创建信息图表"""
+        prompt = f"""
+        主题：{topic}
+        数据要点：{data_points}
+        风格：{style}
+        
+        请创建一个信息图表：
+        1. 整体布局设计
+        2. 数据层次结构
+        3. 视觉元素搭配
+        4. 图标和插图
+        5. 文字排版
+        6. 色彩方案
+        
+        使用Python的可视化库创建专业的信息图表。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def analyze_chart_effectiveness(self, chart_description, target_audience):
+        """分析图表效果"""
+        prompt = f"""
+        图表描述：{chart_description}
+        目标受众：{target_audience}
+        
+        请分析图表的有效性：
+        1. 信息传达清晰度
+        2. 视觉吸引力
+        3. 数据准确性
+        4. 受众适应性
+        5. 改进建议
+        6. 替代方案
+        
+        请提供详细的分析报告和优化建议。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+viz_expert = DataVisualizationExpert("your_api_key")
+chart = viz_expert.create_chart(
+    "公司过去5年的营收、利润和员工数量数据",
+    "组合图表（柱状图+折线图）",
+    "企业风格，蓝色主题，包含趋势分析"
+)
+print(chart)
+```
+
+## 高级功能
+
+### 多步骤代码执行
+
+```python
+class MultiStepCodeExecutor:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+        self.conversation_history = []
+    
+    def execute_step(self, step_description, code=None):
+        """执行单个步骤"""
+        if code:
+            message_content = f"{step_description}\n\n```python\n{code}\n```"
+        else:
+            message_content = step_description
+        
+        self.conversation_history.append({
+            "role": "user",
+            "content": message_content
+        })
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=self.conversation_history,
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        assistant_message = response.choices[0].message
+        self.conversation_history.append({
+            "role": "assistant",
+            "content": assistant_message.content
+        })
+        
+        return assistant_message.content
+    
+    def execute_workflow(self, workflow_steps):
+        """执行完整工作流"""
+        results = []
+        
+        for i, step in enumerate(workflow_steps):
+            print(f"执行步骤 {i+1}: {step['description']}")
+            
+            result = self.execute_step(
+                step['description'],
+                step.get('code')
+            )
+            
+            results.append({
+                "step": i+1,
+                "description": step['description'],
+                "result": result
+            })
+        
+        return results
+    
+    def get_summary(self):
+        """获取执行总结"""
+        summary_prompt = """
+        请总结整个代码执行过程：
+        1. 主要完成的任务
+        2. 关键结果和发现
+        3. 遇到的问题和解决方案
+        4. 最终输出和结论
+        5. 后续建议
+        """
+        
+        self.conversation_history.append({
+            "role": "user",
+            "content": summary_prompt
+        })
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=self.conversation_history
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+executor = MultiStepCodeExecutor("your_api_key")
+
+workflow = [
+    {
+        "description": "加载和探索数据集",
+        "code": """
+        import pandas as pd
+        import numpy as np
+        
+        # 创建示例数据
+        data = {
+            'date': pd.date_range('2023-01-01', periods=100),
+            'sales': np.random.normal(1000, 200, 100),
+            'marketing_spend': np.random.normal(500, 100, 100)
+        }
+        df = pd.DataFrame(data)
+        print(df.head())
+        print(df.info())
+        """
+    },
+    {
+        "description": "数据清洗和预处理"
+    },
+    {
+        "description": "探索性数据分析"
+    },
+    {
+        "description": "建立预测模型"
+    },
+    {
+        "description": "模型评估和可视化"
+    }
+]
+
+results = executor.execute_workflow(workflow)
+summary = executor.get_summary()
+
+print("\n=== 执行总结 ===")
+print(summary)
+```
+
+### 代码质量检测
+
+```python
+class CodeQualityChecker:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def check_code_quality(self, code, language="python"):
+        """检查代码质量"""
+        prompt = f"""
+        请检查以下{language}代码的质量：
+        
+        ```{language}
+        {code}
+        ```
+        
+        检查项目：
+        1. 语法正确性
+        2. 代码风格和规范
+        3. 性能优化机会
+        4. 安全性问题
+        5. 可读性和维护性
+        6. 错误处理
+        7. 测试覆盖率
+        8. 文档完整性
+        
+        请提供详细的质量报告和改进建议，并执行代码验证。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def generate_tests(self, code, test_type="unit"):
+        """生成测试代码"""
+        prompt = f"""
+        为以下代码生成{test_type}测试：
+        
+        ```python
+        {code}
+        ```
+        
+        测试要求：
+        1. 覆盖所有主要功能
+        2. 包含边界条件测试
+        3. 异常情况处理
+        4. 性能测试（如适用）
+        5. 使用pytest框架
+        6. 包含测试数据准备
+        
+        请生成完整的测试代码并执行验证。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def refactor_code(self, code, refactoring_goals):
+        """重构代码"""
+        prompt = f"""
+        请重构以下代码：
+        
+        ```python
+        {code}
+        ```
+        
+        重构目标：{refactoring_goals}
+        
+        重构要求：
+        1. 保持功能不变
+        2. 提高代码可读性
+        3. 优化性能
+        4. 减少代码重复
+        5. 改善代码结构
+        6. 添加适当的注释
+        
+        请提供重构后的代码并解释改进点。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": prompt}],
+            tools=[{"type": "code_interpreter"}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+quality_checker = CodeQualityChecker("your_api_key")
+
+sample_code = """
+def calculate_stats(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    average = total / len(numbers)
+    
+    max_val = numbers[0]
+    min_val = numbers[0]
+    for num in numbers:
+        if num > max_val:
+            max_val = num
+        if num < min_val:
+            min_val = num
+    
+    return total, average, max_val, min_val
+"""
+
+quality_report = quality_checker.check_code_quality(sample_code)
+print(quality_report)
+```
+
+## 最佳实践
+
+### 代码组织和结构
+
+1. **模块化设计**
+   ```python
+   # 将复杂任务分解为小的函数
+   def load_data():
+       pass
+   
+   def process_data(data):
+       pass
+   
+   def visualize_results(results):
+       pass
+   ```
+
+2. **错误处理**
+   ```python
+   try:
+       result = risky_operation()
+   except SpecificException as e:
+       print(f"处理错误: {e}")
+       # 提供备选方案
+   ```
+
+3. **性能优化**
+   ```python
+   # 使用向量化操作
+   import numpy as np
+   result = np.sum(array)  # 而不是循环
+   ```
+
+### 安全考虑
+
+1. **输入验证**：始终验证用户输入
+2. **资源限制**：避免无限循环和内存泄漏
+3. **权限控制**：不执行危险的系统操作
+4. **数据保护**：不处理敏感信息
+
+### 调试技巧
+
+1. **逐步执行**：将复杂问题分解为小步骤
+2. **打印调试**：在关键位置添加输出
+3. **异常捕获**：使用try-except处理错误
+4. **单元测试**：为每个函数编写测试
+
+## 注意事项
+
+### 执行限制
+
+- **运行时间**：单次执行有时间限制
+- **内存使用**：避免创建过大的数据结构
+- **网络访问**：受限的外部网络访问
+- **文件操作**：临时文件系统，执行后清理
+
+### 安全约束
+
+- **系统调用**：禁止危险的系统操作
+- **文件访问**：限制文件读写范围
+- **网络请求**：受控的网络访问
+- **进程管理**：不能启动外部进程
+
+### 性能优化
+
+1. **算法选择**：选择合适的算法和数据结构
+2. **内存管理**：及时释放不需要的变量
+3. **并行处理**：适当使用多线程或向量化
+4. **缓存策略**：避免重复计算
+
+<Tip>
+在编写代码时，建议先进行小规模测试，确认逻辑正确后再处理大数据集。同时，添加适当的注释和错误处理，提高代码的可读性和健壮性。
+</Tip>
+
+<Warning>
+代码解释器在沙箱环境中运行，某些系统级操作和外部网络访问可能受限。请确保代码符合安全规范，避免执行可能造成安全风险的操作。
+</Warning>

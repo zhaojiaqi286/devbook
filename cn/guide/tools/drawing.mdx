@@ -1,0 +1,773 @@
+---
+title: "绘图工具"
+description: "智能体图像生成功能详细介绍"
+---
+
+# 绘图工具
+
+绘图工具为智能体提供了强大的图像生成能力，支持文本到图像的转换，让AI助手能够根据描述创建各种风格的图像。
+
+## 功能特性
+
+### 文本到图像生成
+- 自然语言描述转图像
+- 支持中英文提示词
+- 多种艺术风格
+- 高质量图像输出
+
+### 多样化风格
+- 写实风格
+- 卡通动漫
+- 水彩画
+- 油画风格
+- 素描线稿
+- 科幻未来
+- 古典艺术
+
+### 灵活控制
+- 图像尺寸调整
+- 质量等级选择
+- 批量生成
+- 风格强度控制
+
+## 基础用法
+
+### 简单图像生成
+
+```python
+from zhipuai import ZhipuAI
+
+client = ZhipuAI(api_key="your_api_key")
+
+# 基础图像生成
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="一只可爱的橘猫坐在窗台上，阳光透过窗户洒在它身上，温馨的家居环境",
+    size="1024x1024",
+    quality="standard",
+    n=1
+)
+
+# 获取生成的图像URL
+image_url = response.data[0].url
+print(f"生成的图像URL: {image_url}")
+```
+
+### 智能体集成
+
+```python
+# 在对话中使用绘图功能
+response = client.chat.completions.create(
+    model="glm-4-plus",
+    messages=[
+        {"role": "user", "content": "请画一幅春天的风景画"}
+    ],
+    tools=[
+        {
+            "type": "drawing",
+            "drawing": {
+                "model": "cogview-3-plus",
+                "size": "1024x1024",
+                "quality": "high"
+            }
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### 高级参数配置
+
+```python
+# 详细参数配置
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="一座未来科技城市，高楼大厦，飞行汽车，霓虹灯光，赛博朋克风格",
+    negative_prompt="模糊，低质量，变形",  # 负面提示词
+    size="1024x1024",
+    quality="high",
+    n=2,  # 生成2张图片
+    style="cyberpunk",  # 风格指定
+    seed=12345,  # 随机种子，用于复现
+    steps=50,  # 生成步数
+    guidance_scale=7.5  # 引导强度
+)
+
+for i, image in enumerate(response.data):
+    print(f"图像 {i+1}: {image.url}")
+```
+
+## 应用场景
+
+### 内容创作助手
+
+```python
+class ContentCreationAssistant:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def create_blog_illustration(self, article_title, article_summary):
+        """为博客文章创建插图"""
+        # 分析文章内容，生成合适的图像描述
+        analysis_prompt = f"""
+        文章标题：{article_title}
+        文章摘要：{article_summary}
+        
+        请为这篇文章设计一个合适的插图，描述应该包括：
+        1. 主要视觉元素
+        2. 色彩搭配
+        3. 构图建议
+        4. 艺术风格
+        
+        请用一段详细的英文描述来表达这个插图设计。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": analysis_prompt}]
+        )
+        
+        image_description = response.choices[0].message.content
+        
+        # 生成图像
+        image_response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=image_description,
+            size="1024x1024",
+            quality="high",
+            style="professional"
+        )
+        
+        return {
+            "description": image_description,
+            "image_url": image_response.data[0].url
+        }
+    
+    def create_social_media_post(self, topic, platform="instagram"):
+        """创建社交媒体配图"""
+        platform_specs = {
+            "instagram": {"size": "1024x1024", "style": "vibrant"},
+            "twitter": {"size": "1200x675", "style": "clean"},
+            "facebook": {"size": "1200x630", "style": "engaging"}
+        }
+        
+        spec = platform_specs.get(platform, platform_specs["instagram"])
+        
+        prompt = f"""
+        为{platform}平台创建关于"{topic}"的配图，
+        要求：吸引眼球，色彩鲜明，适合社交媒体传播，
+        风格现代简洁，包含相关的视觉元素
+        """
+        
+        response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=prompt,
+            size=spec["size"],
+            quality="high",
+            style=spec["style"]
+        )
+        
+        return response.data[0].url
+
+# 使用示例
+creator = ContentCreationAssistant("your_api_key")
+illustration = creator.create_blog_illustration(
+    "人工智能的未来发展",
+    "探讨AI技术在各个领域的应用前景和挑战"
+)
+print(f"插图描述: {illustration['description']}")
+print(f"图像URL: {illustration['image_url']}")
+```
+
+### 电商产品展示
+
+```python
+class EcommerceImageGenerator:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def create_product_scene(self, product_name, product_description, scene_type="lifestyle"):
+        """创建产品场景图"""
+        scene_prompts = {
+            "lifestyle": "温馨的家居环境，自然光线，生活化场景",
+            "professional": "专业摄影棚，完美光线，白色背景",
+            "outdoor": "户外自然环境，阳光明媚，绿色植物",
+            "modern": "现代简约风格，几何元素，冷色调"
+        }
+        
+        scene_desc = scene_prompts.get(scene_type, scene_prompts["lifestyle"])
+        
+        prompt = f"""
+        产品：{product_name}
+        描述：{product_description}
+        场景：{scene_desc}
+        
+        创建一个高质量的产品展示图，突出产品特色，
+        构图美观，光线柔和，适合电商平台使用
+        """
+        
+        response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=prompt,
+            size="1024x1024",
+            quality="high",
+            style="commercial"
+        )
+        
+        return response.data[0].url
+    
+    def create_product_variations(self, base_prompt, variations):
+        """创建产品变体图"""
+        results = []
+        
+        for variation in variations:
+            full_prompt = f"{base_prompt}, {variation}"
+            
+            response = self.client.images.generations(
+                model="cogview-3-plus",
+                prompt=full_prompt,
+                size="1024x1024",
+                quality="standard",
+                n=1
+            )
+            
+            results.append({
+                "variation": variation,
+                "image_url": response.data[0].url
+            })
+        
+        return results
+
+# 使用示例
+ecommerce_gen = EcommerceImageGenerator("your_api_key")
+product_image = ecommerce_gen.create_product_scene(
+    "智能手表",
+    "运动健康监测，时尚设计，多功能智能穿戴设备",
+    "lifestyle"
+)
+print(f"产品场景图: {product_image}")
+```
+
+### 教育培训材料
+
+```python
+class EducationalImageGenerator:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def create_concept_illustration(self, concept, subject, age_group="adult"):
+        """创建概念插图"""
+        style_map = {
+            "child": "卡通风格，色彩鲜艳，简单可爱",
+            "teenager": "现代插画风格，活泼有趣",
+            "adult": "专业插图风格，清晰准确"
+        }
+        
+        style = style_map.get(age_group, style_map["adult"])
+        
+        prompt = f"""
+        学科：{subject}
+        概念：{concept}
+        风格：{style}
+        
+        创建一个教育性插图，帮助理解这个概念，
+        图像应该清晰、准确、易于理解，适合教学使用
+        """
+        
+        response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=prompt,
+            size="1024x1024",
+            quality="high",
+            style="educational"
+        )
+        
+        return response.data[0].url
+    
+    def create_process_diagram(self, process_name, steps):
+        """创建流程图"""
+        steps_text = "\n".join([f"{i+1}. {step}" for i, step in enumerate(steps)])
+        
+        prompt = f"""
+        流程名称：{process_name}
+        步骤：
+        {steps_text}
+        
+        创建一个清晰的流程图，显示各个步骤之间的关系，
+        使用箭头和图标，色彩搭配合理，易于理解
+        """
+        
+        response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=prompt,
+            size="1200x800",
+            quality="high",
+            style="diagram"
+        )
+        
+        return response.data[0].url
+    
+    def create_historical_scene(self, historical_event, time_period):
+        """创建历史场景图"""
+        prompt = f"""
+        历史事件：{historical_event}
+        时代：{time_period}
+        
+        创建一个历史场景重现图，准确反映当时的服装、建筑、
+        生活方式等历史细节，画面生动，有教育价值
+        """
+        
+        response = self.client.images.generations(
+            model="cogview-3-plus",
+            prompt=prompt,
+            size="1024x1024",
+            quality="high",
+            style="historical"
+        )
+        
+        return response.data[0].url
+
+# 使用示例
+edu_gen = EducationalImageGenerator("your_api_key")
+concept_img = edu_gen.create_concept_illustration(
+    "光合作用",
+    "生物学",
+    "teenager"
+)
+print(f"概念插图: {concept_img}")
+```
+
+## 高级功能
+
+### 批量图像生成
+
+```python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+class BatchImageGenerator:
+    def __init__(self, api_key, max_workers=3):
+        self.client = ZhipuAI(api_key=api_key)
+        self.max_workers = max_workers
+    
+    def generate_batch(self, prompts, **kwargs):
+        """批量生成图像"""
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = []
+            
+            for prompt in prompts:
+                future = executor.submit(
+                    self.client.images.generations,
+                    model="cogview-3-plus",
+                    prompt=prompt,
+                    **kwargs
+                )
+                futures.append((prompt, future))
+            
+            results = []
+            for prompt, future in futures:
+                try:
+                    response = future.result()
+                    results.append({
+                        "prompt": prompt,
+                        "success": True,
+                        "image_url": response.data[0].url
+                    })
+                except Exception as e:
+                    results.append({
+                        "prompt": prompt,
+                        "success": False,
+                        "error": str(e)
+                    })
+            
+            return results
+    
+    def generate_variations(self, base_prompt, variations, **kwargs):
+        """生成变体图像"""
+        full_prompts = [f"{base_prompt}, {var}" for var in variations]
+        return self.generate_batch(full_prompts, **kwargs)
+
+# 使用示例
+batch_gen = BatchImageGenerator("your_api_key")
+prompts = [
+    "春天的樱花盛开",
+    "夏日海滩风光",
+    "秋天的枫叶满山",
+    "冬日雪景如画"
+]
+results = batch_gen.generate_batch(prompts, size="1024x1024", quality="standard")
+for result in results:
+    if result["success"]:
+        print(f"✓ {result['prompt']}: {result['image_url']}")
+    else:
+        print(f"✗ {result['prompt']}: {result['error']}")
+```
+
+### 图像质量评估
+
+```python
+class ImageQualityAssessment:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def assess_image_quality(self, image_url, criteria=None):
+        """评估图像质量"""
+        if criteria is None:
+            criteria = [
+                "清晰度",
+                "构图",
+                "色彩搭配",
+                "主题表达",
+                "整体美感"
+            ]
+        
+        criteria_text = "、".join(criteria)
+        
+        prompt = f"""
+        请评估这张图像的质量，从以下维度进行分析：
+        {criteria_text}
+        
+        对每个维度给出1-10分的评分，并提供具体的评价意见。
+        最后给出总体评分和改进建议。
+        
+        请以JSON格式返回结果：
+        {{
+            "scores": {{"维度1": 分数, "维度2": 分数, ...}},
+            "comments": {{"维度1": "评价", "维度2": "评价", ...}},
+            "overall_score": 总分,
+            "suggestions": ["建议1", "建议2", ...]
+        }}
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4v-plus",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": image_url}}
+                    ]
+                }
+            ],
+            response_format={"type": "json_object"}
+        )
+        
+        import json
+        return json.loads(response.choices[0].message.content)
+    
+    def compare_images(self, image_urls, comparison_criteria):
+        """比较多张图像"""
+        assessments = []
+        for i, url in enumerate(image_urls):
+            assessment = self.assess_image_quality(url, comparison_criteria)
+            assessment["image_index"] = i
+            assessment["image_url"] = url
+            assessments.append(assessment)
+        
+        # 排序
+        sorted_assessments = sorted(
+            assessments,
+            key=lambda x: x["overall_score"],
+            reverse=True
+        )
+        
+        return sorted_assessments
+
+# 使用示例
+quality_assessor = ImageQualityAssessment("your_api_key")
+assessment = quality_assessor.assess_image_quality(
+    "https://example.com/image.jpg",
+    ["清晰度", "构图", "色彩"]
+)
+print(f"总体评分: {assessment['overall_score']}")
+print(f"改进建议: {assessment['suggestions']}")
+```
+
+### 智能提示词优化
+
+```python
+class PromptOptimizer:
+    def __init__(self, api_key):
+        self.client = ZhipuAI(api_key=api_key)
+    
+    def optimize_prompt(self, original_prompt, target_style=None, target_quality="high"):
+        """优化提示词"""
+        optimization_prompt = f"""
+        原始提示词：{original_prompt}
+        目标风格：{target_style or '不限'}
+        目标质量：{target_quality}
+        
+        请优化这个图像生成提示词，使其能够生成更高质量的图像。
+        
+        优化要点：
+        1. 添加具体的视觉细节描述
+        2. 包含适当的艺术风格指导
+        3. 添加质量和技术参数
+        4. 确保描述清晰、具体
+        5. 避免模糊或矛盾的表述
+        
+        请返回优化后的英文提示词，并说明优化的理由。
+        
+        格式：
+        优化后提示词：[英文提示词]
+        优化说明：[说明优化的具体改进点]
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": optimization_prompt}]
+        )
+        
+        return response.choices[0].message.content
+    
+    def generate_style_variations(self, base_prompt, styles):
+        """生成不同风格的提示词变体"""
+        variations = []
+        
+        for style in styles:
+            style_prompt = f"""
+            基础描述：{base_prompt}
+            目标风格：{style}
+            
+            请将基础描述转换为{style}风格的图像生成提示词。
+            保持原有的主要内容，但调整表达方式以符合指定风格。
+            
+            请直接返回优化后的英文提示词。
+            """
+            
+            response = self.client.chat.completions.create(
+                model="glm-4-plus",
+                messages=[{"role": "user", "content": style_prompt}]
+            )
+            
+            variations.append({
+                "style": style,
+                "prompt": response.choices[0].message.content
+            })
+        
+        return variations
+    
+    def analyze_successful_prompts(self, successful_prompts):
+        """分析成功的提示词模式"""
+        analysis_prompt = f"""
+        以下是一些生成高质量图像的成功提示词：
+        
+        {chr(10).join([f"{i+1}. {prompt}" for i, prompt in enumerate(successful_prompts)])}
+        
+        请分析这些提示词的共同特点和成功模式：
+        1. 常用的描述词汇
+        2. 结构和格式特点
+        3. 技术参数使用
+        4. 风格指导方式
+        
+        基于分析结果，总结出一套提示词编写的最佳实践指南。
+        """
+        
+        response = self.client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[{"role": "user", "content": analysis_prompt}]
+        )
+        
+        return response.choices[0].message.content
+
+# 使用示例
+optimizer = PromptOptimizer("your_api_key")
+optimized = optimizer.optimize_prompt(
+    "一只猫",
+    target_style="写实摄影",
+    target_quality="high"
+)
+print(optimized)
+```
+
+## 最佳实践
+
+### 提示词编写技巧
+
+1. **具体描述**
+   ```python
+   # 好的提示词
+   "一只橘色的长毛波斯猫，蓝色眼睛，坐在红色天鹅绒沙发上，温暖的室内光线"
+   
+   # 避免模糊描述
+   "一只猫"
+   ```
+
+2. **风格指导**
+   ```python
+   # 添加风格描述
+   "水彩画风格，柔和的色彩，艺术插画，高质量，4K分辨率"
+   ```
+
+3. **技术参数**
+   ```python
+   # 包含技术要求
+   "专业摄影，85mm镜头，浅景深，柔和光线，高对比度"
+   ```
+
+### 图像管理和组织
+
+```python
+import os
+import json
+from datetime import datetime
+
+class ImageManager:
+    def __init__(self, storage_path="./generated_images"):
+        self.storage_path = storage_path
+        self.metadata_file = os.path.join(storage_path, "metadata.json")
+        
+        # 创建存储目录
+        os.makedirs(storage_path, exist_ok=True)
+        
+        # 加载元数据
+        self.metadata = self._load_metadata()
+    
+    def _load_metadata(self):
+        """加载图像元数据"""
+        if os.path.exists(self.metadata_file):
+            with open(self.metadata_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    
+    def _save_metadata(self):
+        """保存图像元数据"""
+        with open(self.metadata_file, 'w', encoding='utf-8') as f:
+            json.dump(self.metadata, f, ensure_ascii=False, indent=2)
+    
+    def save_image(self, image_url, prompt, category=None, tags=None):
+        """保存图像并记录元数据"""
+        import requests
+        from urllib.parse import urlparse
+        
+        # 下载图像
+        response = requests.get(image_url)
+        if response.status_code == 200:
+            # 生成文件名
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{timestamp}.png"
+            filepath = os.path.join(self.storage_path, filename)
+            
+            # 保存图像文件
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            # 记录元数据
+            self.metadata[filename] = {
+                "prompt": prompt,
+                "category": category,
+                "tags": tags or [],
+                "created_at": datetime.now().isoformat(),
+                "file_size": len(response.content),
+                "original_url": image_url
+            }
+            
+            self._save_metadata()
+            return filepath
+        
+        return None
+    
+    def search_images(self, keyword=None, category=None, tags=None):
+        """搜索图像"""
+        results = []
+        
+        for filename, metadata in self.metadata.items():
+            match = True
+            
+            if keyword and keyword.lower() not in metadata["prompt"].lower():
+                match = False
+            
+            if category and metadata.get("category") != category:
+                match = False
+            
+            if tags:
+                image_tags = metadata.get("tags", [])
+                if not any(tag in image_tags for tag in tags):
+                    match = False
+            
+            if match:
+                results.append({
+                    "filename": filename,
+                    "filepath": os.path.join(self.storage_path, filename),
+                    **metadata
+                })
+        
+        return results
+    
+    def get_statistics(self):
+        """获取统计信息"""
+        total_images = len(self.metadata)
+        categories = {}
+        tags = {}
+        
+        for metadata in self.metadata.values():
+            # 统计分类
+            category = metadata.get("category", "未分类")
+            categories[category] = categories.get(category, 0) + 1
+            
+            # 统计标签
+            for tag in metadata.get("tags", []):
+                tags[tag] = tags.get(tag, 0) + 1
+        
+        return {
+            "total_images": total_images,
+            "categories": categories,
+            "popular_tags": sorted(tags.items(), key=lambda x: x[1], reverse=True)[:10]
+        }
+
+# 使用示例
+image_manager = ImageManager()
+
+# 生成并保存图像
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="美丽的日落风景",
+    size="1024x1024"
+)
+
+filepath = image_manager.save_image(
+    response.data[0].url,
+    "美丽的日落风景",
+    category="风景",
+    tags=["日落", "自然", "风景"]
+)
+
+print(f"图像已保存到: {filepath}")
+
+# 搜索图像
+results = image_manager.search_images(keyword="日落")
+print(f"找到 {len(results)} 张相关图像")
+```
+
+## 注意事项
+
+### 使用限制
+
+- **生成频率**：避免过于频繁的请求
+- **图像尺寸**：支持的尺寸规格有限
+- **内容限制**：不能生成违法、有害内容
+- **版权问题**：注意避免侵犯他人版权
+
+### 版权和合规
+
+1. **原创性**：生成的图像具有原创性
+2. **商业使用**：确认商业使用的合规性
+3. **肖像权**：避免生成真实人物肖像
+4. **敏感内容**：遵守平台内容政策
+
+### 质量优化建议
+
+1. **提示词优化**：使用具体、详细的描述
+2. **参数调整**：根据需求调整质量和尺寸
+3. **多次尝试**：生成多个版本选择最佳
+4. **后期处理**：必要时进行图像后期优化
+
+<Tip>
+建议在提示词中包含具体的视觉细节、风格指导和质量要求，这样能够生成更符合预期的图像。
+</Tip>
+
+<Warning>
+生成的图像应该遵守相关法律法规和平台政策，避免包含不当内容。商业使用前请确认版权和使用权限。
+</Warning>
