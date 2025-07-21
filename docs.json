@@ -28,16 +28,7 @@
       "defaults": "required"
     },
     "openapi": [
-      "openapi/chat.json",
-      "openapi/embedding.json",
-      "openapi/audio.json",
-      "openapi/image.json",
-      "openapi/video.json",
-      "openapi/tools.json",
-      "openapi/file.json",
-      "openapi/batch.json",
-      "openapi/knowledge.json",
-      "openapi/assistant.json"
+      "openapi/openapi.json"
     ]
   },
   "navigation": {

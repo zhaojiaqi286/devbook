@@ -31,30 +31,13 @@
 
 4. **OPENAPI定义校验**
 
-> OPEN API 接口的定义基于 OPENAPI 3.0.1 规范，在各自模块的json文件中定义，例如： `openapi/chat.json` ，并在 `docs.json` 中添加到 `openapi` 列表里。
+> OPEN API 接口的定义基于 OPENAPI 3.0.1 规范，在 `openapi/openapi.json` 文件中定义。
 
-  校验json是否符合 OPENAPI 3.0.1 规范
+  校验 `openapi.json` 是否符合 OPENAPI 3.0.1 规范
    ```bash
-   mint openapi-check openapi/chat.json
+   mint openapi-check openapi/openapi.json
    ```
 
-  添加到 `docs.json` 
-  ```json
-  {
-    "openapi": [
-      "openapi/chat.json",
-      "openapi/embedding.json",
-      "openapi/audio.json",
-      "openapi/image.json",
-      "openapi/video.json",
-      "openapi/tools.json",
-      "openapi/file.json",
-      "openapi/batch.json",
-      "openapi/knowledge.json",
-      "openapi/assistant.json"
-    ]
-  }
-  ```
 5. **断链校验**
    ```bash
    mint broken-links
@@ -66,95 +49,101 @@
 
 ```
 devbook/
-├── cn/                    # 中文文档
-│   ├── api/              # API 文档
-│   │   ├── agents/       # 智能体相关
-│   │   ├── audio/        # 音频相关
-│   │   ├── chat/         # 聊天对话相关
-│   │   ├── embedding/    # 文本嵌入相关
-│   │   ├── file/         # 文件管理相关
-│   │   ├── image/        # 图像生成相关
-│   │   ├── tools/        # 工具相关
-│   │   └── video/        # 视频生成相关
-│   ├── guide/            # 使用指南
-│   ├── issue/            # 常见问题
-│   └── update/           # 更新日志
-├── en/                    # 英文文档
-│   ├── api/              # API 文档
-│   │   ├── agents/       # 智能体相关
-│   │   ├── audio/        # 音频相关
-│   │   ├── chat/         # 聊天对话相关
-│   │   ├── embedding/    # 文本嵌入相关
-│   │   ├── file/         # 文件管理相关
-│   │   ├── image/        # 图像生成相关
-│   │   ├── tools/        # 工具相关
-│   │   └── video/        # 视频生成相关
-│   ├── guide/            # 使用指南
-│   ├── issue/            # 常见问题
-│   └── update/           # 更新日志
-├── openapi/              # OpenAPI 规范文件
-│   ├── openapi.json      # 完整的 OpenAPI 规范（已废弃，保留兼容性）
-│   ├── chat.json         # 聊天对话 API 规范
-│   ├── embedding.json    # 文本嵌入 API 规范
-│   ├── audio.json        # 音频处理 API 规范
-│   ├── image.json        # 图像生成 API 规范
-│   ├── video.json        # 视频生成 API 规范
-│   ├── file.json         # 文件管理 API 规范
-│   ├── tool.json         # 工具 API 规范
-│   └── assistant.json    # 助手 API 规范
-├── resource/             # 静态资源
-│   ├── favicon.svg
-│   ├── logo_icon.png
-│   └── logo.png
-├── style.css             # 样式文件
-├── docs.json             # 文档配置
-├── LICENSE               # 许可证
-├── CONTRIBUTING.md       # 贡献指南
-└── CODE_OF_CONDUCT.md    # 行为准则
+├── cn/ # 中文文档
+│ ├── api/ # API 文档
+│ │ ├── agents/ # 智能体相关
+│ │ ├── audio/ # 音频相关
+│ │ ├── chat/ # 聊天对话相关
+│ │ ├── embedding/ # 文本嵌入相关
+│ │ ├── file/ # 文件管理相关
+│ │ ├── image/ # 图像生成相关
+│ │ ├── tools/ # 工具相关
+│ │ └── video/ # 视频生成相关
+│ ├── guide/ # 使用指南
+│ ├── issue/ # 常见问题
+│ └── update/ # 更新日志
+├── en/ # 英文文档
+│ ├── api/ # API 文档
+│ │ ├── agents/ # 智能体相关
+│ │ ├── audio/ # 音频相关
+│ │ ├── chat/ # 聊天对话相关
+│ │ ├── embedding/ # 文本嵌入相关
+│ │ ├── file/ # 文件管理相关
+│ │ ├── image/ # 图像生成相关
+│ │ ├── tools/ # 工具相关
+│ │ └── video/ # 视频生成相关
+│ ├── guide/ # 使用指南
+│ ├── issue/ # 常见问题
+│ └── update/ # 更新日志
+├── openapi/ # OpenAPI 规范文件
+│ └── openapi.json # 完整的 OpenAPI 规范（主入口，已模块化合并）
+├── resource/ # 静态资源
+│ ├── favicon.svg
+│ ├── logo_icon.png
+│ └── logo.png
+├── style.css # 样式文件
+├── docs.json # 文档配置
+├── LICENSE # 许可证
+├── CONTRIBUTING.md # 贡献指南
+└── CODE_OF_CONDUCT.md # 行为准则
 ```
 
 ## OpenAPI 规范文件
 
-项目采用模块化的 OpenAPI 规范文件结构，按功能模块拆分为多个 JSON 文件：
+项目采用模块化设计，但当前仅保留合并后的主入口文件 `openapi/openapi.json`，该文件包含所有 API 的完整 OpenAPI 3.0.1 规范定义。
 
-### 模块化文件结构
+### 主要 API 模块与路径
 
-- **chat.json** - 聊天对话相关 API
-  - `/paas/v4/chat/completions` - 聊天完成接口
-  - 支持流式和非流式响应
-  - 包含完整的消息格式和参数定义
+- **聊天对话 API**
+  - `/paas/v4/chat/completions` - 聊天补全
 
-- **embedding.json** - 文本嵌入相关 API
-  - `/paas/v4/embeddings` - 文本嵌入接口
-  - 支持多种模型和向量维度
-  - 兼容 OpenAI Embedding API
+- **文本嵌入 API**
+  - `/paas/v4/embeddings` - 文本嵌入
 
-- **audio.json** - 音频处理相关 API
+- **音频处理 API**
   - `/paas/v4/audio/speech` - 文本转语音
   - `/paas/v4/audio/transcriptions` - 语音转文本
   - `/paas/v4/audio/customization` - 语音定制
 
-- **image.json** - 图像生成相关 API
-  - `/paas/v4/images/generations` - 图像生成接口
-  - 支持多种风格和尺寸
-  - 使用 CogView-3-Plus 模型
+- **图像生成 API**
+  - `/paas/v4/images/generations` - 图像生成
 
-- **video.json** - 视频生成相关 API
-  - `/paas/v4/videos/generations` - 视频生成接口
-  - 支持多种视频生成方式
+- **视频生成 API**
+  - `/paas/v4/videos/generations` - 视频生成
   - `/paas/v4/async-result/{id}` - 异步结果查询
 
-- **file.json** - 文件管理相关 API
-  - `/paas/v4/files` - 文件列表和上传
-  - `/paas/v4/files/{file_id}` - 文件信息获取和删除
+- **文件管理 API**
+  - `/paas/v4/files` - 文件上传与列表
+  - `/paas/v4/files/{file_id}` - 文件信息获取与删除
   - `/paas/v4/files/{file_id}/content` - 文件内容下载
 
-- **tool.json** - 工具相关 API
-  - `/paas/v4/tools/web-search` - 网络搜索工具
+- **工具 API**
+  - `/paas/v4/web_search` - 网络搜索
+  - `/paas/v4/tools` - 综合网络搜索
 
-- **assistant.json** - 助手相关 API
-  - `/paas/v4/assistants` - 助手列表和创建
-  - `/paas/v4/assistants/{assistant_id}` - 助手管理
+- **助手 API**
+  - `/paas/v4/assistant` - 助手对话
+  - `/paas/v4/assistant/list` - 查询助手支持能力
+  - `/paas/v4/assistant/conversation/list` - 查询助手对话统计
+
+- **批处理任务 API**
+  - `/paas/v4/batches` - 创建与列出批处理任务
+  - `/paas/v4/batches/{batch_id}` - 获取批处理任务详情
+  - `/paas/v4/batches/{batch_id}/cancel` - 取消批处理任务
+
+- **知识库 API**
+  - `/knowledge` - 创建与获取知识库列表
+  - `/knowledge/{id}` - 编辑、获取详情、删除知识库
+  - `/knowledge/capacity` - 获取知识库使用量详情
+
+- **知识库文档 API**
+  - `/document/upload_document/{id}` - 向知识库上传文档
+
+- **智能体（Agent）API**
+  - `/v1/agents` - 智能体对话
+  - `/v1/agents/async-result` - 查询智能体异步结果
+
+> 详细字段、参数和响应格式请参考 [openapi/openapi.json](openapi/openapi.json) 文件或使用 Swagger 编辑器进行可视化浏览。
 
 ## 贡献指南
 
