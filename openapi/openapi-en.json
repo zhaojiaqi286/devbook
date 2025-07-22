@@ -60,6 +60,10 @@
       "description": "Knowledge base endpoints"
     },
     {
+      "name": "QingLiu Agent API",
+      "description": "QingLiu Agent API"
+    },
+    {
       "name": "Realtime API",
       "description": "Realtime endpoints"
     },
@@ -1615,6 +1619,312 @@
             }
           }
         }
+      }
+    },
+    "/llm-application/open/v2/application/{app_id}/variables": {
+      "get": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Get agent (application) input parameters",
+        "description": "Get the list of input parameters for the specified agent (application).",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "description": "Agent (application) id. Get it from: My Agents list page.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationVariablesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/v2/application/file_upload": {
+      "post": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "File upload",
+        "description": "Upload files to the agent (application), returns upload result synchronously. You need to request the file parsing status API to get the parsing result.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "app_id": { "type": "string", "description": "Agent (application) id" },
+                  "upload_unit_id": { "type": "string", "description": "Upload file component id. Required for text, not for dialog temporary files." },
+                  "files": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "binary" },
+                    "description": "File array"
+                  },
+                  "conversation_id": { "type": "string", "description": "For dialog-type apps uploading temporary files, you must first create a new conversation and assign the conversation ID to this parameter (required for dialog-type, not for text)." },
+                  "file_type": { "type": "integer", "description": "File type: 1: excel, 2: document, 3: audio 4: image 4: video" }
+                },
+                "required": ["app_id", "files"]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationFileUploadResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/v2/application/file_stat": {
+      "post": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Get file parsing status",
+        "description": "Get the parsing status of specified files.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationFileStatRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApplicationFileStatResponse" }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/v2/application/{app_id}/conversation": {
+      "post": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Create new conversation",
+        "description": "Create a new conversation for the specified agent (application) and return the conversation ID.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "description": "Agent (application) id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationConversationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/v3/application/invoke": {
+      "post": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Inference API",
+        "description": "Inference API for dialog or text applications, supports both synchronous and streaming (SSE) calls.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationInvokeRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApplicationInvokeResponse" }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/v2/application/slice_info": {
+      "post": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Knowledge base slice reference position info",
+        "description": "Get the reference position info of knowledge base slices.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApplicationSliceInfoRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApplicationSliceInfoResponse" }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
+      }
+    },
+    "/llm-application/open/history_session_record/{app_id}/{conversation_id}": {
+      "get": {
+        "tags": [
+          "QingLiu Agent API"
+        ],
+        "summary": "Recommended questions API",
+        "description": "Get the list of recommended questions.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "description": "Application id",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "description": "Conversation id",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HistorySessionRecordResponse" }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "security": [
+          { "bearerAuth": [] }
+        ]
       }
     }
   },
@@ -4396,6 +4706,372 @@
             "type": "string"
           }
         }
+      },
+      "KeyValuePair": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Variable id" },
+          "name": { "type": "string", "description": "Variable name" },
+          "type": { "type": "string", "description": "Variable type. Input: text input, selection_list: dropdown, upload_file: file upload, upload_image: image upload, upload_video: video upload, upload_audio: audio upload" },
+          "tips": { "type": "string", "description": "Tips" },
+          "allowed_values": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Dropdown options, present when type = selection_list"
+          },
+          "input_template": { "$ref": "#/components/schemas/InputTemplate" }
+        },
+        "required": ["id", "name", "type", "tips", "allowed_values", "input_template"]
+      },
+      "InputTemplate": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "array",
+            "items": {},
+            "description": "Options"
+          }
+        },
+        "required": ["options"]
+      },
+      "ApplicationVariablesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KeyValuePair" },
+            "description": "Variable list"
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "ApplicationFileUploadSuccessInfo": {
+        "type": "object",
+        "properties": {
+          "file_id": { "type": "string", "description": "File id" },
+          "file_name": { "type": "string", "description": "File name" }
+        },
+        "required": ["file_id", "file_name"]
+      },
+      "ApplicationFileUploadFailInfo": {
+        "type": "object",
+        "properties": {
+          "file_name": { "type": "string", "description": "File name" },
+          "fail_reason": { "type": "string", "description": "Fail reason" }
+        },
+        "required": ["file_name", "fail_reason"]
+      },
+      "ApplicationFileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "success_info": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ApplicationFileUploadSuccessInfo" },
+                "description": "Successfully uploaded files"
+              },
+              "fail_info": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ApplicationFileUploadFailInfo" },
+                "description": "Failed files"
+              }
+            },
+            "required": ["success_info", "fail_info"]
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "ApplicationConversationResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "conversation_id": { "type": "string", "description": "Conversation id" }
+            },
+            "required": ["conversation_id"]
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "ApplicationInvokeRequest": {
+        "type": "object",
+        "properties": {
+          "app_id": { "type": "string", "description": "Application id" },
+          "conversation_id": { "type": "string", "description": "Conversation id, if not provided a new conversation will be created" },
+          "third_request_id": { "type": "string", "description": "Third-party request id (for plugin calls, used for traceability)" },
+          "stream": { "type": "boolean", "description": "Default true, false for synchronous call" },
+          "messages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationInvokeMessage" },
+            "description": "User input list"
+          },
+          "role": { "type": "string", "description": "For dialog apps: user (user input), assistant (model output)" },
+          "send_log_event": { "type": "boolean", "description": "Whether to push process logs in real time, default false" }
+        },
+        "required": ["app_id", "messages"]
+      },
+      "ApplicationInvokeMessage": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string", "description": "Role user/assistant" },
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationInvokeContent" },
+            "description": "Content list"
+          }
+        },
+        "required": ["content"]
+      },
+      "ApplicationInvokeContent": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "description": "Content type input/upload_file/upload_image/upload_video/selection_list" },
+          "value": { "type": "string", "description": "User input / dropdown option / file ID / image or video url" },
+          "key": { "type": "string", "description": "Field name (required for text app requests)" }
+        },
+        "required": ["type", "value"]
+      },
+      "ApplicationInvokeResponse": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string", "description": "Request id" },
+          "conversation_id": { "type": "string", "description": "Conversation id" },
+          "app_id": { "type": "string", "description": "Application id" },
+          "choices": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationInvokeChoice" },
+            "description": "Incremental return information"
+          },
+          "usage": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationInvokeUsage" },
+            "description": "Token usage statistics for this call"
+          },
+          "model": { "type": "string", "description": "Inference model" },
+          "error_msg": { "type": "string", "description": "Error message" }
+        }
+      },
+      "ApplicationInvokeChoice": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer", "description": "Result index" },
+          "finish_reason": { "type": "string", "description": "stop: normal end, error: failed" },
+          "delta": { "$ref": "#/components/schemas/ApplicationInvokeDelta" },
+          "messages": { "$ref": "#/components/schemas/ApplicationInvokeMessages" }
+        }
+      },
+      "ApplicationInvokeDelta": {
+        "type": "object",
+        "properties": {
+          "content": { "$ref": "#/components/schemas/MessageData" },
+          "event": { "$ref": "#/components/schemas/ApplicationInvokeEvent" },
+          "tool_calls": { "$ref": "#/components/schemas/ToolCallsData" }
+        }
+      },
+      "ApplicationInvokeMessages": {
+        "type": "object",
+        "properties": {
+          "content": { "$ref": "#/components/schemas/MessageData" },
+          "event": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationInvokeEvent" }
+          }
+        }
+      },
+      "ApplicationInvokeEvent": {
+        "type": "object",
+        "properties": {
+          "node_id": { "type": "string", "description": "Node id" },
+          "node_name": { "type": "string", "description": "Node name" },
+          "type": { "type": "string", "description": "Event type node_processing/tool_processing/tool_finish/node_finish" },
+          "content": { "type": "string", "description": "Input/output content" },
+          "time": { "type": "integer", "description": "Milliseconds" },
+          "tool_calls": { "$ref": "#/components/schemas/ToolCallsData" }
+        }
+      },
+      "ToolCallsData": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "description": "function/retrieval/web_search" },
+          "tool_calls_data": { "type": "object", "description": "Tool message/log body" }
+        }
+      },
+      "MessageData": {
+        "type": "object",
+        "properties": {
+          "msg": { "type": "string", "description": "Inference content/text/image/video/tool etc." },
+          "type": { "type": "string", "description": "text/image/video/all_tools" },
+          "code": { "type": "string", "description": "Code (for all_tools)" },
+          "file": { "type": "string", "description": "File URL (for all_tools)" },
+          "url": { "type": "string", "description": "Image/video url" },
+          "coverUrl": { "type": "string", "description": "Video cover url" }
+        }
+      },
+      "ApplicationInvokeUsage": {
+        "type": "object",
+        "properties": {
+          "model": { "type": "string", "description": "Inference model" },
+          "nodeName": { "type": "string", "description": "Node name" },
+          "inputTokenCount": { "type": "integer", "description": "Input token count" },
+          "outputTokenCount": { "type": "integer", "description": "Output token count" },
+          "totalTokenCount": { "type": "integer", "description": "Total token count" }
+        }
+      },
+      "ApplicationSliceInfoRequest": {
+        "type": "object",
+        "properties": {
+          "request_id": { "type": "string", "description": "ID returned by the create conversation or text request interface" },
+          "node_id": { "type": "string", "description": "Node id" }
+        },
+        "required": ["request_id", "node_id"]
+      },
+      "ApplicationSliceInfoResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "document_slices": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/DocumentSlices" },
+                "description": "Knowledge slice info"
+              },
+              "has_old_document": { "type": "boolean", "description": "Whether there are historical documents without slice position info" }
+            },
+            "required": ["document_slices", "has_old_document"]
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "DocumentSlices": {
+        "type": "object",
+        "properties": {
+          "document": { "$ref": "#/components/schemas/DocumentInfo" },
+          "slice_info": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SliceInfo" },
+            "description": "Slice info"
+          },
+          "hide_positions": { "type": "boolean", "description": "Whether there are historical document slices without position info" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SliceImage" },
+            "description": "Image list"
+          }
+        },
+        "required": ["document", "slice_info", "hide_positions"]
+      },
+      "SliceImage": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string", "description": "Image name" },
+          "cos_url": { "type": "string", "description": "Image url" }
+        },
+        "required": ["text", "cos_url"]
+      },
+      "DocumentInfo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Knowledge unique id" },
+          "name": { "type": "string", "description": "Knowledge name" },
+          "url": { "type": "string", "description": "Knowledge url" },
+          "dtype": { "type": "integer", "description": "Knowledge type" }
+        },
+        "required": ["id", "name", "url", "dtype"]
+      },
+      "SliceInfo": {
+        "type": "object",
+        "properties": {
+          "document_id": { "type": "string", "description": "Knowledge unique id" },
+          "position": { "$ref": "#/components/schemas/SlicePosition" },
+          "line": { "type": "integer", "description": "Sheet row number" },
+          "sheet_name": { "type": "string", "description": "Sheet name" },
+          "text": { "type": "string", "description": "Slice content" }
+        },
+        "required": ["document_id", "text"]
+      },
+      "SlicePosition": {
+        "type": "object",
+        "properties": {
+          "x0": { "type": "number", "format": "float", "description": "Distance from left to row left" },
+          "x1": { "type": "number", "format": "float", "description": "Distance from character top to top" },
+          "top": { "type": "number", "format": "float", "description": "Distance from character top to top" },
+          "bottom": { "type": "number", "format": "float", "description": "Distance from character bottom to top" },
+          "page": { "type": "integer", "description": "Page number" },
+          "height": { "type": "number", "format": "float", "description": "Page height" },
+          "width": { "type": "number", "format": "float", "description": "Page width" }
+        },
+        "required": ["x0", "x1", "top", "bottom", "page", "height", "width"]
+      },
+      "HistorySessionRecordResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "problems": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Recommended questions list"
+              }
+            },
+            "required": ["problems"]
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "ApplicationFileStatRequest": {
+        "type": "object",
+        "properties": {
+          "app_id": { "type": "string", "description": "Agent (application) id" },
+          "file_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "File id list"
+          }
+        },
+        "required": ["app_id", "file_ids"]
+      },
+      "ApplicationFileStatResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApplicationFileStatItem" },
+            "description": "File parsing status list"
+          },
+          "code": { "type": "integer", "description": "Response code, 200 means success" },
+          "message": { "type": "string", "description": "Response message" },
+          "timestamp": { "type": "integer", "description": "Response timestamp" }
+        },
+        "required": ["data", "code", "message", "timestamp"]
+      },
+      "ApplicationFileStatItem": {
+        "type": "object",
+        "properties": {
+          "file_id": { "type": "string", "description": "File id" },
+          "code": { "type": "integer", "description": "File parsing status code" },
+          "msg": { "type": "string", "description": "Description" }
+        },
+        "required": ["file_id", "code", "msg"]
       }
     },
     "securitySchemes": {
