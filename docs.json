@@ -17,19 +17,10 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": [
-        "curl",
-        "python",
-        "javascript",
-        "java",
-        "go",
-        "php"
-      ],
+      "languages": ["curl", "python", "javascript", "java", "go", "php"],
       "defaults": "required"
     },
-    "openapi": [
-      "openapi/openapi.json"
-    ]
+    "openapi": ["openapi/openapi.json"]
   },
   "navigation": {
     "versions": [
@@ -82,9 +73,7 @@
                   },
                   {
                     "group": "图像生成模型",
-                    "pages": [
-                      "cn/guide/models/image-generation/cogview-4"
-                    ]
+                    "pages": ["cn/guide/models/image-generation/cogview-4"]
                   },
                   {
                     "group": "视频生成模型",
@@ -138,15 +127,11 @@
               },
               {
                 "group": "Python工具",
-                "pages": [
-                  "cn/guide/python-tools/introduction"
-                ]
+                "pages": ["cn/guide/python-tools/introduction"]
               },
               {
                 "group": "Java工具",
-                "pages": [
-                  "cn/guide/java-tools/introduction"
-                ]
+                "pages": ["cn/guide/java-tools/introduction"]
               }
             ]
           },
@@ -168,14 +153,12 @@
           },
           {
             "tab": "API 文档",
-            "openapi": "openapi/openapi.json"
+            "openapi": "openapi/openapi.json",
+            "asyncapi": "asyncapi/asyncapi.json"
           },
           {
             "tab": "更新日志",
-            "pages": [
-              "cn/update/new-releases",
-              "cn/update/feature-updates"
-            ]
+            "pages": ["cn/update/new-releases", "cn/update/feature-updates"]
           },
           {
             "tab": "条款与协议",
@@ -203,23 +186,15 @@
               },
               {
                 "group": "API 调用问题",
-                "pages": [
-                  "cn/faq/api-issues",
-                  "cn/faq/batch-api-issues"
-                ]
+                "pages": ["cn/faq/api-issues", "cn/faq/batch-api-issues"]
               },
               {
                 "group": "财务问题",
-                "pages": [
-                  "cn/faq/fee-issues",
-                  "cn/faq/invoice-issues"
-                ]
+                "pages": ["cn/faq/fee-issues", "cn/faq/invoice-issues"]
               },
               {
                 "group": "开源模型问题",
-                "pages": [
-                  "cn/faq/business-authorization"
-                ]
+                "pages": ["cn/faq/business-authorization"]
               }
             ]
           }
@@ -240,15 +215,11 @@
               },
               {
                 "group": "language models",
-                "pages": [
-                  "en/guide/llm/glm-4-32b-0414-128k"
-                ]
+                "pages": ["en/guide/llm/glm-4-32b-0414-128k"]
               },
               {
                 "group": "Tools",
-                "pages": [
-                  "en/guide/tools/web-search"
-                ]
+                "pages": ["en/guide/tools/web-search"]
               },
               {
                 "group": "Video Generation",
@@ -262,7 +233,8 @@
           },
           {
             "tab": "API References",
-            "openapi": "openapi/openapi-en.json"
+            "openapi": "openapi/openapi-en.json",
+            "asyncapi": "asyncapi/asyncapi-en.json"
           },
           {
             "tab": "FAQ",
@@ -276,23 +248,15 @@
               },
               {
                 "group": "API Issues",
-                "pages": [
-                  "en/faq/api-issues",
-                  "en/faq/batch-api-issues"
-                ]
+                "pages": ["en/faq/api-issues", "en/faq/batch-api-issues"]
               },
               {
                 "group": "Financial Issues",
-                "pages": [
-                  "en/faq/fee-issues",
-                  "en/faq/invoice-issues"
-                ]
+                "pages": ["en/faq/fee-issues", "en/faq/invoice-issues"]
               },
               {
                 "group": "Open Source Model Issues",
-                "pages": [
-                  "en/faq/business-authorization"
-                ]
+                "pages": ["en/faq/business-authorization"]
               }
             ]
           }

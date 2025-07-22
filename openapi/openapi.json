@@ -64,10 +64,6 @@
       "description": "Knowledge API"
     },
     {
-      "name": "实时 API",
-      "description": "Realtime API"
-    },
-    {
       "name": "批处理 API",
       "description": "Batch API"
     }
@@ -2944,9 +2940,7 @@
         "properties": {
           "model": {
             "type": "string",
-             "enum": [
-              "cogtts"
-            ],
+            "enum": ["cogtts"],
             "default": "cogtts",
             "description": "要使用的TTS模型"
           },
@@ -2957,9 +2951,7 @@
           },
           "voice": {
             "type": "string",
-            "enum": [
-              "tongtong"
-            ],
+            "enum": ["tongtong"],
             "default": "tongtong",
             "description": "用于生成音频的语音"
           },
