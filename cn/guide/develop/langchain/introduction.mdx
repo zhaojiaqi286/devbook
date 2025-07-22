@@ -1,0 +1,867 @@
+---
+title: "LangChain 集成"
+description: "使用 LangChain 框架调用智谱AI模型"
+---
+
+<Info>
+智谱AI 完美集成 LangChain 框架，让您可以使用 LangChain 的强大功能来构建复杂的AI应用，包括链式调用、代理、记忆管理等高级特性。
+</Info>
+
+## 什么是 LangChain 集成
+
+LangChain 是一个用于开发由语言模型驱动的应用程序的框架。智谱AI与LangChain的集成让您能够：
+
+- 使用LangChain的链式调用功能
+- 构建智能代理和工具调用
+- 实现复杂的对话记忆管理
+- 集成向量数据库和检索系统
+- 构建RAG（检索增强生成）应用
+
+### 核心优势
+
+<CardGroup cols={2}>
+  <Card title="框架生态" icon="puzzle-piece">
+    接入LangChain丰富的生态系统和工具链
+  </Card>
+  <Card title="快速开发" icon="rocket">
+    使用预构建的组件快速构建复杂AI应用
+  </Card>
+  <Card title="模块化设计" icon="cubes">
+    灵活组合不同的组件满足各种需求
+  </Card>
+  <Card title="社区支持" icon="users">
+    享受活跃的开源社区和丰富的资源
+  </Card>
+</CardGroup>
+
+## 环境要求
+
+<mcreference link="https://bigmodel.cn/dev/api/thirdparty-frame/langchain-sdk" index="3">3</mcreference>
+
+<CardGroup cols={2}>
+  <Card title="Python 版本" icon="python">
+    Python 3.8 或更高版本
+  </Card>
+  <Card title="LangChain 版本" icon="package">
+    langchain_community 版本在 0.0.32 以上
+  </Card>
+</CardGroup>
+
+<Warning>
+请确保 langchain_community 的版本在 0.0.32 以上，以获得最佳的兼容性和功能支持。
+</Warning>
+
+## 安装依赖
+
+### 基础安装
+
+```bash
+# 安装 LangChain 和相关依赖
+pip install langchain langchainhub httpx_sse
+
+# 安装 OpenAI 兼容包
+pip install langchain-openai
+
+# 可选：安装社区包获得更多功能
+pip install langchain-community
+```
+
+### 完整安装
+
+```bash
+# 一次性安装所有相关包
+pip install langchain langchain-openai langchain-community langchainhub httpx_sse
+
+# 验证安装
+python -c "import langchain; print(langchain.__version__)"
+```
+
+## 快速开始
+
+### 获取 API Key
+
+1. 访问 [智谱AI开放平台](https://bigmodel.cn)
+2. 注册并登录您的账户
+3. 在控制台中创建 API Key
+4. 复制您的 API Key 以供使用
+
+<Tip>
+建议将 API Key 设置为环境变量：`export ZHIPUAI_API_KEY=your-api-key`
+</Tip>
+
+### 基础配置
+
+<mcreference link="https://bigmodel.cn/dev/api/thirdparty-frame/langchain-sdk" index="3">3</mcreference>
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+
+# 创建智谱AI LLM实例
+llm = ChatOpenAI(
+    temperature=0.95,
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 或者使用环境变量
+llm = ChatOpenAI(
+    temperature=0.95,
+    model="glm-4-air-250414",
+    openai_api_key=os.getenv("ZHIPUAI_API_KEY"),
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+```
+
+## 基础使用示例
+
+### 简单对话
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage, SystemMessage
+
+# 创建LLM实例
+llm = ChatOpenAI(
+    temperature=0.7,
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 创建消息
+messages = [
+    SystemMessage(content="你是一个有用的AI助手"),
+    HumanMessage(content="请介绍一下人工智能的发展历程")
+]
+
+# 调用模型
+response = llm(messages)
+print(response.content)
+```
+
+### 使用提示模板
+
+```python
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
+# 创建LLM
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 创建提示模板
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是一个专业的{domain}专家"),
+    ("human", "请解释一下{topic}的概念和应用")
+])
+
+# 创建链
+chain = prompt | llm
+
+# 调用链
+response = chain.invoke({
+    "domain": "机器学习",
+    "topic": "深度学习"
+})
+
+print(response.content)
+```
+
+### 对话记忆管理
+
+<mcreference link="https://bigmodel.cn/dev/api/thirdparty-frame/langchain-sdk" index="3">3</mcreference>
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.prompts import (
+    ChatPromptTemplate,
+    MessagesPlaceholder,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
+
+# 创建LLM
+llm = ChatOpenAI(
+    temperature=0.95,
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 创建提示模板
+prompt = ChatPromptTemplate(
+    messages=[
+        SystemMessagePromptTemplate.from_template(
+            "You are a nice chatbot having a conversation with a human."
+        ),
+        MessagesPlaceholder(variable_name="chat_history"),
+        HumanMessagePromptTemplate.from_template("{question}")
+    ]
+)
+
+# 创建记忆
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+# 创建对话链
+conversation = LLMChain(
+    llm=llm,
+    prompt=prompt,
+    verbose=True,
+    memory=memory
+)
+
+# 进行对话
+response1 = conversation.invoke({"question": "tell me a joke"})
+print("AI:", response1['text'])
+
+response2 = conversation.invoke({"question": "tell me another one"})
+print("AI:", response2['text'])
+```
+
+## 高级功能
+
+### 智能代理 (Agent)
+
+<mcreference link="https://bigmodel.cn/dev/api/thirdparty-frame/langchain-sdk" index="3">3</mcreference>
+
+```python
+import os
+from langchain import hub
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_openai import ChatOpenAI
+
+# 设置搜索工具API密钥
+os.environ["TAVILY_API_KEY"] = "your-tavily-api-key"
+
+# 创建LLM
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 创建工具
+tools = [TavilySearchResults(max_results=2)]
+
+# 获取提示模板
+prompt = hub.pull("hwchase17/react")
+
+# 创建代理
+agent = create_react_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+# 执行任务
+result = agent_executor.invoke({"input": "what is LangChain?"})
+print(result['output'])
+```
+
+### 自定义工具
+
+```python
+from langchain.tools import tool
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain import hub
+from langchain_openai import ChatOpenAI
+import requests
+
+@tool
+def get_weather(city: str) -> str:
+    """获取指定城市的天气信息"""
+    # 这里应该调用真实的天气API
+    # 示例返回
+    return f"{city}的天气：晴天，温度25°C，湿度60%"
+
+@tool
+def calculate(expression: str) -> str:
+    """计算数学表达式"""
+    try:
+        result = eval(expression)
+        return f"计算结果：{expression} = {result}"
+    except Exception as e:
+        return f"计算错误：{str(e)}"
+
+# 创建LLM
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 工具列表
+tools = [get_weather, calculate]
+
+# 创建代理
+prompt = hub.pull("hwchase17/react")
+agent = create_react_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+# 使用代理
+result = agent_executor.invoke({"input": "北京今天天气怎么样？然后帮我计算 25 * 4 + 10"})
+print(result['output'])
+```
+
+### RAG (检索增强生成)
+
+```python
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain_openai import ChatOpenAI
+
+# 创建LLM
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+# 加载文档
+loader = TextLoader("your_document.txt")
+documents = loader.load()
+
+# 分割文档
+text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+texts = text_splitter.split_documents(documents)
+
+# 创建嵌入（这里使用OpenAI的嵌入，您也可以使用智谱AI的嵌入）
+embeddings = OpenAIEmbeddings(
+    openai_api_key="your-openai-api-key"  # 或使用智谱AI的嵌入服务
+)
+
+# 创建向量存储
+vectorstore = FAISS.from_documents(texts, embeddings)
+
+# 创建检索QA链
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",
+    retriever=vectorstore.as_retriever(),
+    return_source_documents=True
+)
+
+# 查询
+query = "文档中提到的主要观点是什么？"
+result = qa_chain({"query": query})
+
+print("答案:", result['result'])
+print("来源文档:", len(result['source_documents']))
+```
+
+### 流式输出
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.schema import HumanMessage
+
+# 创建带流式输出的LLM
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()]
+)
+
+# 发送消息（输出会实时流式显示）
+response = llm([HumanMessage(content="写一首关于春天的诗")])
+```
+
+## 支持的模型
+
+### 语言模型配置
+
+```python
+# 不同模型的配置示例
+models_config = {
+    "glm-4-plus": {
+        "model": "glm-4-plus",
+        "temperature": 0.7,
+        "max_tokens": 4000,
+        "description": "最强大的语言模型，适合复杂任务"
+    },
+    "glm-4-air": {
+        "model": "glm-4-air-250414",
+        "temperature": 0.8,
+        "max_tokens": 2000,
+        "description": "平衡性能和成本的通用模型"
+    },
+    "glm-4-flash": {
+        "model": "glm-4-flash",
+        "temperature": 0.7,
+        "max_tokens": 1000,
+        "description": "快速响应的轻量级模型"
+    }
+}
+
+def create_llm(model_name: str):
+    """根据模型名称创建LLM实例"""
+    config = models_config.get(model_name)
+    if not config:
+        raise ValueError(f"不支持的模型: {model_name}")
+    
+    return ChatOpenAI(
+        model=config["model"],
+        temperature=config["temperature"],
+        max_tokens=config["max_tokens"],
+        openai_api_key="your-zhipuai-api-key",
+        openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+    )
+
+# 使用不同模型
+fast_llm = create_llm("glm-4-flash")  # 用于简单任务
+strong_llm = create_llm("glm-4-plus")  # 用于复杂任务
+```
+
+## 实用工具类
+
+### LangChain 智谱AI 包装器
+
+```python
+from typing import Optional, List, Dict, Any
+from langchain_openai import ChatOpenAI
+from langchain.schema import BaseMessage
+from langchain.callbacks.manager import CallbackManagerForLLMRun
+
+class ZhipuAILLM:
+    """智谱AI LangChain 包装器"""
+    
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "glm-4-air-250414",
+        temperature: float = 0.7,
+        max_tokens: Optional[int] = None,
+        **kwargs
+    ):
+        self.llm = ChatOpenAI(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            openai_api_key=api_key,
+            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+            **kwargs
+        )
+    
+    def chat(self, messages: List[BaseMessage]) -> str:
+        """简单聊天接口"""
+        response = self.llm(messages)
+        return response.content
+    
+    def generate_text(self, prompt: str, **kwargs) -> str:
+        """文本生成接口"""
+        from langchain.schema import HumanMessage
+        message = HumanMessage(content=prompt)
+        return self.chat([message])
+    
+    def batch_generate(self, prompts: List[str]) -> List[str]:
+        """批量生成"""
+        from langchain.schema import HumanMessage
+        messages_list = [[HumanMessage(content=prompt)] for prompt in prompts]
+        responses = self.llm.batch(messages_list)
+        return [response.content for response in responses]
+
+# 使用示例
+zhipu_llm = ZhipuAILLM(
+    api_key="your-zhipuai-api-key",
+    model="glm-4-air-250414",
+    temperature=0.8
+)
+
+# 简单对话
+response = zhipu_llm.generate_text("请介绍一下LangChain框架")
+print(response)
+
+# 批量生成
+prompts = [
+    "什么是机器学习？",
+    "什么是深度学习？",
+    "什么是自然语言处理？"
+]
+responses = zhipu_llm.batch_generate(prompts)
+for prompt, response in zip(prompts, responses):
+    print(f"Q: {prompt}")
+    print(f"A: {response}\n")
+```
+
+### 对话管理器
+
+```python
+from typing import List, Dict, Optional
+from langchain_openai import ChatOpenAI
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.schema import HumanMessage, AIMessage, SystemMessage
+
+class ConversationManager:
+    """对话管理器"""
+    
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "glm-4-air-250414",
+        system_prompt: str = "你是一个有用的AI助手",
+        memory_window: int = 10
+    ):
+        self.llm = ChatOpenAI(
+            model=model,
+            openai_api_key=api_key,
+            openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+        )
+        
+        self.memory = ConversationBufferWindowMemory(
+            k=memory_window,
+            return_messages=True
+        )
+        
+        self.system_prompt = system_prompt
+        self.conversation_history = [SystemMessage(content=system_prompt)]
+    
+    def chat(self, user_input: str) -> str:
+        """进行对话"""
+        # 添加用户消息
+        user_message = HumanMessage(content=user_input)
+        self.conversation_history.append(user_message)
+        
+        # 获取AI回复
+        response = self.llm(self.conversation_history)
+        
+        # 添加AI回复到历史
+        ai_message = AIMessage(content=response.content)
+        self.conversation_history.append(ai_message)
+        
+        # 更新记忆
+        self.memory.save_context(
+            {"input": user_input},
+            {"output": response.content}
+        )
+        
+        return response.content
+    
+    def get_conversation_summary(self) -> str:
+        """获取对话摘要"""
+        if len(self.conversation_history) <= 1:
+            return "暂无对话记录"
+        
+        summary_prompt = "请总结以下对话的主要内容：\n\n"
+        for msg in self.conversation_history[1:]:  # 跳过系统消息
+            role = "用户" if isinstance(msg, HumanMessage) else "助手"
+            summary_prompt += f"{role}: {msg.content}\n"
+        
+        summary_prompt += "\n请用简洁的语言总结对话要点："
+        
+        summary_response = self.llm([HumanMessage(content=summary_prompt)])
+        return summary_response.content
+    
+    def clear_history(self):
+        """清除对话历史"""
+        self.conversation_history = [SystemMessage(content=self.system_prompt)]
+        self.memory.clear()
+    
+    def export_conversation(self) -> List[Dict[str, str]]:
+        """导出对话记录"""
+        conversation = []
+        for msg in self.conversation_history:
+            if isinstance(msg, SystemMessage):
+                role = "system"
+            elif isinstance(msg, HumanMessage):
+                role = "user"
+            else:
+                role = "assistant"
+            
+            conversation.append({
+                "role": role,
+                "content": msg.content
+            })
+        
+        return conversation
+
+# 使用示例
+manager = ConversationManager(
+    api_key="your-zhipuai-api-key",
+    system_prompt="你是一个专业的编程助手",
+    memory_window=20
+)
+
+# 进行对话
+print(manager.chat("你好，我想学习Python编程"))
+print(manager.chat("从哪里开始比较好？"))
+print(manager.chat("能推荐一些学习资源吗？"))
+
+# 获取对话摘要
+print("\n对话摘要:")
+print(manager.get_conversation_summary())
+
+# 导出对话
+conversation = manager.export_conversation()
+print(f"\n对话记录共 {len(conversation)} 条消息")
+```
+
+## 错误处理和最佳实践
+
+### 错误处理
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+import time
+import random
+from typing import Optional
+
+class RobustZhipuAILLM:
+    """带错误处理的智谱AI LLM"""
+    
+    def __init__(self, api_key: str, model: str = "glm-4-air-250414"):
+        self.api_key = api_key
+        self.model = model
+        self.llm = self._create_llm()
+    
+    def _create_llm(self):
+        """创建LLM实例"""
+        return ChatOpenAI(
+            model=self.model,
+            openai_api_key=self.api_key,
+            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+            timeout=30,
+            max_retries=3
+        )
+    
+    def chat_with_retry(
+        self,
+        messages: list,
+        max_retries: int = 3,
+        base_delay: float = 1.0
+    ) -> Optional[str]:
+        """带重试机制的聊天"""
+        for attempt in range(max_retries):
+            try:
+                response = self.llm(messages)
+                return response.content
+                
+            except Exception as e:
+                error_type = type(e).__name__
+                print(f"尝试 {attempt + 1}/{max_retries} 失败: {error_type} - {str(e)}")
+                
+                if attempt < max_retries - 1:
+                    # 指数退避
+                    delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+                    print(f"等待 {delay:.2f} 秒后重试...")
+                    time.sleep(delay)
+                else:
+                    print("所有重试都失败了")
+                    return None
+        
+        return None
+    
+    def safe_generate(self, prompt: str) -> str:
+        """安全的文本生成"""
+        messages = [HumanMessage(content=prompt)]
+        result = self.chat_with_retry(messages)
+        
+        if result is None:
+            return "抱歉，服务暂时不可用，请稍后再试。"
+        
+        return result
+
+# 使用示例
+robust_llm = RobustZhipuAILLM("your-zhipuai-api-key")
+response = robust_llm.safe_generate("请介绍一下人工智能")
+print(response)
+```
+
+### 性能优化
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.cache import InMemoryCache
+from langchain.globals import set_llm_cache
+import asyncio
+from typing import List
+
+# 启用缓存
+set_llm_cache(InMemoryCache())
+
+class OptimizedZhipuAILLM:
+    """优化的智谱AI LLM"""
+    
+    def __init__(self, api_key: str):
+        self.llm = ChatOpenAI(
+            model="glm-4-air-250414",
+            openai_api_key=api_key,
+            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+            cache=True,  # 启用缓存
+            max_tokens=1000,  # 限制输出长度
+            temperature=0.7
+        )
+    
+    async def async_generate(self, prompt: str) -> str:
+        """异步生成"""
+        from langchain.schema import HumanMessage
+        message = HumanMessage(content=prompt)
+        response = await self.llm.agenerate([[message]])
+        return response.generations[0][0].text
+    
+    async def batch_async_generate(self, prompts: List[str]) -> List[str]:
+        """批量异步生成"""
+        tasks = [self.async_generate(prompt) for prompt in prompts]
+        results = await asyncio.gather(*tasks)
+        return results
+    
+    def batch_generate_optimized(self, prompts: List[str]) -> List[str]:
+        """优化的批量生成"""
+        from langchain.schema import HumanMessage
+        
+        # 使用LangChain的批量处理
+        messages_list = [[HumanMessage(content=prompt)] for prompt in prompts]
+        responses = self.llm.batch(messages_list)
+        return [response.content for response in responses]
+
+# 使用示例
+optimized_llm = OptimizedZhipuAILLM("your-zhipuai-api-key")
+
+# 同步批量生成
+prompts = ["什么是AI？", "什么是ML？", "什么是DL？"]
+results = optimized_llm.batch_generate_optimized(prompts)
+for prompt, result in zip(prompts, results):
+    print(f"Q: {prompt}")
+    print(f"A: {result}\n")
+
+# 异步批量生成
+async def async_example():
+    results = await optimized_llm.batch_async_generate(prompts)
+    for prompt, result in zip(prompts, results):
+        print(f"Q: {prompt}")
+        print(f"A: {result}\n")
+
+# asyncio.run(async_example())
+```
+
+## 最佳实践
+
+<CardGroup cols={2}>
+  <Card title="性能优化" icon="gauge-high">
+    - 启用LangChain缓存机制
+    - 使用批量处理减少API调用
+    - 合理设置max_tokens限制
+    - 使用异步处理提高并发性能
+  </Card>
+  <Card title="错误处理" icon="exclamation-triangle">
+    - 实施重试机制和指数退避
+    - 设置合理的超时时间
+    - 记录详细的错误日志
+    - 提供降级方案
+  </Card>
+  <Card title="内存管理" icon="memory">
+    - 使用ConversationBufferWindowMemory限制历史长度
+    - 定期清理不必要的对话历史
+    - 监控内存使用情况
+    - 实施对话摘要机制
+  </Card>
+  <Card title="安全性" icon="shield">
+    - 使用环境变量存储API密钥
+    - 实施输入验证和过滤
+    - 监控API使用量和成本
+    - 定期轮换API密钥
+  </Card>
+</CardGroup>
+
+## 常见问题
+
+### Q: 如何处理长对话历史？
+
+```python
+from langchain.memory import ConversationSummaryBufferMemory
+from langchain_openai import ChatOpenAI
+
+# 使用摘要缓冲记忆
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
+
+memory = ConversationSummaryBufferMemory(
+    llm=llm,
+    max_token_limit=1000,  # 当历史超过1000 tokens时进行摘要
+    return_messages=True
+)
+```
+
+### Q: 如何实现流式输出？
+
+```python
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="glm-4-air-250414",
+    openai_api_key="your-zhipuai-api-key",
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()]
+)
+```
+
+### Q: 如何集成自定义嵌入模型？
+
+```python
+from langchain.embeddings.base import Embeddings
+from typing import List
+import requests
+
+class ZhipuAIEmbeddings(Embeddings):
+    """智谱AI嵌入模型"""
+    
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "https://open.bigmodel.cn/api/paas/v4/"
+    
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """嵌入文档列表"""
+        # 实现批量嵌入逻辑
+        embeddings = []
+        for text in texts:
+            embedding = self._embed_single(text)
+            embeddings.append(embedding)
+        return embeddings
+    
+    def embed_query(self, text: str) -> List[float]:
+        """嵌入单个查询"""
+        return self._embed_single(text)
+    
+    def _embed_single(self, text: str) -> List[float]:
+        """嵌入单个文本"""
+        # 调用智谱AI嵌入API
+        # 这里需要根据实际的嵌入API实现
+        pass
+```
+
+## 获取帮助
+
+<CardGroup cols={2}>
+  <Card title="LangChain 官方文档" icon="book" href="https://python.langchain.com/docs/get_started/introduction">
+    查看LangChain官方文档和教程
+  </Card>
+  <Card title="智谱AI API 文档" icon="api" href="/api-reference">
+    查看智谱AI完整的API文档
+  </Card>
+  <Card title="GitHub 示例" icon="github" href="https://github.com/langchain-ai/langchain">
+    查看LangChain GitHub仓库和示例
+  </Card>
+  <Card title="社区支持" icon="users" href="https://bigmodel.cn/support">
+    获取技术支持和社区帮助
+  </Card>
+</CardGroup>
+
+<Note>
+LangChain是一个快速发展的框架，建议定期更新到最新版本以获得最佳功能和性能。同时，智谱AI会持续优化与LangChain的集成，确保最佳的兼容性和用户体验。
+</Note>

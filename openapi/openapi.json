@@ -87,8 +87,8 @@
     "/paas/v4/chat/completions": {
       "post": {
         "tags": ["对话 API"],
-        "summary": "创建聊天补全",
-        "description": "为聊天对话生成 AI 回复。支持多种应用场景，提供智能对话能力。",
+        "summary": "聊天补全",
+        "description": "为聊天对话生成 AI 回复。支持多种应用场景对话，多模态能力。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"

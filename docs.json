@@ -34,8 +34,18 @@
                 "group": "开始使用",
                 "pages": [
                   "cn/guide/start/introduction",
+                  "cn/guide/start/model-overview",
                   "cn/guide/start/quick-start",
-                  "cn/guide/start/model-overview"
+                  {
+                    "group": "开发指南",
+                    "pages": [
+                      "cn/guide/develop/http/introduction",
+                      "cn/guide/develop/python/introduction",
+                      "cn/guide/develop/java/introduction",
+                      "cn/guide/develop/openai/introduction",
+                      "cn/guide/develop/langchain/introduction"
+                    ]
+                  }
                 ]
               },
               {
@@ -107,10 +117,8 @@
               {
                 "group": "模型工具",
                 "pages": [
-                  "cn/guide/tools/document-management",
                   "cn/guide/tools/web-search",
                   "cn/guide/tools/function-calling",
-                  "cn/guide/tools/knowledge-base",
                   "cn/guide/tools/drawing",
                   "cn/guide/tools/code-interpreter",
                   "cn/guide/tools/json-mode"
@@ -125,14 +133,6 @@
                   "cn/guide/platform/equity-explain",
                   "cn/guide/platform/filing"
                 ]
-              },
-              {
-                "group": "Python工具",
-                "pages": ["cn/guide/python-tools/introduction"]
-              },
-              {
-                "group": "Java工具",
-                "pages": ["cn/guide/java-tools/introduction"]
               }
             ]
           },

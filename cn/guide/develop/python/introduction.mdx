@@ -1,0 +1,745 @@
+---
+title: "官方 Python SDK"
+description: "Z.ai Python SDK 概述与介绍"
+---
+
+<Info>
+Z.ai Python SDK 是智谱AI官方提供的Python开发工具包，为Python开发者提供便捷、高效的AI模型集成方案。
+</Info>
+
+## 什么是 Z.ai Python SDK
+
+Z.ai Python SDK 是一个功能强大、易于使用的Python开发工具包，专为与智谱AI的各种人工智能模型进行交互而设计。无论您是要构建智能聊天机器人、内容生成应用，还是需要在现有Python应用中集成AI功能，我们的SDK都能为您提供完整的解决方案。
+
+### 核心优势
+
+<CardGroup cols={2}>
+  <Card title="简单易用" icon="rocket">
+    Pythonic的API设计，完善的文档和示例，让您快速上手
+  </Card>
+  <Card title="功能完整" icon="puzzle-piece">
+    支持智谱AI全系列模型，包括语言、视觉、图像生成等
+  </Card>
+  <Card title="高性能" icon="gauge-high">
+    异步支持、连接池管理，优化的网络请求处理
+  </Card>
+  <Card title="类型安全" icon="shield-check">
+    完整的类型提示，IDE友好，减少开发错误
+  </Card>
+</CardGroup>
+
+### 支持的功能
+
+- **💬 对话聊天**：支持单轮和多轮对话，流式和非流式响应
+- **🔧 函数调用**：让AI模型调用您的自定义函数
+- **👁️ 视觉理解**：图像分析、OCR、视觉问答
+- **🎨 图像生成**：根据文本描述生成高质量图像
+- **🎬 视频生成**：文本到视频的创意内容生成
+- **🔊 语音处理**：语音转文字、文字转语音
+- **📊 文本嵌入**：文本向量化，支持语义搜索
+- **🤖 智能助手**：构建专业的AI助手应用
+- **📚 知识库管理**：文档上传、检索、问答
+- **🛡️ 内容审核**：文本和图像内容安全检测
+
+### 支持的模型
+
+<Tabs>
+  <Tab title="语言模型">
+    - **GLM-4-Plus**：最强大的语言理解和生成模型
+    - **GLM-4-Air**：平衡性能和成本的通用模型
+    - **GLM-4-Flash**：快速响应的轻量级模型
+    - **GLM-4-Long**：支持超长上下文的模型
+  </Tab>
+  <Tab title="多模态模型">
+    - **GLM-4V-Plus**：强大的视觉理解模型
+    - **GLM-4V**：通用视觉理解模型
+    - **GLM-4-Voice**：语音交互模型
+  </Tab>
+  <Tab title="生成模型">
+    - **CogView-3**：高质量图像生成
+    - **CogVideoX**：视频内容生成
+    - **Embedding-2**：文本向量化模型
+  </Tab>
+</Tabs>
+
+## 技术规格
+
+### 环境要求
+
+- **Python版本**：Python 3.9 或更高版本
+- **包管理器**：pip 或 poetry
+- **网络要求**：支持HTTPS连接
+- **API密钥**：需要有效的智谱AI API密钥
+
+### 依赖管理
+
+SDK采用模块化设计，您可以根据需要选择性安装功能模块：
+
+- **核心模块**：基础API调用功能
+- **异步模块**：异步和并发处理支持
+- **工具模块**：实用工具和辅助功能
+
+## 快速开始
+
+### 环境要求
+
+<CardGroup cols={2}>
+  <Card title="Python 版本" icon="python">
+    Python 3.9 或更高版本
+  </Card>
+  <Card title="包管理器" icon="package">
+    pip（推荐）
+  </Card>
+</CardGroup>
+
+<Warning>
+支持 Python 3.8, 3.9, 3.10, 3.11, 3.12 版本，跨平台兼容 Windows、macOS、Linux
+</Warning>
+
+### 安装 SDK
+
+#### 使用 pip 安装
+
+```bash
+# 安装最新版本
+pip install zai-sdk
+
+# 或指定版本
+pip install zai-sdk==1.0.0
+```
+
+#### 验证安装
+
+```python
+import zai
+print(zai.__version__)
+```
+
+### 获取 API Key
+
+1. 访问 [Z.ai 开放平台](https://bigmodel.cn)
+2. 注册并登录您的账户
+3. 在控制台中创建 API Key
+4. 复制您的 API Key 以供使用
+
+<Tip>
+建议将 API Key 设置为环境变量：`export ZAI_API_KEY=your-api-key`
+</Tip>
+
+### 第一个示例
+
+#### 创建客户端
+
+<Tabs>
+  <Tab title="环境变量">
+    
+```python
+from zai import ZaiClient
+import os
+
+# 从环境变量读取 API Key
+client = ZaiClient(api_key=os.getenv("ZAI_API_KEY"))
+
+# 或者直接使用（如果已设置环境变量）
+client = ZaiClient()
+```
+
+  </Tab>
+  <Tab title="直接设置">
+    
+```python
+from zai import ZaiClient
+
+# 直接设置 API Key
+client = ZaiClient(api_key="your-api-key")
+```
+
+  </Tab>
+  <Tab title="配置文件">
+    
+```python
+from zai import ZaiClient
+
+# 使用配置文件
+client = ZaiClient.from_config("config.json")
+```
+
+配置文件示例 (`config.json`)：
+```json
+{
+  "api_key": "your-api-key",
+  "base_url": "https://api.z.ai/api/paas/v4/",
+  "timeout": 30,
+  "max_retries": 3
+}
+```
+
+  </Tab>
+</Tabs>
+
+#### 基础对话
+
+```python
+from zai import ZaiClient
+
+# 初始化客户端
+client = ZaiClient(api_key="your-api-key")
+
+# 创建聊天完成请求
+response = client.chat.completions.create(
+    model="glm-4",
+    messages=[
+        {"role": "user", "content": "你好，请介绍一下自己"}
+    ]
+)
+
+# 获取回复
+print(response.choices[0].message.content)
+```
+
+#### 流式对话
+
+```python
+# 创建流式聊天请求
+stream = client.chat.completions.create(
+    model="glm-4",
+    messages=[
+        {"role": "user", "content": "写一首关于春天的诗"}
+    ],
+    stream=True
+)
+
+# 处理流式响应
+for chunk in stream:
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+
+print()  # 换行
+```
+
+#### 多轮对话
+
+```python
+# 维护对话历史
+conversation = [
+    {"role": "system", "content": "你是一个有用的AI助手"}
+]
+
+def chat_with_ai(user_input):
+    # 添加用户消息
+    conversation.append({"role": "user", "content": user_input})
+    
+    # 创建请求
+    response = client.chat.completions.create(
+        model="glm-4",
+        messages=conversation
+    )
+    
+    # 获取AI回复
+    ai_response = response.choices[0].message.content
+    
+    # 添加AI回复到对话历史
+    conversation.append({"role": "assistant", "content": ai_response})
+    
+    return ai_response
+
+# 使用示例
+print(chat_with_ai("你好"))
+print(chat_with_ai("我想了解Python编程"))
+print(chat_with_ai("能给我一个简单的例子吗？"))
+```
+
+### 完整示例
+
+```python
+from zai import ZaiClient
+import os
+
+def main():
+    # 初始化客户端
+    client = ZaiClient(api_key=os.getenv("ZAI_API_KEY"))
+    
+    print("欢迎使用 Z.ai 聊天机器人！输入 'quit' 退出。")
+    
+    # 对话历史
+    conversation = [
+        {"role": "system", "content": "你是一个友好的AI助手"}
+    ]
+    
+    while True:
+        # 获取用户输入
+        user_input = input("您: ")
+        
+        if user_input.lower() == 'quit':
+            break
+        
+        try:
+            # 添加用户消息
+            conversation.append({"role": "user", "content": user_input})
+            
+            # 创建聊天请求
+            response = client.chat.completions.create(
+                model="glm-4",
+                messages=conversation,
+                temperature=0.7,
+                max_tokens=1000
+            )
+            
+            # 获取AI回复
+            ai_response = response.choices[0].message.content
+            print(f"AI: {ai_response}")
+            
+            # 添加AI回复到对话历史
+            conversation.append({"role": "assistant", "content": ai_response})
+            
+        except Exception as e:
+            print(f"发生错误: {e}")
+    
+    print("再见！")
+
+if __name__ == "__main__":
+    main()
+```
+
+### 异步编程
+
+#### 异步客户端
+
+```python
+import asyncio
+from zai import AsyncZaiClient
+
+async def async_chat_example():
+    # 创建异步客户端
+    client = AsyncZaiClient(api_key="your-api-key")
+    
+    try:
+        # 异步聊天请求
+        response = await client.chat.completions.create(
+            model="glm-4",
+            messages=[
+                {"role": "user", "content": "你好"}
+            ]
+        )
+        
+        print(response.choices[0].message.content)
+        
+    finally:
+        # 关闭客户端
+        await client.close()
+
+# 运行异步函数
+asyncio.run(async_chat_example())
+```
+
+#### 并发处理
+
+```python
+async def process_multiple_requests():
+    client = AsyncZaiClient(api_key="your-api-key")
+    
+    # 准备多个问题
+    questions = [
+        "什么是人工智能？",
+        "Python有什么优势？",
+        "如何学习机器学习？"
+    ]
+    
+    try:
+        # 创建并发任务
+        tasks = []
+        for question in questions:
+            task = client.chat.completions.create(
+                model="glm-4",
+                messages=[{"role": "user", "content": question}]
+            )
+            tasks.append(task)
+        
+        # 等待所有请求完成
+        responses = await asyncio.gather(*tasks)
+        
+        # 处理结果
+        for i, response in enumerate(responses):
+            print(f"问题{i+1}的回答: {response.choices[0].message.content}")
+            
+    finally:
+        await client.close()
+
+# 运行并发示例
+asyncio.run(process_multiple_requests())
+```
+
+### 错误处理
+
+```python
+from zai import (
+    ZaiClient,
+    ZaiError,
+    APIError,
+    RateLimitError,
+    AuthenticationError,
+    TimeoutError
+)
+
+def robust_chat(message):
+    client = ZaiClient(api_key="your-api-key")
+    
+    try:
+        response = client.chat.completions.create(
+            model="glm-4",
+            messages=[{"role": "user", "content": message}]
+        )
+        return response.choices[0].message.content
+        
+    except AuthenticationError:
+        return "认证失败，请检查API Key"
+    except RateLimitError:
+        return "请求频率过高，请稍后重试"
+    except TimeoutError:
+        return "请求超时，请稍后重试"
+    except APIError as e:
+        return f"API错误：{e.message}"
+    except ZaiError as e:
+        return f"SDK错误：{e}"
+    except Exception as e:
+        return f"未知错误：{e}"
+
+# 使用示例
+result = robust_chat("你好")
+print(result)
+```
+
+### 高级配置
+
+```python
+import httpx
+from zai import ZaiClient
+
+# 自定义HTTP客户端
+httpx_client = httpx.Client(
+    limits=httpx.Limits(
+        max_keepalive_connections=20,
+        max_connections=100
+    ),
+    timeout=30.0
+)
+
+# 创建带自定义配置的客户端
+client = ZaiClient(
+    api_key="your-api-key",
+    base_url="https://api.z.ai/api/paas/v4/",
+    timeout=httpx.Timeout(timeout=300.0, connect=8.0),
+    max_retries=3,
+    http_client=httpx_client
+)
+```
+
+## 高级功能
+
+### 函数调用 (Function Calling)
+
+函数调用允许 AI 模型调用您定义的函数来获取实时信息或执行特定操作。
+
+#### 定义和使用函数
+
+```python
+from zai import ZaiClient
+import json
+
+# 定义函数
+def get_weather(location, date=None):
+    """获取天气信息"""
+    # 模拟天气API调用
+    return {
+        "location": location,
+        "date": date or "今天",
+        "weather": "晴天",
+        "temperature": "25°C",
+        "humidity": "60%"
+    }
+
+def get_stock_price(symbol):
+    """获取股票价格"""
+    # 模拟股票API调用
+    return {
+        "symbol": symbol,
+        "price": 150.25,
+        "change": "+2.5%"
+    }
+
+# 函数描述
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "获取指定地点的天气信息",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "地点名称"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "日期，格式为YYYY-MM-DD"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_stock_price",
+            "description": "获取股票当前价格",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "股票代码"
+                    }
+                },
+                "required": ["symbol"]
+            }
+        }
+    }
+]
+
+# 使用函数调用
+client = ZaiClient(api_key="your-api-key")
+
+response = client.chat.completions.create(
+    model='glm-4',
+    messages=[
+        {'role': 'user', 'content': '北京今天天气怎么样？'}
+    ],
+    tools=tools,
+    tool_choice="auto"
+)
+
+# 处理函数调用
+if response.choices[0].message.tool_calls:
+    for tool_call in response.choices[0].message.tool_calls:
+        function_name = tool_call.function.name
+        function_args = json.loads(tool_call.function.arguments)
+        
+        if function_name == "get_weather":
+            result = get_weather(**function_args)
+            print(f"天气信息：{result}")
+        elif function_name == "get_stock_price":
+            result = get_stock_price(**function_args)
+            print(f"股票信息：{result}")
+else:
+    print(response.choices[0].message.content)
+```
+
+### 多模态处理
+
+#### 图像理解
+
+```python
+import base64
+from zai import ZaiClient
+
+def encode_image(image_path):
+    """将图像编码为base64格式"""
+    with open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
+client = ZaiClient(api_key="your-api-key")
+
+# 方式1：使用图像URL
+response = client.chat.completions.create(
+    model="glm-4v",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "这张图片里有什么？请详细描述。"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "https://example.com/image.jpg"
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+
+# 方式2：使用base64编码的图像
+base64_image = encode_image('path/to/your/image.jpg')
+
+response = client.chat.completions.create(
+    model="glm-4v",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "分析这张图片中的内容"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+#### 图像生成
+
+```python
+# 图像生成
+response = client.images.generations(
+    model="cogview-3",
+    prompt="一幅美丽的山水画，中国传统风格，水墨画",
+    size="1024x1024",
+    quality="standard",
+    n=1
+)
+
+image_url = response.data[0].url
+print(f"生成的图像URL: {image_url}")
+
+# 高质量图像生成
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="未来城市的概念设计，科幻风格，高清细节",
+    size="1024x1024",
+    quality="hd",
+    n=2
+)
+
+for i, image in enumerate(response.data):
+    print(f"图像 {i+1} URL: {image.url}")
+```
+
+### 文本嵌入
+
+```python
+# 基础文本嵌入
+response = client.embeddings.create(
+    model="embedding-2",
+    input=[
+        "这是第一段文本",
+        "这是第二段文本",
+        "这是第三段文本"
+    ]
+)
+
+for i, embedding in enumerate(response.data):
+    print(f"文本{i+1}的嵌入向量维度: {len(embedding.embedding)}")
+    print(f"前5个维度的值: {embedding.embedding[:5]}")
+
+# 计算文本相似度
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def calculate_similarity(texts):
+    """计算文本间的相似度"""
+    response = client.embeddings.create(
+        model="embedding-2",
+        input=texts
+    )
+    
+    embeddings = [data.embedding for data in response.data]
+    embeddings_array = np.array(embeddings)
+    
+    # 计算余弦相似度
+    similarity_matrix = cosine_similarity(embeddings_array)
+    
+    return similarity_matrix
+
+# 使用示例
+texts = [
+    "我喜欢吃苹果",
+    "苹果是我最爱的水果",
+    "今天天气很好"
+]
+
+similarity = calculate_similarity(texts)
+print("相似度矩阵:")
+print(similarity)
+```
+
+### 流式处理
+
+```python
+class StreamProcessor:
+    def __init__(self, client):
+        self.client = client
+        self.full_response = ""
+    
+    def stream_chat(self, messages, model="glm-4", callback=None):
+        """流式聊天处理"""
+        stream = self.client.chat.completions.create(
+            model=model,
+            messages=messages,
+            stream=True
+        )
+        
+        self.full_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                self.full_response += content
+                
+                if callback:
+                    callback(content, self.full_response)
+                else:
+                    print(content, end="", flush=True)
+        
+        print()  # 换行
+        return self.full_response
+
+# 使用示例
+processor = StreamProcessor(client)
+
+# 自定义回调函数
+def on_token_received(token, full_text):
+    # 可以在这里实现实时处理逻辑
+    print(token, end="", flush=True)
+
+response = processor.stream_chat(
+    messages=[{"role": "user", "content": "写一个Python函数来计算斐波那契数列"}],
+    callback=on_token_received
+)
+```
+
+## 获取帮助
+
+<CardGroup cols={2}>
+  <Card title="GitHub仓库" icon="github" href="https://github.com/THUDM/z-ai-sdk-python">
+    查看源代码、提交问题、参与贡献
+  </Card>
+  <Card title="API 参考" icon="book" href="/api-reference">
+    查看完整的 API 文档
+  </Card>
+  <Card title="示例项目" icon="code" href="https://github.com/THUDM/z-ai-sdk-python/tree/main/examples">
+    浏览更多实际应用示例
+  </Card>
+  <Card title="最佳实践" icon="star" href="https://github.com/THUDM/z-ai-sdk-python">
+    学习 SDK 使用的最佳实践
+  </Card>
+</CardGroup>
+
+<Note>
+本SDK基于智谱AI最新的API规范开发，确保与平台功能保持同步更新。建议定期更新到最新版本以获得最佳体验。
+</Note>

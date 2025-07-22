@@ -1,0 +1,673 @@
+---
+title: "官方 Java SDK"
+description: "Z.ai Java SDK 概述与介绍"
+---
+
+<Info>
+Z.ai Java SDK 是智谱AI官方提供的Java开发工具包，为Java开发者提供便捷、高效的AI模型集成方案。
+</Info>
+
+## 什么是 Z.ai Java SDK
+
+Z.ai Java SDK 是一个功能强大、易于使用的Java开发工具包，专为与智谱AI的各种人工智能模型进行交互而设计。无论您是要构建企业级AI应用、智能客服系统，还是需要在现有Java应用中集成AI功能，我们的SDK都能为您提供完整的解决方案。
+
+### 核心优势
+
+<CardGroup cols={2}>
+  <Card title="企业级" icon="building">
+    专为企业应用设计，支持高并发、高可用性
+  </Card>
+  <Card title="易于集成" icon="plug">
+    简洁的API设计，完善的文档，快速集成到现有项目
+  </Card>
+  <Card title="类型安全" icon="shield-check">
+    完整的类型定义，编译时错误检查，减少运行时错误
+  </Card>
+  <Card title="高性能" icon="gauge-high">
+    优化的网络请求处理，支持连接池和异步调用
+  </Card>
+</CardGroup>
+
+### 支持的功能
+
+- **💬 对话聊天**：支持单轮和多轮对话，流式和非流式响应
+- **🔧 函数调用**：让AI模型调用您的自定义函数
+- **👁️ 视觉理解**：图像分析、OCR、视觉问答
+- **🎨 图像生成**：根据文本描述生成高质量图像
+- **🎬 视频生成**：文本到视频的创意内容生成
+- **🔊 语音处理**：语音转文字、文字转语音
+- **📊 文本嵌入**：文本向量化，支持语义搜索
+- **🤖 智能助手**：构建专业的AI助手应用
+- **📚 知识库管理**：文档上传、检索、问答
+- **🛡️ 内容审核**：文本和图像内容安全检测
+
+### 支持的模型
+
+<Tabs>
+  <Tab title="语言模型">
+    - **GLM-4-Plus**：最强大的语言理解和生成模型
+    - **GLM-4-Air**：平衡性能和成本的通用模型
+    - **GLM-4-Flash**：快速响应的轻量级模型
+    - **GLM-4-Long**：支持超长上下文的模型
+  </Tab>
+  <Tab title="多模态模型">
+    - **GLM-4V-Plus**：强大的视觉理解模型
+    - **GLM-4V**：通用视觉理解模型
+    - **GLM-4-Voice**：语音交互模型
+  </Tab>
+  <Tab title="生成模型">
+    - **CogView-3**：高质量图像生成
+    - **CogVideoX**：视频内容生成
+    - **Embedding-2**：文本向量化模型
+  </Tab>
+</Tabs>
+
+## 技术规格
+
+### 环境要求
+
+- **Java版本**：Java 1.8 或更高版本
+- **构建工具**：Maven 3.6+ 或 Gradle 6.0+
+- **网络要求**：支持HTTPS连接
+- **API密钥**：需要有效的智谱AI API密钥
+
+### 依赖管理
+
+SDK采用模块化设计，您可以根据需要选择性引入功能模块：
+
+- **核心模块**：基础API调用功能
+- **异步模块**：异步和并发处理支持
+- **工具模块**：实用工具和辅助功能
+
+## 快速开始
+
+### 环境要求
+
+<CardGroup cols={2}>
+  <Card title="Java 版本" icon="coffee">
+    Java 1.8 或更高版本
+  </Card>
+  <Card title="构建工具" icon="hammer">
+    Maven 3.6+ 或 Gradle 6.0+
+  </Card>
+</CardGroup>
+
+<Warning>
+支持 Java 8, 11, 17, 21 版本，跨平台兼容 Windows、macOS、Linux
+</Warning>
+
+### 添加依赖
+
+<Tabs>
+  <Tab title="Maven">
+    
+```xml
+<dependency>
+    <groupId>com.zhipuai</groupId>
+    <artifactId>zai-sdk-java</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+  </Tab>
+  <Tab title="Gradle">
+    
+```gradle
+implementation 'com.zhipuai:zai-sdk-java:1.0.0'
+```
+
+  </Tab>
+  <Tab title="Gradle (Kotlin DSL)">
+    
+```kotlin
+implementation("com.zhipuai:zai-sdk-java:1.0.0")
+```
+
+  </Tab>
+</Tabs>
+
+### 获取 API Key
+
+1. 访问 [Z.ai 开放平台](https://bigmodel.cn)
+2. 注册并登录您的账户
+3. 在控制台中创建 API Key
+4. 复制您的 API Key 以供使用
+
+<Tip>
+建议将 API Key 设置为环境变量：`export ZAI_API_KEY=your-api-key`
+</Tip>
+
+### 第一个示例
+
+#### 创建客户端
+
+<Tabs>
+  <Tab title="环境变量">
+    
+```java
+import com.zhipuai.ZaiClient;
+
+public class QuickStart {
+    public static void main(String[] args) {
+        // 从环境变量读取 API Key
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 或者直接使用（如果已设置环境变量）
+        ZaiClient client2 = ZaiClient.builder().build();
+    }
+}
+```
+
+  </Tab>
+  <Tab title="直接设置">
+    
+```java
+import com.zhipuai.ZaiClient;
+
+public class QuickStart {
+    public static void main(String[] args) {
+        // 直接设置 API Key
+        ZaiClient client = ZaiClient.builder()
+            .apiKey("your-api-key")
+            .build();
+    }
+}
+```
+
+  </Tab>
+</Tabs>
+
+#### 基础对话
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.ChatCompletionRequest;
+import com.zhipuai.model.ChatCompletionResponse;
+import com.zhipuai.model.ChatMessage;
+import java.util.Arrays;
+
+public class BasicChat {
+    public static void main(String[] args) {
+        // 初始化客户端
+        ZaiClient client = ZaiClient.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        // 创建聊天完成请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .messages(Arrays.asList(
+                ChatMessage.userMessage("你好，请介绍一下自己")
+            ))
+            .build();
+        
+        // 发送请求
+        ChatCompletionResponse response = client.chatCompletions().create(request);
+        
+        // 获取回复
+        String reply = response.getChoices().get(0).getMessage().getContent();
+        System.out.println("AI回复: " + reply);
+    }
+}
+```
+
+#### 流式对话
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.ChatCompletionRequest;
+import com.zhipuai.model.ChatCompletionChunk;
+import com.zhipuai.model.ChatMessage;
+import java.util.Arrays;
+
+public class StreamingChat {
+    public static void main(String[] args) {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey("your-api-key")
+            .build();
+        
+        // 创建流式聊天请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .messages(Arrays.asList(
+                ChatMessage.userMessage("写一首关于春天的诗")
+            ))
+            .stream(true)
+            .build();
+        
+        // 处理流式响应
+        client.chatCompletions().createStream(request)
+            .forEach(chunk -> {
+                if (chunk.getChoices() != null && !chunk.getChoices().isEmpty()) {
+                    String content = chunk.getChoices().get(0).getDelta().getContent();
+                    if (content != null) {
+                        System.out.print(content);
+                    }
+                }
+            });
+        
+        System.out.println(); // 换行
+    }
+}
+```
+
+### 完整示例
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ChatBot {
+    private final ZaiClient client;
+    private final List<ChatMessage> conversation;
+    
+    public ChatBot(String apiKey) {
+        this.client = ZaiClient.builder()
+            .apiKey(apiKey)
+            .build();
+        this.conversation = new ArrayList<>();
+        // 添加系统消息
+        this.conversation.add(ChatMessage.systemMessage("你是一个友好的AI助手"));
+    }
+    
+    public String chat(String userInput) {
+        try {
+            // 添加用户消息
+            conversation.add(ChatMessage.userMessage(userInput));
+            
+            // 创建请求
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model("glm-4")
+                .messages(conversation)
+                .temperature(0.7)
+                .maxTokens(1000)
+                .build();
+            
+            // 发送请求
+            ChatCompletionResponse response = client.chatCompletions().create(request);
+            
+            // 获取AI回复
+            String aiResponse = response.getChoices().get(0).getMessage().getContent();
+            
+            // 添加AI回复到对话历史
+            conversation.add(ChatMessage.assistantMessage(aiResponse));
+            
+            return aiResponse;
+            
+        } catch (Exception e) {
+            return "发生错误: " + e.getMessage();
+        }
+    }
+    
+    public static void main(String[] args) {
+        ChatBot bot = new ChatBot(System.getenv("ZAI_API_KEY"));
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("欢迎使用 Z.ai 聊天机器人！输入 'quit' 退出。");
+        
+        while (true) {
+            System.out.print("您: ");
+            String input = scanner.nextLine();
+            
+            if ("quit".equalsIgnoreCase(input)) {
+                break;
+            }
+            
+            String response = bot.chat(input);
+            System.out.println("AI: " + response);
+        }
+        
+        System.out.println("再见！");
+        scanner.close();
+    }
+}
+```
+
+## 高级功能
+
+### 函数调用 (Function Calling)
+
+函数调用允许 AI 模型调用您定义的函数来获取实时信息或执行特定操作。
+
+#### 定义和使用函数
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
+
+public class FunctionCallingExample {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    // 模拟天气API
+    public static Map<String, Object> getWeather(String location, String date) {
+        Map<String, Object> weather = new HashMap<>();
+        weather.put("location", location);
+        weather.put("date", date != null ? date : "今天");
+        weather.put("weather", "晴天");
+        weather.put("temperature", "25°C");
+        weather.put("humidity", "60%");
+        return weather;
+    }
+    
+    // 模拟股票API
+    public static Map<String, Object> getStockPrice(String symbol) {
+        Map<String, Object> stock = new HashMap<>();
+        stock.put("symbol", symbol);
+        stock.put("price", 150.25);
+        stock.put("change", "+2.5%");
+        return stock;
+    }
+    
+    public static void main(String[] args) {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 定义函数工具
+        List<Tool> tools = Arrays.asList(
+            Tool.function(
+                Function.builder()
+                    .name("get_weather")
+                    .description("获取指定地点的天气信息")
+                    .parameters(Parameters.builder()
+                        .type("object")
+                        .properties(Map.of(
+                            "location", Property.builder()
+                                .type("string")
+                                .description("地点名称")
+                                .build(),
+                            "date", Property.builder()
+                                .type("string")
+                                .description("日期，格式为YYYY-MM-DD")
+                                .build()
+                        ))
+                        .required(Arrays.asList("location"))
+                        .build())
+                    .build()
+            ),
+            Tool.function(
+                Function.builder()
+                    .name("get_stock_price")
+                    .description("获取股票当前价格")
+                    .parameters(Parameters.builder()
+                        .type("object")
+                        .properties(Map.of(
+                            "symbol", Property.builder()
+                                .type("string")
+                                .description("股票代码")
+                                .build()
+                        ))
+                        .required(Arrays.asList("symbol"))
+                        .build())
+                    .build()
+            )
+        );
+        
+        // 创建请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .messages(Arrays.asList(
+                ChatMessage.userMessage("北京今天天气怎么样？")
+            ))
+            .tools(tools)
+            .toolChoice("auto")
+            .build();
+        
+        // 发送请求
+        ChatCompletionResponse response = client.chatCompletions().create(request);
+        
+        // 处理函数调用
+        ChatMessage assistantMessage = response.getChoices().get(0).getMessage();
+        if (assistantMessage.getToolCalls() != null && !assistantMessage.getToolCalls().isEmpty()) {
+            for (ToolCall toolCall : assistantMessage.getToolCalls()) {
+                String functionName = toolCall.getFunction().getName();
+                String arguments = toolCall.getFunction().getArguments();
+                
+                try {
+                    Map<String, Object> args = objectMapper.readValue(arguments, Map.class);
+                    Map<String, Object> result;
+                    
+                    if ("get_weather".equals(functionName)) {
+                        result = getWeather(
+                            (String) args.get("location"),
+                            (String) args.get("date")
+                        );
+                        System.out.println("天气信息: " + result);
+                    } else if ("get_stock_price".equals(functionName)) {
+                        result = getStockPrice((String) args.get("symbol"));
+                        System.out.println("股票信息: " + result);
+                    }
+                } catch (Exception e) {
+                    System.err.println("函数调用错误: " + e.getMessage());
+                }
+            }
+        } else {
+            System.out.println(assistantMessage.getContent());
+        }
+    }
+}
+```
+
+### 多模态处理
+
+#### 图像理解
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+
+public class ImageUnderstanding {
+    public static void main(String[] args) throws Exception {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 方式1：使用图像URL
+        ChatCompletionRequest request1 = ChatCompletionRequest.builder()
+            .model("glm-4v")
+            .messages(Arrays.asList(
+                ChatMessage.builder()
+                    .role("user")
+                    .content(Arrays.asList(
+                        Content.text("这张图片里有什么？请详细描述。"),
+                        Content.imageUrl("https://example.com/image.jpg")
+                    ))
+                    .build()
+            ))
+            .build();
+        
+        ChatCompletionResponse response1 = client.chatCompletions().create(request1);
+        System.out.println(response1.getChoices().get(0).getMessage().getContent());
+        
+        // 方式2：使用base64编码的图像
+        byte[] imageBytes = Files.readAllBytes(Paths.get("path/to/your/image.jpg"));
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        
+        ChatCompletionRequest request2 = ChatCompletionRequest.builder()
+            .model("glm-4v")
+            .messages(Arrays.asList(
+                ChatMessage.builder()
+                    .role("user")
+                    .content(Arrays.asList(
+                        Content.text("分析这张图片中的内容"),
+                        Content.imageUrl("data:image/jpeg;base64," + base64Image)
+                    ))
+                    .build()
+            ))
+            .build();
+        
+        ChatCompletionResponse response2 = client.chatCompletions().create(request2);
+        System.out.println(response2.getChoices().get(0).getMessage().getContent());
+    }
+}
+```
+
+#### 图像生成
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+
+public class ImageGeneration {
+    public static void main(String[] args) {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 图像生成
+        ImageGenerationRequest request = ImageGenerationRequest.builder()
+            .model("cogview-3")
+            .prompt("一幅美丽的山水画，中国传统风格，水墨画")
+            .size("1024x1024")
+            .quality("standard")
+            .n(1)
+            .build();
+        
+        ImageGenerationResponse response = client.images().generate(request);
+        
+        String imageUrl = response.getData().get(0).getUrl();
+        System.out.println("生成的图像URL: " + imageUrl);
+    }
+}
+```
+
+### 文本嵌入
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+import java.util.*;
+
+public class TextEmbedding {
+    public static void main(String[] args) {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 基础文本嵌入
+        EmbeddingRequest request = EmbeddingRequest.builder()
+            .model("embedding-2")
+            .input(Arrays.asList(
+                "这是第一段文本",
+                "这是第二段文本",
+                "这是第三段文本"
+            ))
+            .build();
+        
+        EmbeddingResponse response = client.embeddings().create(request);
+        
+        for (int i = 0; i < response.getData().size(); i++) {
+            EmbeddingData embedding = response.getData().get(i);
+            System.out.println("文本" + (i + 1) + "的嵌入向量维度: " + embedding.getEmbedding().size());
+            System.out.println("前5个维度的值: " + embedding.getEmbedding().subList(0, 5));
+        }
+    }
+}
+```
+
+### 异步编程
+
+```java
+import com.zhipuai.ZaiClient;
+import com.zhipuai.model.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.*;
+
+public class AsyncExample {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        ZaiClient client = ZaiClient.builder()
+            .apiKey(System.getenv("ZAI_API_KEY"))
+            .build();
+        
+        // 异步聊天请求
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+            .model("glm-4")
+            .messages(Arrays.asList(
+                ChatMessage.userMessage("你好")
+            ))
+            .build();
+        
+        CompletableFuture<ChatCompletionResponse> future = 
+            client.chatCompletions().createAsync(request);
+        
+        // 异步处理结果
+        future.thenAccept(response -> {
+            String reply = response.getChoices().get(0).getMessage().getContent();
+            System.out.println("异步回复: " + reply);
+        }).exceptionally(throwable -> {
+            System.err.println("异步请求失败: " + throwable.getMessage());
+            return null;
+        });
+        
+        // 等待完成
+        future.get();
+        
+        // 并发处理多个请求
+        List<String> questions = Arrays.asList(
+            "什么是人工智能？",
+            "Java有什么优势？",
+            "如何学习机器学习？"
+        );
+        
+        List<CompletableFuture<ChatCompletionResponse>> futures = new ArrayList<>();
+        
+        for (String question : questions) {
+            ChatCompletionRequest req = ChatCompletionRequest.builder()
+                .model("glm-4")
+                .messages(Arrays.asList(ChatMessage.userMessage(question)))
+                .build();
+            
+            futures.add(client.chatCompletions().createAsync(req));
+        }
+        
+        // 等待所有请求完成
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+            futures.toArray(new CompletableFuture[0])
+        );
+        
+        allFutures.thenRun(() -> {
+            for (int i = 0; i < futures.size(); i++) {
+                try {
+                    ChatCompletionResponse response = futures.get(i).get();
+                    String answer = response.getChoices().get(0).getMessage().getContent();
+                    System.out.println("问题" + (i + 1) + "的回答: " + answer);
+                } catch (Exception e) {
+                    System.err.println("获取回答失败: " + e.getMessage());
+                }
+            }
+        }).get();
+    }
+}
+```
+
+## 获取帮助
+
+<CardGroup cols={2}>
+  <Card title="GitHub仓库" icon="github" href="https://github.com/THUDM/z-ai-sdk-java">
+    查看源代码、提交问题、参与贡献
+  </Card>
+  <Card title="API 参考" icon="book" href="/api-reference">
+    查看完整的 API 文档
+  </Card>
+  <Card title="示例项目" icon="code" href="https://github.com/THUDM/z-ai-sdk-java/tree/main/samples">
+    浏览更多实际应用示例
+  </Card>
+  <Card title="最佳实践" icon="star" href="https://github.com/THUDM/z-ai-sdk-java">
+    学习 SDK 使用的最佳实践
+  </Card>
+</CardGroup>
+
+<Note>
+本SDK基于智谱AI最新的API规范开发，确保与平台功能保持同步更新。建议定期更新到最新版本以获得最佳体验。
+</Note>

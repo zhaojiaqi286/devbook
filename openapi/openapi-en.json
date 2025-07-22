@@ -85,7 +85,7 @@
         "tags": [
           "Chat API"
         ],
-        "summary": "Create chat completion",
+        "summary": "Chat completion",
         "description": "Generate AI responses for chat conversations. Supports multiple application scenarios and provides intelligent dialogue capabilities.",
         "parameters": [
           {
