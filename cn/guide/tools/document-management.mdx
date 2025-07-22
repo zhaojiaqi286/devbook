@@ -1,33 +1,44 @@
 ---
 title: "文档管理"
 description: "智能体文档管理功能介绍"
+icon: "folder-open"
 ---
 
-智能体文档管理功能允许您上传、组织和管理各种类型的文档，为智能体提供丰富的知识库支持。
+<Info>
+智能体文档管理功能允许您上传、组织和管理各种类型的文档，为智能体提供丰富的知识库支持，实现高效的文档检索和智能问答。
+</Info>
 
 ## 功能特性
 
-### 多格式支持
-- PDF文档
-- Word文档
-- Excel表格
-- PowerPoint演示文稿
-- 纯文本文件
-- Markdown文件
-
-### 智能处理
-- 自动文档解析
-- 内容提取和索引
-- 语义分块
-- 向量化存储
-
-### 高效检索
-- 语义搜索
-- 关键词匹配
-- 相似度排序
-- 上下文理解
+<CardGroup cols={3}>
+  <Card title="多格式支持" icon="file">
+    - PDF文档
+    - Word文档
+    - Excel表格
+    - PowerPoint演示文稿
+    - 纯文本文件
+    - Markdown文件
+  </Card>
+  
+  <Card title="智能处理" icon="brain">
+    - 自动文档解析
+    - 内容提取和索引
+    - 语义分块
+    - 向量化存储
+  </Card>
+  
+  <Card title="高效检索" icon="magnifying-glass">
+    - 语义搜索
+    - 关键词匹配
+    - 相似度排序
+    - 上下文理解
+  </Card>
+</CardGroup>
 
 ## 使用方式
+
+<Tabs>
+  <Tab title="文档上传">
 
 ### 文档上传
 
@@ -46,6 +57,9 @@ file_id = response.id
 print(f"文档上传成功，文件ID: {file_id}")
 ```
 
+  </Tab>
+  <Tab title="创建知识库">
+
 ### 创建知识库
 
 ```python
@@ -58,6 +72,9 @@ knowledge_base = client.knowledge.create(
 kb_id = knowledge_base.id
 ```
 
+  </Tab>
+  <Tab title="添加文档">
+
 ### 添加文档到知识库
 
 ```python
@@ -67,6 +84,9 @@ client.knowledge.documents.create(
     file_id=file_id
 )
 ```
+
+  </Tab>
+  <Tab title="文档检索">
 
 ### 文档检索
 
@@ -85,39 +105,54 @@ for result in results:
     print("---")
 ```
 
+  </Tab>
+</Tabs>
+
 ## 最佳实践
 
-### 文档准备
+<Accordion title="文档准备">
 1. **格式规范**：确保文档格式清晰，结构合理
 2. **内容质量**：提供准确、完整的信息
 3. **文件命名**：使用有意义的文件名
 4. **版本管理**：及时更新过时的文档
+</Accordion>
 
-### 知识库组织
+<Accordion title="知识库组织">
 1. **分类管理**：按主题或部门组织知识库
 2. **权限控制**：设置适当的访问权限
 3. **定期维护**：清理无用文档，更新内容
 4. **标签标注**：为文档添加相关标签
+</Accordion>
 
-### 检索优化
+<Accordion title="检索优化">
 1. **查询优化**：使用清晰、具体的查询语句
 2. **结果筛选**：根据相关度和来源筛选结果
 3. **上下文利用**：结合上下文信息提高检索准确性
 4. **反馈改进**：根据使用反馈优化知识库
+</Accordion>
 
 ## 注意事项
 
-### 文件限制
-- 单个文件大小不超过100MB
-- 支持的文件格式有限
-- 文档内容需要符合平台规范
+<Warning>
+在使用文档管理功能时，请注意数据安全和隐私保护，确保敏感信息得到妥善处理。
+</Warning>
 
-### 隐私安全
-- 敏感信息需要谨慎处理
-- 遵守数据保护法规
-- 定期审查访问权限
-
-### 性能考虑
-- 大量文档可能影响检索速度
-- 建议合理分割大型文档
-- 定期清理无用文档
+<CardGroup cols={3}>
+  <Card title="文件限制" icon="exclamation-triangle">
+    - 单个文件大小不超过100MB
+    - 支持的文件格式有限
+    - 文档内容需要符合平台规范
+  </Card>
+  
+  <Card title="隐私安全" icon="shield">
+    - 敏感信息需要谨慎处理
+    - 遵守数据保护法规
+    - 定期审查访问权限
+  </Card>
+  
+  <Card title="性能考虑" icon="gauge">
+    - 大量文档可能影响检索速度
+    - 建议合理分割大型文档
+    - 定期清理无用文档
+  </Card>
+</CardGroup>

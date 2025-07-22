@@ -1,203 +1,204 @@
 ---
 title: "Web Search"
-keywords: ["Z.AI","web search"]
+icon: "magnifying-glass"
+keywords: ["智谱AI","web search","网络搜索"]
 ---
 
-Z.AI provides developers with a full suite of AI search tools, covering three core services: **basic search (Web Search API)**, **retrieval-augmented generation (Web Search in Chat)**, and **intelligent search agents (Search Agent)**. Through a unified API, it integrates both proprietary engines and third-party services (Bing, Sogou, Quark, [Jina.ai](http://Jina.ai)), offering end-to-end capabilities—from raw web data retrieval and fusion of search results with LLM output, to multi-turn dialogue context management. This empowers developers to build trustworthy, real-time, and traceable AI applications at **lower cost**.
+<Info>
+智谱AI为开发者提供全系列AI搜索工具，覆盖 **基础检索（Web Search API）**、**问答增强（Web Search in Chat）**、**搜索智能体（Search Agent）** 三大服务，基于统一API接口集成自研引擎及第三方服务（Bing/搜狗/夸克/Jina.ai），提供从原始网页数据抓取、搜索结果与LLM生成融合、到多轮对话上下文管理的全链路能力，助力开发者以 **更低成本** 构建可信、实时、可溯源的AI应用。
+</Info>
 
-- View [Product Price](/guides/overview/pricing)
-- View Your [API Key](https://chat.z.ai)
+- 查看 [产品价格](/guides/overview/pricing)
+- 查看您的 [API Key](https://chat.z.ai)
 
-## Product Overview
+## 服务概览
 
-| Service Module     | Developer Value                                                                                        | Technical Features                                                            |
-| :----------------- | :----------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
-| Web Search API     | Directly obtain **structured search results** (title/summary/link, etc.)                               | Multi-Search Engine Support                                                   |
-| Web Search in Chat | Incorporate search results into large model-generated **answers with cited**  **web sources**.         | Seamless Integration of Real-Time Retrieval and LLM Generation                |
-| Search Agent       | **Query decomposition** based on search intent, manage dialogue state, and enable intelligent routing. | Intent Understanding Enhances Context Management and Search Engine Invocation |
+<CardGroup cols={3}>
+  <Card title="Web Search API" icon="search">
+    直接获取**结构化搜索结果**（标题/摘要/链接等），支持多搜索引擎
+  </Card>
+  <Card title="Web Search in Chat" icon="comments">
+    将搜索结果融入大模型生成**回答并标注网页结果来源**，实时检索+LLM生成无缝衔接
+  </Card>
+  <Card title="Search Agent" icon="robot">
+    根据搜索意图进行**query拆解**，对话状态管理与智能路由，意图理解增强上下文管理
+  </Card>
+</CardGroup>
 
 ## Web Search API
 
-Web Search API is a search engine specifically designed for large language models. Building on the traditional capabilities of webpage crawling and ranking, it enhances intent recognition and returns results that are more suitable for LLM processing (webpage titles, URLs, summaries, site names, and favicons).
+Web Search API 是一个专给大模型用的搜索引擎，在传统搜索引擎网页抓取、排序的能力基础上，增强了意图识别能力，返回更适合大模型处理的结果（网页标题、网页URL、网页摘要、网站名称、网站图标等）。
 
-1. Intent-Enhanced Retrieval: Intelligently identifies the user’s query intent and automatically determines whether web search is needed.
-2. Structured Output: Returns data formats optimized for LLMs, including titles, URLs, summaries, site names, and icons.
-3. Multi-Engine Support: Integrates Z.AI’s proprietary engine along with mainstream engines like Bing, Sogou, Quark, and [Jina.ai](http://Jina.ai).
-4. Customizable Search Scope: Allows developers to specify the number of results, domain constraints, and time ranges. It also supports adjustable summary lengths for fine-grained search behavior control.
-5. Time-Aware Output Control: The response can include the webpage’s publication time, facilitating timeliness analysis and result ranking.
+1. **意图增强检索**：支持智能识别用户查询意图，自动判断是否需要网页检索
+2. **结构化输出**：返回适合LLM处理的数据格式（含标题/URL/摘要/网站名/图标等）
+3. **多引擎支持**：整合智谱自研引擎及主流搜索引擎（bing/搜狗/夸克/Jina.ai）
+4. **支持指定范围搜索**：可自定义返回的搜索结果数量、域名、时间范围等指定搜索，并可调整网页摘要的字数，帮助实现搜索行为的精细化管控
+5. **可灵活控制输出结果时间**：响应参数可设置网页发布时间字段，便于时效性分析和排序
 
-**API Call**
+**接口调用**
 
-- API Docs: [Web Search API](/api-reference/tools/web-search)
-- Example: Search Financial News
+- 接口文档：[Web Search API](/api-reference/tools/web-search)
+- 场景示例：搜索财经新闻
 
-```python Search Financial News
-from zhipuai import ZhipuAI
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
 
-client = ZhipuAI(api_key="")  # Fill in your own APIKey
+    client = ZhipuAI(api_key="")  # 填写您自己的APIKey
 
-response = client.web_search.web_search(
-   search_engine="search-pro",
-   search_query="search economic events",
-   count=15, # The number of results to return, ranging from 1-50, default 10
-   search_domain_filter="www.sohu.com", # Only access content from specified domain names.
-   search_recency_filter="noLimit", # Search for content within specified date ranges
-   content_size="high" # Control the word count of webpage summaries, default medium
-)
-print(response)
-```
-
-```json
-WebSearchResp(
-{
-    "created": 1748261757,
-    "id": "20250526201557dda85ca6801b467b",
-    "request_id": "20250526201557dda85ca6801b467b",
-    "search_intent": [
-        {
-            "intent": "SEARCH_ALL",
-            "keywords": "Financial news in April 2025",
-            "query": "Search for financial news in April 2025"
-        }
-    ],
-    "search_result": [
-        {
-            "content": "1. China's outward direct investment from January to April reached $57.54 billion, a year-on-year increase of 7.5%. The trade-in policy continues to show results, with retail sales of home appliances maintaining double-digit growth for eight consecutive months.\n2. China has implemented multiple measures to accelerate the construction of a sci-tech financial system. The CSRC will support tech companies breaking through key core technologies by granting them 'green channel' access. The PBOC stated that nearly 100 institutions have issued over 250 billion yuan in sci-tech innovation bonds.\n3. In May, China's passenger car retail sales are estimated at around 1.85 million units, up 8.5% year-on-year and 5.4% month-on-month. New energy vehicle sales are expected to reach 980,000, maintaining a penetration rate of approximately 52.9%.\n4. The Beijing Humanoid Robot Innovation Center released the world's first 'Humanoid Robot Intelligence Grading' standard, establishing a 'four-dimensional, five-level' evaluation framework covering 'perception and cognition, decision-making and learning, execution performance, and collaborative interaction.'\n5. Federal Reserve Governor Waller stated that if the Trump administration's tariffs stabilize around 10%, the Fed may cut interest rates in the second half of 2025.\n6. The U.S. manufacturing PMI rose to a three-month high of 52.3 in May. The services PMI preliminary reading was 52.3, hitting a two-month high. New orders grew at their fastest pace in over a year, while price indicators reached a nearly three-year peak.\n7. The eurozone manufacturing PMI preliminary reading improved slightly to 49.2 in May, but the services PMI unexpectedly dropped sharply to 48.9, marking the worst performance in 16 months. This dragged the eurozone composite PMI down to 49.5 from 50.4 in April. Return to Sohu for more.",
-            "icon": "https://sfile.chatglm.cn/searchImage/sohu_icon_new.jpg",
-            "link": "https://www.sohu.com/a/897879632_121123890",
-            "media": "Sohu",
-            "publish_date": "2025-05-23",
-            "refer": "ref_1",
-            "title": "Financial Morning Briefing for May 23, 2025"
-        },
-        {
-            "content": "1. The CSRC and seven other departments issued 'Several Measures to Support Financing for Small and Micro Enterprises,' proposing 23 specific initiatives across eight areas: increasing financing supply, reducing comprehensive financing costs, improving financing efficiency, enhancing support precision, implementing regulatory policies, strengthening risk management, improving policy safeguards, and ensuring effective implementation.\nComment: Increased support for small and micro enterprise financing, with 23 measures targeting the real economy to alleviate financing difficulties.\n2. Ministry of Commerce: From January to April 2025, China's outward direct investment across all sectors totaled $57.54 billion, up 7.5% year-on-year.\nComment: Steady growth in China's outward investment, with 'Belt and Road' cooperation likely a key driver.\nIndustry Insights\n3. Ministry of Commerce: From September 2024 to April 2025, retail sales of home appliances maintained double-digit growth for eight consecutive months. In April, retail sales of household appliances and audio-visual equipment in above-quota units surged 38.8% year-on-year, ranking first among 16 major consumer goods categories.\nComment: Strong demand for home appliances, driven by policy incentives and consumption upgrades.\n4. National Energy Administration: As of end-April, China's total installed power generation capacity reached 3.49 billion kW, up 15.9% year-on-year. From January to April, major power enterprises completed 193.3 billion yuan in power source engineering investments, up 1.6% year-on-year, while grid engineering investments totaled 140.8 billion yuan, up 14.6%.\nComment: Accelerated energy infrastructure development, with grid investment growth outpacing power source investment.\nGlobal Perspective\n5. The U.S. House Rules Committee approved Trump's comprehensive tax cut bill, paving the way for a full House vote.\nComment: Progress on Trump's tax cuts, which could stimulate U.S. consumption but exacerbate fiscal deficit pressures if enacted.\nFinancial Markets\n6. Most domestic commodity futures closed lower, with weak energy performance, widespread pressure on chemical futures, and declines in the black commodities sector. Agricultural products, particularly apple futures, also saw notable drops.\nComment: Broad-based commodity market declines reflect weak demand expectations.\n7. On Thursday, the onshore yuan closed at 7.2040 against the dollar at 16:30, up 25 basis points from the previous session. The central parity rate was adjusted up 34 basis points to 7.1903. Treasury futures mostly flatlined, with the 30-year contract down 0.04% and the 10-year contract up 0.01%.\nComment: Stabilizing yuan exchange rate, with parity rate adjustments signaling policy support.\n8. On May 22, the three major indices closed lower. Defense stocks led gains, while innovative drug concepts were active. Bank stocks bucked the trend, while pet economy concepts lagged, beauty care stocks plunged, and solid-state battery concepts retreated.\nComment: Structural divergence in A-shares as risk aversion rises, with caution advised over June U.S. debt maturity risks and potential global market corrections. Return to Sohu for more.",
-            "icon": "https://sfile.chatglm.cn/searchImage/sohu_icon_new.jpg",
-            "link": "https://www.sohu.com/a/897874861_121123901",
-            "media": "Sohu",
-            "publish_date": "2025-05-23",
-            "refer": "ref_2",
-            "title": "Financial Morning Briefing for May 23"
-        },
-        {
-            "content": "According to Zhitong Finance APP, Macao's Composite Consumer Price Index (CPI) rose 0.23% year-on-year and 0.16% month-on-month in April 2025. The data, released by Macao's Statistics and Census Service on May 23, reflects subtle shifts in Macao's consumer market.\n1. Changes in Macao's CPI\nData shows that the 12-month average composite CPI as of April 2025 rose 0.42% compared to the same period a year earlier (May 2023–April 2024). Among major categories, the price index for Recreation, Sports, and Culture rose 2.47% year-on-year, while Miscellaneous Goods and Services increased 1.82%, signaling potential economic recovery.\n2. Impact of Food and Rent\nFood and non-alcoholic beverage prices rose 0.48% year-on-year, driven by higher dining-out and takeaway costs. Housing and fuel prices also increased 0.21% due to rising rents. As tourism recovers, dining demand has pushed up service fees.\nHowever, prices for Communication (-3.01%), Clothing (-2.35%), and Transport (-1.67%) declined, complicating the overall CPI trend.\n3. Month-on-Month Changes\nCompared to March 2025, April's CPI rose 0.16%. Recreation, Sports, and Culture saw the largest increase (2.6%) due to higher hotel rates. Summer clothing launches and rebounding airfares also lifted Clothing (+0.78%) and Transport (+0.42%) prices.\nDespite this, Food and non-alcoholic beverages dipped slightly (-0.04%) as lower prices for fresh fish, seafood, vegetables, and fruit offset higher dining costs.\n4. CPI Classification\nMacao's CPI is compiled into three series to reflect price impacts on households with different spending patterns. Category A (50% of households) covers monthly expenditures of 11,000–35,999 MOP, while Category B (30%) covers 36,000–71,999 MOP.\nHousing and fuel (34.47%), food (29.47%), and transport (8.33%) carry the highest weights, ensuring precise reflection of consumption trends across income groups.\n5. Outlook\nMacao's consumer market will continue to face multiple influences. While some categories show price declines, the overall mild CPI rise suggests recovery potential. With tourism rebounding and demand growing, CPI may maintain a gradual upward trend.\nIn summary, April 2025's CPI changes reflect market dynamics and new cost-of-living challenges. Authorities must monitor price impacts to craft effective policies ensuring stable living standards. Return to Sohu for more.",
-            "icon": "https://sfile.chatglm.cn/searchImage/sohu_icon_new.jpg",
-            "link": "https://www.sohu.com/a/898091955_121956424",
-            "media": "Sohu",
-            "publish_date": "2025-05-23",
-            "refer": "ref_3",
-            "title": "Macao's April 2025 CPI Rises Slightly: Key Drivers Explained"
-        },
-        {
-            "content": "Zhitong Finance APP learned that on May 23, the Asset Management Association of China (AMAC) released its monthly report on private fund manager registrations and product filings. In April 2025, 1,606 new private funds were filed nationwide, with a total size of 643.72 billion yuan. This included 1,189 private securities investment funds (366.95 billion yuan), 143 private equity funds (161.01 billion yuan), and 274 venture capital funds (115.76 billion yuan).\n1. Private Fund Manager Registration Overview\n(1) Monthly Registrations\nIn April 2025, 16 institutions passed AMAC's AMBERS system, including 4 private securities investment fund managers and 12 private equity/venture capital fund managers. During the same period, 76 private fund managers were deregistered.\n(2) Existing Managers\nAs of end-April 2025, there were 19,891 private fund managers overseeing 141,579 funds with 20.22 trillion yuan in assets. This included 7,827 private securities investment fund managers, 11,867 private equity/venture capital managers, 6 asset allocation managers, and 191 others.\n(3) Geographic Distribution\nBy registered location (across 36 regions), 72.20% of managers were concentrated in Shanghai (3,714), Beijing (3,244), Shenzhen (3,012), Guangdong (ex-Shenzhen, 1,594), Zhejiang (ex-Ningbo, 1,590), and Jiangsu (1,207), accounting for 18.67%, 16.31%, 15.14%, 8.01%, 7.99%, and 6.07% respectively.\nBy AUM, the top regions were Shanghai (5.08 trillion yuan, 25.12%), Beijing (4.68 trillion yuan, 23.13%), Shenzhen (1.97 trillion yuan, 9.74%), Guangdong (ex-Shenzhen, 1.30 trillion yuan, 6.43%), Jiangsu (1.18 trillion yuan, 5.82%), and Zhejiang (ex-Ningbo, 967.16 billion yuan, 4.78%), totaling 75.02%.\n2. Private Fund Filings Overview\n(1) Monthly Filings\nApril 2025 saw 1,606 new private funds (643.72 billion yuan), including 1,189 private securities funds (366.95 billion yuan), 143 private equity funds (161.01 billion yuan), and 274 venture capital funds (115.76 billion yuan).\n(2) Existing Funds\nAs of end-April 2025, there were 141,579 private funds (20.22 trillion yuan), including 84,673 private securities funds (5.51 trillion yuan), 30,205 private equity funds (10.96 trillion yuan), and 25,830 venture capital funds (3.41 trillion yuan).",
-            "icon": "https://sfile.chatglm.cn/searchImage/sohu_icon_new.jpg",
-            "link": "https://www.sohu.com/a/898137965_323087",
-            "media": "Sohu",
-            "publish_date": "2025-05-23",
-            "refer": "ref_4",
-            "title": "AMAC: 1,606 New Private Funds Filed in April, Totaling 643.72 Billion Yuan"
-        }
-    ]
-}
-)
-```
+    response = client.web_search.web_search(
+       search_engine="search_pro",
+       search_query="搜索2025年4月的财经新闻",
+       count=15,  # 返回结果的条数，范围1-50，默认10
+       search_domain_filter="www.sohu.com",  # 只访问指定域名的内容
+       search_recency_filter="noLimit",  # 搜索指定日期范围内的内容
+       content_size="high"  # 控制网页摘要的字数，默认medium
+    )
+    print(response)
+    ```
+  </Tab>
+  <Tab title="响应示例">
+    ```json
+    WebSearchResp(
+    {
+        "created": 1748261757,
+        "id": "20250526201557dda85ca6801b467b",
+        "request_id": "20250526201557dda85ca6801b467b",
+        "search_intent": [
+            {
+                "intent": "SEARCH_ALL",
+                "keywords": "2025年4月 财经新闻",
+                "query": "搜索2025年4月的财经新闻"
+            }
+        ],
+        "search_result": [
+            {
+                "content": "一、1-4月我国对外直接投资575.4亿美元，同比增长7.5%。以旧换新成效持续显现，家电类商品零售额连续8个月保持两位数增长。",
+                "icon": "https://sfile.chatglm.cn/searchImage/sohu_icon_new.jpg",
+                "link": "https://www.sohu.com/a/897879632_121123890",
+                "media": "搜狐",
+                "publish_date": "2025-05-23",
+                "refer": "ref_1",
+                "title": "2025年5月23日财经早资讯"
+            }
+        ]
+    }
+    )
+    ```
+  </Tab>
+</Tabs>
 
 ### MCP Server
 
-Access the [official MCP documentation](https://modelcontextprotocol.io/introduction) to learn more about the protocol.
+访问[官方MCP文档](https://modelcontextprotocol.io/introduction)了解更多关于该协议的信息。
 
-**Installation Guide**
+<Accordion title="MCP Server 配置指南">
+  **安装指南**
 
-- Use clients that support the MCP protocol, such as Cursor and Cherry Studio.
-- Obtain an [API Key](https://z.ai/manage-apikey/apikey-list) from the Z.AI Platform.
+  - 使用支持MCP协议的客户端，如Cursor和Cherry Studio。
+  - 从智谱AI平台获取[API密钥](https://bigmodel.cn/dev/apikey)。
 
-**Using in Cursor**
+  **在Cursor中使用**
 
-Cursor 0.45.6 includes MCP functionality. Cursor acts as an MCP service client and can connect to the MCP service with simple configuration.
+  Cursor 0.45.6包含MCP功能。Cursor作为MCP服务客户端，可以通过简单配置连接到MCP服务。
 
-Navigation Path: Cursor Settings → [Features] → [MCP Servers]
+  导航路径：Cursor设置 → [功能] → [MCP服务器]
 
-![370b139e 8201 40a0 9c44 3faf4b1b9655 Pn](/images/370b139e-8201-40a0-9c44-3faf4b1b9655.png)
+  ![370b139e 8201 40a0 9c44 3faf4b1b9655 Pn](/images/370b139e-8201-40a0-9c44-3faf4b1b9655.png)
 
-**Configure MCP Server**
+  **配置MCP服务器**
 
-```python
-{
-  "mcpServers": {
-    "z.ai-web-search-sse": {
-      "url": "https://api.z.ai/api/mcp/web_search/sse?Authorization=YOUR API Key"
-    }
-  } 
-}
-```
+  ```json
+  {
+    "mcpServers": {
+      "zhipu-web-search-sse": {
+        "url": "https://open.bigmodel.cn/api/mcp/web_search/sse?Authorization=YOUR API Key"
+      }
+    } 
+  }
+  ```
 
-**Cursor MCP Usage**
+  **Cursor MCP使用方法**
 
-Cursor MCP must be used in Composer's Agent mode.
+  Cursor MCP必须在Composer的Agent模式下使用。
 
-![Bb97f60a B887 4e13 92d7 8156227676c7 Pn](/images/bb97f60a-b887-4e13-92d7-8156227676c7.png)
+  ![Bb97f60a B887 4e13 92d7 8156227676c7 Pn](/images/bb97f60a-b887-4e13-92d7-8156227676c7.png)
+</Accordion>
 
-## Web Search in Chat
+## 对话中的网络搜索
 
-Web Search in Chat allows the Completions API to call search engines, combining real-time web retrieval results with GLM's generative capabilities to provide up-to-date and verifiable answers.
+对话中的网络搜索允许Completions API调用搜索引擎，将实时网络检索结果与GLM的生成能力相结合，提供最新且可验证的答案。
 
-- API Docs: [Web Search in Chat](/api-reference/tools/web-search)
-- Example: Financial Analysis Summary
+- API文档：[对话中的网络搜索](/api-reference/tools/web-search)
+- 示例：财经分析摘要
 
-```python Financial Analysis Summary
-from zhipuai import ZhipuAI
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
 
-# Initialize the ZhipuAI client
-client = ZhipuAI(api_key="YourAPIKey")
+    # 初始化智谱AI客户端
+    client = ZhipuAI(api_key="YourAPIKey")
 
-# Define tool parameters
-tools = [{
-    "type": "web_search",
-    "web_search": {
-         "enable": "True",
-         "search_engine": "search_pro",
-         "search_result": "True",
-         "search_prompt": "You are a financial analyst. Please use concise language to summarize the key information in {{search_result}} from the web search, ranked by importance and citing the source date. Today's date is April 11, 2025.",
-         "count": "5",
-         "search_domain_filter": "www.sohu.com",
-         "search_recency_filter": "noLimit",
-         "content_size": "high"
-    }
-}]
-
-# Define user message
-messages = [{
-    "role": "user",
-    "content": "Key financial events, policy changes, and market data in April 2025"
-}]
-
-# Call the API to get a response
-response = client.chat.completions.create(
-    model="glm-4-air",  # Model identifier
-    messages=messages,  # User messages
-    tools=tools         # Tool parameters
-)
-
-# Print the response result
-print(response)
-```
-
-```json
-{
-    "choices": [
-        {
-            "finish_reason": "stop",
-            "index": 0,
-            "message": {
-                "content": "Based on the documents you provided, here are the important financial events for April 2025, ranked by importance:\n\n1. **G20 Finance and Central Bank Ministers Meeting** - Date to be determined. The G20 meeting will discuss key issues such as global economic recovery, financial stability, and sustainable development. This will have a profound impact on the coordination of global economic policies and financial market sentiment. [Source: ref_1]\n\n2. **Preliminary Manufacturing PMI Releases for Multiple Countries and Regions** - Including France, Germany, the Eurozone, and the UK. These data will reveal the activity status of their respective manufacturing sectors, providing critical insights for investors. [Source: ref_1]\n\n3. **Eurozone Seasonally Adjusted Trade Balance for February** - Released at 17:00. The performance of the trade balance will significantly impact the euro and related markets, reflecting the region's trade conditions. [Source: ref_1]\n\n4. **Speeches by Fed Officials Moussalem and Waller** - At 21:30. Speeches by Fed officials will play a crucial role in driving market volatility and sparking discussions about the future direction of U.S. monetary policy. [Source: ref_1]\n\n5. **U.S. April S&P Global Manufacturing and Services PMI Preliminaries** - Released at 21:45. The PMI data for manufacturing and services will indicate the overall trend of economic activity, influencing investment decisions. [Source: ref_1]\n\n6. **U.S. March New Home Sales Annualized Total** - Released at 22:00. As an important indicator of economic health, new home sales will signal changes in market demand. [Source: ref_1]\n\n7. **U.S. EIA Crude Oil Inventory for the Week Ending April 18** - Released at 22:30. Crude oil inventory data will provide a key reference point for the market, affecting oil price fluctuations. [Source: ref_1]\n\n8. **Fed Releases the Beige Book on Economic Conditions** - At 02:00 the next day. The Fed's Beige Book report will summarize economic development trends, impacting investor confidence and strategies. [Source: ref_1]\n\n9. **Speech by Fed Governor Lisa Cook** - At 07:10. Governor Cook's speech may reflect the Fed's current thinking on the economic situation, influencing market sentiment and asset price fluctuations. [Source: ref_2]\n\n10. **Release of China's Core Economic Data** - Including the monthly report on residential sales prices in 70 large and medium-sized cities, Q1 GDP annual rate, total retail sales of consumer goods, and industrial added value above a designated size. These will have a significant impact on global economic growth and the healthy development of China's economy. [Source: ref_2]\n\n11. **Release of European Economic Data** - Including the UK's March CPI monthly rate, the Eurozone's seasonally adjusted current account for February, and the final annual CPI rate for March. These will provide investors with a comprehensive view of the European economy. [Source: ref_2]\n\n12. **WTO Global Trade Outlook Report** - Released at 20:00. The report may reveal the future direction of global trade and changes among countries. [Source: ref_2]\n\n13. **Release of Key U.S. Economic Indicators** - Including the March retail sales monthly rate, industrial production monthly rate, and NAHB housing market index. These will influence investors' assessment of the strength of the U.S. economic recovery. [Source: ref_2]\n\n14. **Bank of Canada Interest Rate Decision** - Released at 21:45. The direction of Canada's monetary policy is also worth noting. [Source: ref_2]\n\n15. **China's State Council Information Office Releases Q1 Import and Export Data** - Released at 10:00. The growth or decline in import and export data will directly affect GDP growth expectations and investor confidence. [Source: ref_3]\n\n16. **Canada's February Wholesale Sales Monthly Rate Data** - Released at 20:30. Wholesale sales are an important indicator of retail demand expectations, directly reflecting the health of the economy. [Source: ref_3]\n\n17. **U.S. One-Year Inflation Expectations Data for March** - Released at 23:00. This data is a key reference for assessing U.S. consumers' and businesses' views on future economic conditions. [Source: ref_3]\n\n18. **OPEC Monthly Crude Oil Market Report** - Release time to be determined. The report typically influences global crude oil market price trends. [Source: ref_3]\n\n19. **Speeches by Fed Officials** - At 00:00 and 06:00 the next day. Speeches by Fed officials will outline the future direction of Fed policy, affecting global investor expectations. [Source: ref_3]\n\nThe above events and data will have a significant impact on global market trends. Investors should closely monitor them and adjust their strategies accordingly.",
-                "role": "assistant"
-            }
+    # 定义工具参数
+    tools = [{
+        "type": "web_search",
+        "web_search": {
+             "enable": "True",
+             "search_engine": "search_pro",
+             "search_result": "True",
+             "search_prompt": "你是一位财经分析师。请用简洁的语言总结网络搜索{{search_result}}中的关键信息，按重要性排序并引用来源日期。今天的日期是2025年4月11日。",
+             "count": "5",
+             "search_domain_filter": "www.sohu.com",
+             "search_recency_filter": "noLimit",
+             "content_size": "high"
         }
-    ],
-    "created": 1748311718,
-    "id": "20250527100811da2f8f7243f94b02",
-    "model": "glm-4-air",
-    "request_id": "20250527100811da2f8f7243f94b02",
+    }]
+
+    # 定义用户消息
+    messages = [{
+        "role": "user",
+        "content": "2025年4月的重要财经事件、政策变化和市场数据"
+    }]
+
+    # 调用API获取响应
+    response = client.chat.completions.create(
+        model="glm-4-air",  # 模型标识符
+        messages=messages,  # 用户消息
+        tools=tools         # 工具参数
+    )
+
+    # 打印响应结果
+    print(response)
+    ```
+  </Tab>
+  <Tab title="响应示例">
+    ```json
+    {
+        "choices": [
+            {
+                "finish_reason": "stop",
+                "index": 0,
+                "message": {
+                    "content": "根据您提供的文档，以下是2025年4月的重要财经事件，按重要性排序：\n\n1. **G20财长和央行行长会议** - 日期待定。G20会议将讨论全球经济复苏、金融稳定和可持续发展等关键议题。这将对全球经济政策协调和金融市场情绪产生深远影响。[来源：ref_1]\n\n2. **多国和地区制造业PMI初值发布** - 包括法国、德国、欧元区和英国。这些数据将揭示各自制造业部门的活动状况，为投资者提供关键洞察。[来源：ref_1]",
+                    "role": "assistant"
+                }
+            }
+        ],
+        "created": 1748311718,
+        "id": "20250527100811da2f8f7243f94b02",
+        "model": "glm-4-air",
+        "request_id": "20250527100811da2f8f7243f94b02",
+        "usage": {
+            "completion_tokens": 868,
+            "prompt_tokens": 4199,
+            "total_tokens": 5067
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
     "usage": {
         "completion_tokens": 868,
         "prompt_tokens": 4199,
@@ -253,16 +254,17 @@ print(response)
 }
 ```
 
-## Search Agent
+## 搜索智能体
 
-Based on the search intent, intelligently decompose it into multiple search queries, retrieve corresponding search results, and synthesize the content from all web pages for a comprehensive model-generated response. The answer is thorough and insightful.
+基于搜索意图，智能分解为多个搜索查询，检索对应的搜索结果，并综合所有网页内容生成全面的模型回答。答案详尽且富有洞察力。
 
-- **API Documentation**: [Agent Search](/api-reference/tools/web-search)
-- **Use Case Example**: Risk assessment report generation
+- **API文档**: [智能体搜索](/api-reference/tools/web-search)
+- **使用场景示例**: 风险评估报告生成
 
-```python Risk assessment report generation
+<Accordion title="风险评估报告生成示例">
+```python
 from zhipuai import ZhipuAI  
-api_key = "Your API key"  
+api_key = "您的API密钥"  
 url = "https://api.z.ai/api/paas/v4"  
 client = ZhipuAI(api_key=api_key, base_url=url)  
 generate = client.assistant.conversation(  
@@ -274,7 +276,7 @@ generate = client.assistant.conversation(
             "role": "user",  
             "content": [{  
                 "type": "text",  
-                "text": "Please conduct a comprehensive analysis of the impact of Q1 2025 Middle East geopolitical conflicts on the global energy market. Incorporate data on crude oil price fluctuations, policy adjustments by major oil-producing countries, and European energy substitution alternatives. Generate a timeline-based risk assessment report, highlighting real-time reactions in futures markets and key institutional responses (e.g., IEA recommendations)."  
+                "text": "请对2025年第一季度中东地缘政治冲突对全球能源市场的影响进行全面分析。结合原油价格波动数据、主要产油国政策调整以及欧洲能源替代方案。生成基于时间线的风险评估报告，突出期货市场的实时反应和关键机构响应（如IEA建议）。"  
             }]  
         }  
     ],  
@@ -310,14 +312,15 @@ AssistantCompletion(id='20250414114728284cd996d6bb4a5b', conversation_id='67fc85
 AssistantCompletion(id='20250414114728284cd996d6bb4a5b', conversation_id='67fc85509bb7d75dd3b8ca3b', assistant_id='659e54b1b8006379b4b2abd6', created=1744602495311, status='in_process', last_error=None, choices=[AssistantChoice(index=0, delta=TextContentBlock(content='this helps', role='assistant', type='content', metadata={}), finish_reason=None, metadata=None)], metadata=None, usage=None, model='glm-4-assistant')
 AssistantCompletion(id='20250414114728284cd996d6bb4a5b', conversation_id='67fc85509bb7d75dd3b8ca3b', assistant_id='659e54b1b8006379b4b2abd6', created=1744602495614, status='completed', last_error=None, choices=[AssistantChoice(index=0, delta=ToolsDeltaBlock(tool_calls=None, role='assistant', type='tool_calls', metadata={}), finish_reason='stop', metadata=None)], metadata=None, usage=CompletionUsage(prompt_tokens=11624, completion_tokens=756, total_tokens=12380), model='glm-4-assistant')'''
 ```
+</Accordion>
 
-## Search Engine Version Description
+## 搜索引擎版本说明
 
-| **Version**          | **Features**                                                                                                                                                    | **Price**            |
+| **版本**             | **特性**                                                                                                                                                        | **价格**             |
 | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- |
-| **Search-Std**       | Basic Version (Developed by Z.AI): Meets everyday query needs with exceptional cost-effectiveness                                                               | \$0.0015 per request |
-| **Search-Pro**       | Advanced Version (Developed by Z.AI): Multi-engine collaboration significantly reduces empty result rates, with improved recall and accuracy                    | \$0.005 per request  |
-| **Search-Pro-Sogou** | Sogou: Covers Tencent ecosystem (News/Penguin Media) and Zhihu content, with strong authority in vertical domains such as encyclopedias and medical information | \$0.01 per request   |
-| **Search-Pro-Quark** | Quark: Delivers precise access to vertical content                                                                                                              | \$0.01 per request   |
-| **Search-Pro-Jina**  | [Jina.AI](http://Jina.AI): Intelligently refines results and directly provides clear answers                                                                    | \$0.01 per request   |
-| **Search-Pro-Bing**  | Bing Search: A search engine service launched by Microsoft (provided by a third party)                                                                          | \$0.01 per request   |
+| **Search-Std**       | 基础版（智谱AI自研）：满足日常查询需求，性价比极高                                                                                                               | \$0.0015 每次请求   |
+| **Search-Pro**       | 高级版（智谱AI自研）：多引擎协作显著降低空结果率，召回率和准确率大幅提升                                                                                        | \$0.005 每次请求    |
+| **Search-Pro-Sogou** | 搜狗：覆盖腾讯生态（新闻/企鹅号）和知乎内容，在百科、医疗等垂直领域权威性强                                                                                     | \$0.01 每次请求     |
+| **Search-Pro-Quark** | 夸克：精准触达垂直内容                                                                                                                                          | \$0.01 每次请求     |
+| **Search-Pro-Jina**  | [Jina.AI](http://Jina.AI)：智能精炼结果，直接提供清晰答案                                                                                                       | \$0.01 每次请求     |
+| **Search-Pro-Bing**  | 必应搜索：微软推出的搜索引擎服务（第三方提供）                                                                                                                  | \$0.01 每次请求     |

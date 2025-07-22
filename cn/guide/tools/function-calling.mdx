@@ -1,31 +1,42 @@
 ---
 title: "函数调用工具"
 description: "智能体函数调用功能详细介绍"
+icon: "function"
 ---
 
+<Info>
 函数调用工具允许智能体调用外部函数和API，极大扩展了AI助手的能力边界，使其能够执行具体的操作和获取实时数据。
+</Info>
 
 ## 功能特性
 
-### 结构化输出
-- 自动解析函数参数
-- 类型验证和转换
-- 错误处理和重试
-- 结果格式化
-
-### 多函数支持
-- 同时定义多个函数
-- 函数链式调用
-- 条件函数选择
-- 并行函数执行
-
-### 灵活集成
-- RESTful API集成
-- 数据库操作
-- 文件系统访问
-- 第三方服务调用
+<CardGroup cols={3}>
+  <Card title="结构化输出" icon="code">
+    - 自动解析函数参数
+    - 类型验证和转换
+    - 错误处理和重试
+    - 结果格式化
+  </Card>
+  
+  <Card title="多函数支持" icon="layer-group">
+    - 同时定义多个函数
+    - 函数链式调用
+    - 条件函数选择
+    - 并行函数执行
+  </Card>
+  
+  <Card title="灵活集成" icon="plug">
+    - RESTful API集成
+    - 数据库操作
+    - 文件系统访问
+    - 第三方服务调用
+  </Card>
+</CardGroup>
 
 ## 基础用法
+
+<Tabs>
+  <Tab title="定义函数">
 
 ### 定义函数
 
@@ -69,6 +80,9 @@ tools = [
     }
 ]
 ```
+
+  </Tab>
+  <Tab title="API调用">
 
 ### API调用示例
 
@@ -116,9 +130,12 @@ if message.tool_calls:
             print(final_response.choices[0].message.content)
 ```
 
+  </Tab>
+</Tabs>
+
 ## 完整实现示例
 
-### 多功能助手
+<Accordion title="多功能助手完整实现">
 
 ```python
 import json
@@ -276,9 +293,15 @@ print(agent.chat("帮我计算 15 * 23 + 7"))
 print(agent.chat("搜索一下人工智能的最新发展"))
 ```
 
+</Accordion>
+
 ## 高级应用场景
 
-### 数据库查询
+<Warning>
+在使用函数调用时，请确保对外部API和数据库操作进行适当的安全验证和权限控制。
+</Warning>
+
+<Accordion title="数据库查询">
 
 ```python
 import sqlite3
@@ -323,7 +346,9 @@ db_tool = {
 }
 ```
 
-### 文件操作
+</Accordion>
+
+<Accordion title="文件操作">
 
 ```python
 import os
@@ -381,7 +406,9 @@ file_tool = {
 }
 ```
 
-### API集成
+</Accordion>
+
+<Accordion title="API集成">
 
 ```python
 import requests
@@ -438,15 +465,27 @@ api_tool = {
 }
 ```
 
+</Accordion>
+
 ## 最佳实践
 
-### 函数设计原则
-
-1. **单一职责**：每个函数只做一件事
-2. **清晰命名**：函数名和参数名要有意义
-3. **完整描述**：提供详细的函数和参数描述
-4. **错误处理**：妥善处理异常情况
-5. **类型安全**：验证参数类型和值
+<CardGroup cols={2}>
+  <Card title="函数设计原则" icon="lightbulb">
+    1. **单一职责**：每个函数只做一件事
+    2. **清晰命名**：函数名和参数名要有意义
+    3. **完整描述**：提供详细的函数和参数描述
+    4. **错误处理**：妥善处理异常情况
+    5. **类型安全**：验证参数类型和值
+  </Card>
+  
+  <Card title="安全考虑" icon="shield">
+    1. **输入验证**：严格验证所有输入参数
+    2. **权限控制**：限制函数的访问权限
+    3. **资源限制**：防止资源滥用
+    4. **日志记录**：记录函数调用日志
+    5. **异常处理**：优雅处理错误情况
+  </Card>
+</CardGroup>
 
 ### 参数设计
 

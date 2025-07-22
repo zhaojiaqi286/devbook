@@ -119,10 +119,11 @@
               {
                 "group": "平台服务",
                 "pages": [
-                  "cn/guide/platform/introduction",
-                  "cn/guide/platform/batch-api",
-                  "cn/guide/platform/fine-tuning",
-                  "cn/guide/platform/knowledge-base"
+                  "cn/guide/platform/prompt",
+                  "cn/guide/platform/securityaudit",
+                  "cn/guide/platform/model-migration",
+                  "cn/guide/platform/equity-explain",
+                  "cn/guide/platform/filing"
                 ]
               },
               {

@@ -1,34 +1,45 @@
 ---
 title: "代码解释器"
 description: "智能体代码执行和分析功能详细介绍"
+icon: "code"
 ---
 
+<Info>
 代码解释器为智能体提供了强大的代码执行和分析能力，支持多种编程语言的代码运行、调试和结果分析，让AI助手能够帮助用户解决编程问题。
+</Info>
 
 ## 功能特性
 
-### 多语言支持
-- Python（主要支持）
-- JavaScript/Node.js
-- R语言
-- SQL查询
-- Shell脚本
-- Markdown渲染
-
-### 代码执行能力
-- 实时代码运行
-- 错误诊断和调试
-- 结果可视化
-- 数据分析和处理
-- 图表生成
-
-### 安全沙箱环境
-- 隔离执行环境
-- 资源限制控制
-- 安全权限管理
-- 超时保护机制
+<CardGroup cols={3}>
+  <Card title="多语言支持" icon="code">
+    - Python（主要支持）
+    - JavaScript/Node.js
+    - R语言
+    - SQL查询
+    - Shell脚本
+    - Markdown渲染
+  </Card>
+  
+  <Card title="代码执行能力" icon="play">
+    - 实时代码运行
+    - 错误诊断和调试
+    - 结果可视化
+    - 数据分析和处理
+    - 图表生成
+  </Card>
+  
+  <Card title="安全沙箱环境" icon="shield">
+    - 隔离执行环境
+    - 资源限制控制
+    - 安全权限管理
+    - 超时保护机制
+  </Card>
+</CardGroup>
 
 ## 基础用法
+
+<Tabs>
+  <Tab title="Python代码执行">
 
 ### Python代码执行
 
@@ -55,6 +66,9 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message.content)
 ```
+
+  </Tab>
+  <Tab title="数据分析任务">
 
 ### 数据分析任务
 
@@ -88,6 +102,9 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+  </Tab>
+  <Tab title="文件处理">
+
 ### 文件处理和分析
 
 ```python
@@ -116,9 +133,18 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+  </Tab>
+</Tabs>
+
 ## 高级应用场景
 
+<Warning>
+在使用代码解释器进行复杂数据分析时，请确保数据的安全性和隐私保护。
+</Warning>
+
 ### 数据科学助手
+
+<Accordion title="数据科学助手完整实现">
 
 ```python
 class DataScienceAssistant:
@@ -199,15 +225,20 @@ class DataScienceAssistant:
         return response.choices[0].message.content
 
 # 使用示例
-data_assistant = DataScienceAssistant("your_api_key")
-analysis = data_assistant.analyze_dataset(
-    "电商平台用户行为数据，包含用户ID、访问时间、页面浏览、购买记录等",
-    "分析用户购买行为模式，识别高价值客户，预测用户流失风险"
+assistant = DataScienceAssistant("your_api_key")
+result = assistant.analyze_dataset(
+    "销售数据包含日期、产品、销量、价格等字段",
+    "分析销售趋势，识别热销产品，预测未来销量"
 )
-print(analysis)
+print(result)
+```
+
+</Accordion>
 ```
 
 ### 算法学习助手
+
+<Accordion title="算法学习助手完整实现">
 
 ```python
 class AlgorithmTutor:
@@ -295,7 +326,11 @@ explanation = algo_tutor.explain_algorithm("快速排序", "beginner")
 print(explanation)
 ```
 
+</Accordion>
+
 ### 代码调试助手
+
+<Accordion title="代码调试助手完整实现">
 
 ```python
 class CodeDebugger:
@@ -426,7 +461,11 @@ debug_result = debugger.debug_code(
 print(debug_result)
 ```
 
+</Accordion>
+
 ### 数据可视化专家
+
+<Accordion title="数据可视化专家完整实现">
 
 ```python
 class DataVisualizationExpert:
@@ -522,9 +561,13 @@ chart = viz_expert.create_chart(
 print(chart)
 ```
 
+</Accordion>
+
 ## 高级功能
 
 ### 多步骤代码执行
+
+<Accordion title="多步骤代码执行完整实现">
 
 ```python
 class MultiStepCodeExecutor:
@@ -643,7 +686,11 @@ print("\n=== 执行总结 ===")
 print(summary)
 ```
 
+</Accordion>
+
 ### 代码质量检测
+
+<Accordion title="代码质量检测完整实现">
 
 ```python
 class CodeQualityChecker:
@@ -763,75 +810,91 @@ quality_report = quality_checker.check_code_quality(sample_code)
 print(quality_report)
 ```
 
+</Accordion>
+
 ## 最佳实践
 
-### 代码组织和结构
-
-1. **模块化设计**
-   ```python
-   # 将复杂任务分解为小的函数
-   def load_data():
-       pass
-   
-   def process_data(data):
-       pass
-   
-   def visualize_results(results):
-       pass
-   ```
-
-2. **错误处理**
-   ```python
-   try:
-       result = risky_operation()
-   except SpecificException as e:
-       print(f"处理错误: {e}")
-       # 提供备选方案
-   ```
-
-3. **性能优化**
-   ```python
-   # 使用向量化操作
-   import numpy as np
-   result = np.sum(array)  # 而不是循环
-   ```
-
-### 安全考虑
-
-1. **输入验证**：始终验证用户输入
-2. **资源限制**：避免无限循环和内存泄漏
-3. **权限控制**：不执行危险的系统操作
-4. **数据保护**：不处理敏感信息
-
-### 调试技巧
-
-1. **逐步执行**：将复杂问题分解为小步骤
-2. **打印调试**：在关键位置添加输出
-3. **异常捕获**：使用try-except处理错误
-4. **单元测试**：为每个函数编写测试
+<CardGroup cols={3}>
+  <Card title="代码组织和结构" icon="code">
+    **模块化设计**
+    ```python
+    # 将复杂任务分解为小的函数
+    def load_data():
+        pass
+    
+    def process_data(data):
+        pass
+    
+    def visualize_results(results):
+        pass
+    ```
+    
+    **错误处理**
+    ```python
+    try:
+        result = risky_operation()
+    except SpecificException as e:
+        print(f"处理错误: {e}")
+        # 提供备选方案
+    ```
+    
+    **性能优化**
+    ```python
+    # 使用向量化操作
+    import numpy as np
+    result = np.sum(array)  # 而不是循环
+    ```
+  </Card>
+  
+  <Card title="安全考虑" icon="shield">
+    - **输入验证**：始终验证用户输入
+    - **资源限制**：避免无限循环和内存泄漏
+    - **权限控制**：不执行危险的系统操作
+    - **数据保护**：不处理敏感信息
+    - **沙箱环境**：利用安全的执行环境
+    - **代码审查**：定期检查代码安全性
+  </Card>
+  
+  <Card title="调试技巧" icon="bug">
+    - **逐步执行**：将复杂问题分解为小步骤
+    - **打印调试**：在关键位置添加输出
+    - **异常捕获**：使用try-except处理错误
+    - **单元测试**：为每个函数编写测试
+    - **日志记录**：使用logging模块记录执行过程
+    - **断点调试**：在关键位置设置检查点
+  </Card>
+</CardGroup>
 
 ## 注意事项
 
-### 执行限制
-
-- **运行时间**：单次执行有时间限制
-- **内存使用**：避免创建过大的数据结构
-- **网络访问**：受限的外部网络访问
-- **文件操作**：临时文件系统，执行后清理
-
-### 安全约束
-
-- **系统调用**：禁止危险的系统操作
-- **文件访问**：限制文件读写范围
-- **网络请求**：受控的网络访问
-- **进程管理**：不能启动外部进程
-
-### 性能优化
-
-1. **算法选择**：选择合适的算法和数据结构
-2. **内存管理**：及时释放不需要的变量
-3. **并行处理**：适当使用多线程或向量化
-4. **缓存策略**：避免重复计算
+<CardGroup cols={3}>
+  <Card title="执行限制" icon="clock">
+    - **运行时间**：单次执行有时间限制
+    - **内存使用**：避免创建过大的数据结构
+    - **网络访问**：受限的外部网络访问
+    - **文件操作**：临时文件系统，执行后清理
+    - **计算资源**：合理使用CPU和内存资源
+    - **并发限制**：避免过多的并行操作
+  </Card>
+  
+  <Card title="安全约束" icon="lock">
+    - **系统调用**：禁止危险的系统操作
+    - **文件访问**：限制文件读写范围
+    - **网络请求**：受控的网络访问
+    - **进程管理**：不能启动外部进程
+    - **权限控制**：严格的执行权限管理
+    - **数据隔离**：确保数据安全和隐私
+  </Card>
+  
+  <Card title="性能优化" icon="zap">
+    - **算法选择**：选择合适的算法和数据结构
+    - **内存管理**：及时释放不需要的变量
+    - **并行处理**：适当使用多线程或向量化
+    - **缓存策略**：避免重复计算
+    - **代码优化**：使用高效的编程模式
+    - **资源监控**：实时监控资源使用情况
+  </Card>
+</CardGroup>
 
 <Tip>
 在编写代码时，建议先进行小规模测试，确认逻辑正确后再处理大数据集。同时，添加适当的注释和错误处理，提高代码的可读性和健壮性。

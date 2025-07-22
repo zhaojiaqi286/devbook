@@ -1,39 +1,45 @@
 ---
 title: "知识库工具"
-description: "智能体知识库功能详细介绍"
+description: "智谱AI知识库工具使用指南"
+icon: "database"
 ---
 
-知识库工具为智能体提供了强大的文档检索和知识问答能力，让AI助手能够基于企业或个人的专有知识库回答问题。
+# 知识库工具
+
+<Info>
+智谱AI提供强大的知识库工具，支持多种文档格式的上传、处理和智能检索。通过知识库，您可以构建专属的知识体系，实现高效的信息管理和智能问答。
+</Info>
 
 ## 功能特性
 
-### 多格式文档支持
-- PDF文档
-- Word文档（.doc, .docx）
-- Excel表格（.xls, .xlsx）
-- PowerPoint演示文稿（.ppt, .pptx）
-- 纯文本文件（.txt）
-- Markdown文件（.md）
-- HTML网页
-- CSV数据文件
-
-### 智能文档处理
-- 自动文档解析
-- 内容分块和索引
-- 语义向量化
-- 关键信息提取
-- 多语言支持
-
-### 高效检索能力
-- 语义相似度搜索
-- 关键词精确匹配
-- 混合检索策略
-- 上下文理解
-- 相关性排序
+<CardGroup cols={3}>
+  <Card title="多格式文档支持" icon="file-lines">
+    - **文本文档**：支持 TXT、MD、DOC、DOCX 等格式
+    - **表格文档**：支持 XLS、XLSX、CSV 等格式
+    - **演示文档**：支持 PPT、PPTX 等格式
+    - **PDF文档**：支持标准PDF文档解析
+    - **图片文档**：支持 JPG、PNG 等图片格式的OCR识别
+  </Card>
+  
+  <Card title="智能文档处理" icon="brain">
+    - **自动解析**：智能识别文档结构和内容
+    - **内容提取**：精确提取文本、表格、图片等信息
+    - **语义分析**：理解文档语义，建立知识关联
+    - **向量化存储**：将文档内容转换为向量表示
+  </Card>
+  
+  <Card title="高效检索能力" icon="magnifying-glass">
+    - **语义检索**：基于语义理解的智能搜索
+    - **关键词检索**：支持精确关键词匹配
+    - **混合检索**：结合多种检索策略
+    - **相关性排序**：智能排序检索结果
+  </Card>
+</CardGroup>
 
 ## 基础用法
 
-### 创建知识库
+<Tabs>
+  <Tab title="创建知识库">
 
 ```python
 from zhipuai import ZhipuAI
@@ -51,7 +57,8 @@ kb_id = knowledge_base.id
 print(f"知识库创建成功，ID: {kb_id}")
 ```
 
-### 上传文档
+  </Tab>
+  <Tab title="上传文档">
 
 ```python
 # 上传单个文档
@@ -70,7 +77,8 @@ with open("company_policy.pdf", "rb") as file:
 print(f"文档上传成功，ID: {document.id}")
 ```
 
-### 批量上传文档
+  </Tab>
+  <Tab title="批量上传文档">
 
 ```python
 import os
@@ -101,7 +109,8 @@ def upload_documents_batch(kb_id, folder_path):
 uploaded = upload_documents_batch(kb_id, "./documents")
 ```
 
-### 知识库检索
+  </Tab>
+  <Tab title="知识库检索">
 
 ```python
 # 基础检索
@@ -119,7 +128,8 @@ for result in results:
     print("-" * 50)
 ```
 
-### 智能问答
+  </Tab>
+  <Tab title="智能问答">
 
 ```python
 # 基于知识库的问答
@@ -142,9 +152,12 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+  </Tab>
+</Tabs>
+
 ## 高级功能
 
-### 多模态检索
+<Accordion title="多模态检索完整实现">
 
 ```python
 # 图文混合检索
@@ -171,7 +184,9 @@ response = client.chat.completions.create(
 )
 ```
 
-### 增量更新
+</Accordion>
+
+<Accordion title="增量更新完整实现">
 
 ```python
 # 更新文档
@@ -228,7 +243,9 @@ def sync_knowledge_base(kb_id, source_folder):
                     )
 ```
 
-### 查询扩展
+</Accordion>
+
+<Accordion title="查询扩展完整实现">
 
 ```python
 def expand_query(original_query):
@@ -283,9 +300,11 @@ def enhanced_search(kb_id, query, top_k=10):
     return sorted_results[:top_k]
 ```
 
+</Accordion>
+
 ## 应用场景
 
-### 企业客服系统
+<Accordion title="企业客服系统完整实现">
 
 ```python
 class CustomerServiceBot:
@@ -339,7 +358,9 @@ answer = bot.answer_question("如何申请退款？")
 print(answer)
 ```
 
-### 技术文档助手
+</Accordion>
+
+<Accordion title="技术文档助手完整实现">
 
 ```python
 class TechnicalDocAssistant:
@@ -414,7 +435,9 @@ code_example = tech_assistant.generate_code_example("用户认证API")
 print(code_example)
 ```
 
-### 学习辅导系统
+</Accordion>
+
+<Accordion title="学习辅导系统完整实现">
 
 ```python
 class LearningAssistant:
@@ -502,9 +525,11 @@ study_plan = learning_assistant.create_study_plan("机器学习", "初级", "3�
 print(study_plan)
 ```
 
+</Accordion>
+
 ## 性能优化
 
-### 批量处理
+<Accordion title="批量处理完整实现">
 
 ```python
 import asyncio
@@ -586,7 +611,9 @@ for question, answer in results.items():
     print("-" * 50)
 ```
 
-### 缓存机制
+</Accordion>
+
+<Accordion title="缓存机制完整实现">
 
 ```python
 import hashlib
@@ -664,14 +691,25 @@ cached_search = CachedKnowledgeSearch("your_api_key")
 results = cached_search.search(kb_id, "公司政策", top_k=5)
 ```
 
+</Accordion>
+
 ## 最佳实践
 
-### 文档质量
-
-1. **内容准确性**：确保文档内容准确、最新
-2. **结构清晰**：使用标题、段落、列表等结构化元素
-3. **语言规范**：使用标准的语言表达
-4. **信息完整**：提供完整的上下文信息
+<CardGroup cols={2}>
+  <Card title="文档质量" icon="file-check">
+    - **内容准确性**：确保文档内容准确、最新
+    - **结构清晰**：使用标题、段落、列表等结构化元素
+    - **语言规范**：使用标准的语言表达
+    - **信息完整**：提供完整的上下文信息
+  </Card>
+  
+  <Card title="检索优化" icon="magnifying-glass">
+    - **查询优化**：使用清晰、具体的查询语句
+    - **结果筛选**：根据相关度阈值筛选结果
+    - **多轮检索**：结合上下文进行多轮检索
+    - **结果重排**：根据业务逻辑重新排序
+  </Card>
+</CardGroup>
 
 ### 分块策略
 
@@ -688,13 +726,6 @@ document = client.knowledge.documents.create(
     }
 )
 ```
-
-### 检索优化
-
-1. **查询优化**：使用清晰、具体的查询语句
-2. **结果筛选**：根据相关度阈值筛选结果
-3. **多轮检索**：结合上下文进行多轮检索
-4. **结果重排**：根据业务逻辑重新排序
 
 ### 监控和维护
 

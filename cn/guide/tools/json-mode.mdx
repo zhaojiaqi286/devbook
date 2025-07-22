@@ -1,31 +1,42 @@
 ---
 title: "JSON模式"
 description: "智能体结构化输出功能详细介绍"
+icon: "brackets-curly"
 ---
 
+<Info>
 JSON模式为智能体提供了结构化输出能力，确保AI返回符合预定义格式的JSON数据，适用于需要程序化处理AI输出的场景。
+</Info>
 
 ## 功能特性
 
-### 结构化输出
-- 严格的JSON格式输出
-- 自定义数据结构
-- 类型安全保证
-- 字段验证机制
-
-### 灵活配置
-- 支持复杂嵌套结构
-- 可选和必需字段
-- 数组和对象类型
-- 枚举值限制
-
-### 高可靠性
-- 格式验证
-- 错误处理
-- 重试机制
-- 降级策略
+<CardGroup cols={3}>
+  <Card title="结构化输出" icon="code">
+    - 严格的JSON格式输出
+    - 自定义数据结构
+    - 类型安全保证
+    - 字段验证机制
+  </Card>
+  
+  <Card title="灵活配置" icon="sliders">
+    - 支持复杂嵌套结构
+    - 可选和必需字段
+    - 数组和对象类型
+    - 枚举值限制
+  </Card>
+  
+  <Card title="高可靠性" icon="shield-check">
+    - 格式验证
+    - 错误处理
+    - 重试机制
+    - 降级策略
+  </Card>
+</CardGroup>
 
 ## 基础用法
+
+<Tabs>
+  <Tab title="简单JSON输出">
 
 ### 简单JSON输出
 
@@ -52,6 +63,9 @@ import json
 result = json.loads(response.choices[0].message.content)
 print(result)
 ```
+
+  </Tab>
+  <Tab title="指定JSON结构">
 
 ### 指定JSON结构
 
@@ -88,6 +102,9 @@ print(f"情感: {result['sentiment']}")
 print(f"置信度: {result['confidence']}")
 print(f"情绪: {result['emotions']}")
 ```
+
+  </Tab>
+  <Tab title="Schema验证">
 
 ### 使用JSON Schema验证
 
@@ -161,9 +178,16 @@ if result:
     print("分析结果:", result)
 ```
 
+  </Tab>
+</Tabs>
+
 ## 高级应用场景
 
-### 数据提取和结构化
+<Warning>
+在使用JSON模式进行数据提取时，请确保输入数据的质量和格式，以获得最佳的提取效果。
+</Warning>
+
+<Accordion title="数据提取和结构化完整实现">
 
 ```python
 class DataExtractor:
@@ -395,7 +419,9 @@ if contacts:
             print(f"电话: {contact['phone']}")
 ```
 
-### API响应格式化
+</Accordion>
+
+<Accordion title="API响应格式化完整实现">
 
 ```python
 class APIResponseFormatter:
@@ -604,7 +630,9 @@ if formatted_results:
         print(f"相关性: {result['relevance_score']}")
 ```
 
-### 配置管理和验证
+</Accordion>
+
+<Accordion title="配置管理和验证完整实现">
 
 ```python
 class ConfigurationManager:
@@ -813,6 +841,8 @@ if config:
             print("警告:", validation_result['warnings'])
 ```
 
+</Accordion>
+
 ## 高级功能
 
 ### 动态Schema生成
@@ -937,7 +967,9 @@ if generated_schema:
     print("生成的Schema:", json.dumps(generated_schema['schema'], indent=2, ensure_ascii=False))
 ```
 
-### 错误处理和重试机制
+</Accordion>
+
+<Accordion title="错误处理和重试机制完整实现">
 
 ```python
 import time
@@ -1137,51 +1169,68 @@ else:
     print(f"处理失败: {result['error']}")
 ```
 
+</Accordion>
+
 ## 最佳实践
 
-### Schema设计原则
-
-1. **明确性**：字段名称和类型要清晰明确
-2. **完整性**：包含所有必要的验证规则
-3. **灵活性**：考虑未来的扩展需求
-4. **容错性**：合理设置可选字段
-
-### 错误处理策略
-
-1. **多层验证**：Schema验证 + 业务逻辑验证
-2. **降级方案**：准备简化的备用Schema
-3. **重试机制**：网络错误和临时故障的重试
-4. **日志记录**：详细记录错误信息
-
-### 性能优化
-
-1. **Schema缓存**：避免重复生成相同的Schema
-2. **批量处理**：合并多个请求
-3. **异步处理**：非阻塞的JSON处理
-4. **结果缓存**：缓存常见查询的结果
+<CardGroup cols={2}>
+  <Card title="Schema设计原则" icon="drafting-compass">
+    - **明确性**：字段名称和类型要清晰明确
+    - **完整性**：包含所有必要的验证规则
+    - **灵活性**：考虑未来的扩展需求
+    - **容错性**：合理设置可选字段
+  </Card>
+  
+  <Card title="错误处理策略" icon="shield-check">
+    - **多层验证**：Schema验证 + 业务逻辑验证
+    - **降级方案**：准备简化的备用Schema
+    - **重试机制**：网络错误和临时故障的重试
+    - **日志记录**：详细记录错误信息
+  </Card>
+  
+  <Card title="性能优化" icon="gauge-high">
+    - **Schema缓存**：避免重复生成相同的Schema
+    - **批量处理**：合并多个请求
+    - **异步处理**：非阻塞的JSON处理
+    - **结果缓存**：缓存常见查询的结果
+  </Card>
+  
+  <Card title="安全考虑" icon="lock">
+    - **敏感信息**：避免在Schema中暴露敏感字段
+    - **输入验证**：严格验证用户输入
+    - **输出过滤**：过滤不必要的敏感信息
+    - **访问控制**：限制Schema的访问权限
+  </Card>
+</CardGroup>
 
 ## 注意事项
 
-### 使用限制
+<Warning>
+JSON模式要求AI严格按照指定格式输出，但在某些复杂场景下可能影响回答的自然性。建议在功能性和用户体验之间找到平衡点。
+</Warning>
 
-- **复杂度限制**：过于复杂的Schema可能影响性能
-- **嵌套深度**：避免过深的嵌套结构
-- **数组大小**：大型数组可能导致超时
-- **字符串长度**：超长字符串可能被截断
-
-### 数据安全
-
-- **敏感信息**：避免在Schema中暴露敏感字段
-- **输入验证**：严格验证用户输入
-- **输出过滤**：过滤不必要的敏感信息
-- **访问控制**：限制Schema的访问权限
-
-### 兼容性考虑
-
-- **版本管理**：Schema的版本控制和向后兼容
-- **字段演进**：新增字段的兼容性处理
-- **类型变更**：数据类型变更的迁移策略
-- **默认值**：合理设置字段默认值
+<CardGroup cols={3}>
+  <Card title="使用限制" icon="exclamation-triangle">
+    - **复杂度限制**：过于复杂的Schema可能影响性能
+    - **嵌套深度**：避免过深的嵌套结构
+    - **数组大小**：大型数组可能导致超时
+    - **字符串长度**：超长字符串可能被截断
+  </Card>
+  
+  <Card title="数据安全" icon="shield">
+    - **敏感信息**：避免在Schema中暴露敏感字段
+    - **输入验证**：严格验证用户输入
+    - **输出过滤**：过滤不必要的敏感信息
+    - **访问控制**：限制Schema的访问权限
+  </Card>
+  
+  <Card title="兼容性考虑" icon="arrows-rotate">
+    - **版本管理**：Schema的版本控制和向后兼容
+    - **字段演进**：新增字段的兼容性处理
+    - **类型变更**：数据类型变更的迁移策略
+    - **默认值**：合理设置字段默认值
+  </Card>
+</CardGroup>
 
 <Tip>
 设计JSON Schema时，建议从简单结构开始，逐步增加复杂性。同时，为关键字段提供详细的描述和示例，有助于AI更好地理解和生成符合要求的JSON数据。
