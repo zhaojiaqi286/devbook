@@ -313,7 +313,7 @@
           "File API"
         ],
         "summary": "Upload file",
-        "description": "Upload files to the platform for fine-tuning, knowledge base, or other AI tasks.",
+        "description": "Upload files to the platform for batch, file extraction, or other AI tasks.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -377,8 +377,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "fine-tune",
-                "assistants"
+               "batch",
+               "file-extract",
+               "code-interpreter"
               ]
             }
           },
@@ -430,49 +431,6 @@
       }
     },
     "/paas/v4/files/{file_id}": {
-      "get": {
-        "tags": [
-          "File API"
-        ],
-        "summary": "Get file info",
-        "description": "Get detailed information and metadata for a specified file.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "file_id",
-            "in": "path",
-            "required": true,
-            "description": "文件唯一标识符",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FileObject"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
       "delete": {
         "tags": [
           "File API"

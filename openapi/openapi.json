@@ -373,7 +373,9 @@
             "description": "按用途过滤文件",
             "schema": {
               "type": "string",
-              "enum": ["fine-tune", "assistants"]
+              "enum": [ "batch",
+               "file-extract",
+               "code-interpreter"]
             }
           },
           {
@@ -404,6 +406,49 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FileListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/files/{file_id}": {
+      "delete": {
+        "tags": ["文件 API"],
+        "summary": "删除文件",
+        "description": "永久删除指定文件及其所有关联数据。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "description": "文件唯一标识符",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileDeletedResponse"
                 }
               }
             }
