@@ -1,0 +1,64 @@
+---
+title: "GLM-4.1V-Thinking-Flash"
+---
+
+## <Icon icon="rectangle-list" iconType="solid" color="#134CFF" size={28} />   概览
+
+GLM-4.1V-Thinking-Flash 是智谱推出的免费视觉推理模型。它在图表/视频理解、前端Coding、GUI任务等场景表现出色，核心能力达到全面新SOTA。模型引入思维链推理机制，显著提升了复杂场景中的回答精准度与可解释性。
+
+## <Icon icon="stars" iconType="solid" color="#134CFF" size={28} />   功能特色
+
+<AccordionGroup>
+  <Accordion title="图文理解" defaultOpen icon="image">
+    精准识别并综合分析图像与文本信息。
+  </Accordion>
+  <Accordion title="数学与科学推理" defaultOpen icon="chart-line">
+    支持持复杂题解、多步演绎与公式理解。
+  </Accordion>
+  <Accordion title="视频理解" defaultOpen icon="video">
+    具备时序分析与事件逻辑建模能力。
+  </Accordion>
+  <Accordion title="GUI 与网页智能体任务" defaultOpen icon="code">
+    理解界面结构，辅助自动化操作。
+  </Accordion>
+  <Accordion title="视觉锚定与实体定位" defaultOpen icon="eyes">
+    语言与图像区域精准对齐，提升人机交互可控性。
+  </Accordion>
+</AccordionGroup>
+
+## <Icon icon="arrow-left-to-line" iconType="solid" color="#134CFF" size={28} />   快捷入口
+
+- 接口调用查看 [接口文档](https://www.bigmodel.cn/dev/api/visual-reasoning-model/GLM-4.1V-Thinking)
+- 在 [体验中心](https://www.bigmodel.cn/trialcenter/modeltrial/multimodal?modelCode=glm-4.1v-thinking-flash) 体验模型能力
+- 模型[速率限制](https://www.bigmodel.cn/usercenter/proj-mgmt/rate-limits)
+
+## <Icon icon="diamonds-4" iconType="solid" color="#134CFF" size={28} />   场景应用
+
+<Tabs>
+  <Tab title="图片问答">
+    | Prompt                                                                                                                        | 生成结果                                                                                                                                                                                 |
+    | :---------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | ![Description](https://cdn.bigmodel.cn/markdown/1751371892938image.png?attname=image.png)        请找出这张图中年度利润最高的公司，以及该公司的最大部门？ | Sony has the highest annual profit at \$6.3B. For Sony, the note states, “Media is Sony’s second - largest segment after game consoles.” Thus, the largest segment is game consoles. |
+  </Tab>
+  <Tab title="学科解题">
+    | Prompt                                                                                                               | 生成结果                                                                                                                                |
+    | :------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+    | ![Description](https://cdn.bigmodel.cn/markdown/1751371905445image.png?attname=image.png)        请帮我解决这个题目，给出详细过程和答案 | 思考过程略已知 PA ⊥ 平面 ABCD ，故 PA ⊥ AD 且 PA ⊥ AB。又 AB ⊥ AD ，AB ⊥ AD ，且 PA 与 AB 的公共点为 A ，因此 AD ⊥平面 PAB。由于 AD ⊂ 平面 PAD，故平面 PAB **⊥** 平面 PAD。 |
+  </Tab>
+  <Tab title="GUI Agent">
+    | Prompt                                                                                                                      | 生成结果                                                                                                            |
+    | :-------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+    | ![Description](https://cdn.bigmodel.cn/markdown/1751371916542image.png?attname=image.png)        在APP中，帮我创建一个两周后3点与史密斯博士的会议 | ![Description](https://cdn.bigmodel.cn/markdown/175282595604320250718-160538.jpeg?attname=20250718-160538.jpeg) |
+  </Tab>
+  <Tab title="前端网页Coding">
+    | Prompt                                                                                                                            | 生成结果                                                                                                           |
+    | :-------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- |
+    | ![Description](https://cdn.bigmodel.cn/markdown/1751371942040image.png?attname=image.png)        请构建一个与输入图片相似的网页并将其转换为 React  代码。 | 生成的React代码后渲染的网页界面截图：![Description](https://cdn.bigmodel.cn/markdown/1751381809888image.png?attname=image.png) |
+  </Tab>
+</Tabs>
+
+## <Icon icon="ampersand" iconType="solid" color="#134CFF" size={28} />   更多免费模型
+
+- **GLM-4-Flash-250414：** 完全免费的语言模型，可以进行智能问答、摘要生成和文本数据处理， [点击查看详情](https://bigmodel.cn/dev/activities/free/glm-4-flash)
+- **GLM-Z1-Flash：** 完全免费的推理模型，可以进行数学逻辑推理、长文档处理、代码生成，[点击查看详情](https://bigmodel.cn/dev/activities/free/glm-z1-flash)
+- **Cogview-3-Flash：** 完全免费的图片生成模型，可根据指令生成高质量图片，[点击查看详情](https://bigmodel.cn/dev/activities/free/cogview-3-flash)

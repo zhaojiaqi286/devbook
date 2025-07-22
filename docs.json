@@ -54,64 +54,64 @@
                   {
                     "group": "语言模型",
                     "pages": [
-                      "cn/guide/Models/Language/GLM-4-PLUS",
-                      "cn/guide/Models/Language/GLM-4-Air-250414",
-                      "cn/guide/Models/Language/GLM-4-AirX",
-                      "cn/guide/Models/Language/GLM-4-Long",
-                      "cn/guide/Models/Language/GLM-4-FlashX-250414"
+                      "cn/guide/models/language/glm-4-plus",
+                      "cn/guide/models/language/glm-4-air-250414",
+                      "cn/guide/models/language/glm-4-airx",
+                      "cn/guide/models/language/glm-4-long",
+                      "cn/guide/models/language/glm-4-flashx"
                     ]
                   },
                   {
                     "group": "推理模型",
                     "pages": [
-                      "cn/guide/Models/Inference/GLM-Z1-Air",
-                      "cn/guide/Models/Inference/GLM-Z1-AirX",
-                      "cn/guide/Models/Inference/GLM-Z1-FlashX"
+                      "cn/guide/models/inference/glm-z1-air",
+                      "cn/guide/models/inference/glm-z1-airx",
+                      "cn/guide/models/inference/glm-z1-flashx"
                     ]
                   },
                   {
                     "group": "视觉理解模型",
                     "pages": [
-                      "cn/guide/Models/VisualUnderstanding/GLM-4V-Plus-0111"
+                      "cn/guide/models/visual-understanding/glm-4v-plus-0111"
                     ]
                   },
                   {
                     "group": "视觉推理模型",
                     "pages": [
-                      "cn/guide/Models/VisualInference/GLM-4.1V-Thinking"
+                      "cn/guide/models/visual-inference/glm-4.1v-thinking"
                     ]
                   },
                   {
                     "group": "图像生成模型",
                     "pages": [
-                      "cn/guide/Models/ImageGeneration/CogView-4"
+                      "cn/guide/models/image-generation/cogview-4"
                     ]
                   },
                   {
                     "group": "视频生成模型",
                     "pages": [
-                      "cn/guide/Models/VideoGeneration/CogVideoX-2",
-                      "cn/guide/Models/VideoGeneration/ViduQ1",
-                      "cn/guide/Models/VideoGeneration/Vidu2"
+                      "cn/guide/models/video-generation/cogvideox-2",
+                      "cn/guide/models/video-generation/viduq1",
+                      "cn/guide/models/video-generation/vidu2"
                     ]
                   },
                   {
                     "group": "音视频模型",
                     "pages": [
-                      "cn/guide/Models/SoundandVideo/GLM-Realtime",
-                      "cn/guide/Models/SoundandVideo/GLM-4-Voice",
-                      "cn/guide/Models/SoundandVideo/GLM-ASR"
+                      "cn/guide/models/soundandvideo/glm-realtime",
+                      "cn/guide/models/soundandvideo/glm-4-voice",
+                      "cn/guide/models/soundandvideo/glm-asr"
                     ]
                   },
                   {
                     "group": "免费模型",
                     "pages": [
-                      "cn/guide/Models/Free/GLM-4.1V-Thinking-Flash",
-                      "cn/guide/Models/Free/GLM-4-Flash-250414",
-                      "cn/guide/Models/Free/GLM-4V-Flash",
-                      "cn/guide/Models/Free/GLM-Z1-Flash",
-                      "cn/guide/Models/Free/CogView-3-Flash",
-                      "cn/guide/Models/Free/CogVideoX-Flash"
+                      "cn/guide/models/free/glm-4.1v-thinking-flash",
+                      "cn/guide/models/free/glm-4-flash-250414",
+                      "cn/guide/models/free/glm-4v-flash",
+                      "cn/guide/models/free/glm-z1-flash",
+                      "cn/guide/models/free/cogview-3-flash",
+                      "cn/guide/models/free/cogvideox-flash"
                     ]
                   }
                 ]
@@ -253,7 +253,7 @@
                 ]
               },
               {
-                "group": "Language Models",
+                "group": "language models",
                 "pages": [
                   "en/guide/llm/glm-4-32b-0414-128k"
                 ]
