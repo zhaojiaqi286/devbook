@@ -794,31 +794,36 @@
     "/v1/agents/async-result": {
       "post": {
         "tags": ["Agent API"],
-        "summary": "查询异步结果 (WIP)",
+        "summary": "查询异步结果",
         "description": "查询智能体异步任务的处理结果和状态。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "async_id",
-            "in": "query",
-            "required": true,
-            "description": "任务ID",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "agent_id",
-            "in": "query",
-            "required": true,
-            "description": "agent智能体名称，如doc_translation_agent",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["async_id", "agent_id"],
+                "properties": {
+                  "async_id": {
+                    "type": "string",
+                    "description": "任务ID",
+                    "example": "VHJhbnNsYXRvckVudGl0eVRhc2s6OTI5OTY5"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "description": "智能体ID，如 doc_translation_agent (专业文档翻译智能体)",
+                    "example": "doc_translation_agent"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "业务处理成功",
@@ -3942,8 +3947,8 @@
             "oneOf": [
               {
                 "type": "string",
-                "enum": ["general_translation"],
-                "description": "**请切换变量类型至string以输入其他智能体ID**\n 此处提供 通用翻译智能体 (general_translation) 作为示例。"
+                "enum": ["general_translation", "doc_translation_agent"],
+                "description": "**请切换变量类型至string以输入其他智能体ID**\n 此处提供 通用翻译智能体 (general_translation) 和 专业文档翻译智能体 (doc_translation_agent) 作为示例。"
               },
               {
                 "type": "string",
@@ -3975,21 +3980,42 @@
                   "type": "array",
                   "description": "会话消息体内容。",
                   "items": {
-                    "type": "object",
-                    "required": ["type", "text"],
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "description": "消息内容类型。目前支持 type=text。",
-                        "enum": ["text"],
-                        "example": "text"
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "required": ["type", "text"],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "消息内容类型。",
+                            "enum": ["text"],
+                            "default": "text"
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "用户输入的文本内容。",
+                            "example": "请帮我翻译这段文字：Hello World"
+                          }
+                        }
                       },
-                      "text": {
-                        "type": "string",
-                        "description": "用户输入的文本内容。",
-                        "example": "请帮我翻译这段文字：Hello World"
+                      {
+                        "type": "object",
+                        "required": ["type", "file_id"],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "消息内容类型。",
+                            "enum": ["file_id"],
+                            "default": "file_id"
+                          },
+                          "file_id": {
+                            "type": "string",
+                            "description": "用户上传文件返回的文件id。支持的文件类型：.pdf, .docx, .pptx, .xlsx, .json, .txt, .epub, .po, .srt, .html, .htm, .xhtml, .xml, .zip, .xlf, .xliff, .jpg, .jpeg, .png, .webp, .md, .odt, .ods, .odp, .csv, .yml, .yaml, .php, .ai, .indd, .wav, .mp3, .wma, .m4a, .amr。文件大小限制：100MB。",
+                            "example": "agent_1750681215_9b92722d788f4b32bab28cc333293584"
+                          }
+                        }
                       }
-                    }
+                    ]
                   }
                 }
               }
@@ -4001,6 +4027,9 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/TranslationAgentCustomVariables"
+              },
+              {
+                "$ref": "#/components/schemas/DocumentTranslationAgentCustomVariables"
               },
               {
                 "type": "object",
@@ -4019,28 +4048,22 @@
           }
         },
         "example": {
-          "agent_id": "general_translation",
-          "stream": false,
+          "agent_id": "doc_translation_agent",
           "messages": [
             {
               "role": "user",
               "content": [
                 {
-                  "type": "text",
-                  "text": "Please translate the following text into Chinese: Machine learning is a subset of artificial intelligence that provides systems the ability to automatically learn and improve from experience without being explicitly programmed."
+                  "type": "file_id",
+                  "file_id": "agent_1750681215_9b92722d788f4b32bab28cc333293584"
                 }
               ]
             }
           ],
           "custom_variables": {
-            "source_lang": "en",
-            "target_lang": "zh-CN",
-            "strategy": "cot",
-            "strategy_config": {
-              "cot": {
-                "reason_lang": "to"
-              }
-            }
+            "from_lang": "English",
+            "to_lang": "Simplified Chinese",
+            "should_translate_image": true
           }
         }
       },
@@ -4097,7 +4120,7 @@
       },
       "TranslationAgentCustomVariables": {
         "type": "object",
-        "description": "**当前为 通用翻译智能体 (general_translation) 扩展参数预设\n请切换切换至 Option 2 以手动输入其他智能体扩展参数**",
+        "description": "**当前为 通用翻译智能体 (general_translation) 扩展参数预设\n请切换至 Option 2 以使用 专业文档翻译智能体 (doc_translation_agent) 扩展参数预设; Option 3 以手动输入其他智能体扩展参数**",
         "properties": {
           "source_lang": {
             "type": "string",
@@ -4253,16 +4276,44 @@
           }
         }
       },
+      "DocumentTranslationAgentCustomVariables": {
+        "type": "object",
+        "description": "**当前为 专业文档翻译智能体 (doc_translation_agent) 扩展参数预设\n请切换至 Option 1 以使用 通用翻译智能体 (general_translation) 扩展参数预设; Option 3 以手动输入其他智能体扩展参数**",
+        "required": ["from_lang", "to_lang"],
+        "properties": {
+          "from_lang": {
+            "type": "string",
+            "description": "被翻译的语言",
+            "default": "English"
+          },
+          "to_lang": {
+            "type": "string",
+            "description": "翻译成什么语言",
+            "default": "Simplified Chinese"
+          },
+          "should_translate_image": {
+            "type": "boolean",
+            "description": "是否要翻译 PDF 文档中的图片，默认是 false，一般建议指定为 true。当指定为 true 时，会检测文件里的图片，并自动对含有图片的页进行 OCR 翻译，但这样价格一般会高一些。",
+            "default": false,
+            "example": true
+          }
+        },
+        "example": {
+          "from_lang": "English",
+          "to_lang": "Simplified Chinese",
+          "should_translate_image": true
+        }
+      },
       "AgentAsyncResultResponse": {
         "type": "object",
         "properties": {
           "agent_id": {
             "type": "string",
-            "description": "agent智能体名称"
+            "description": "智能体ID"
           },
           "async_id": {
             "type": "string",
-            "description": "翻译任务的 ID"
+            "description": "异步任务的ID"
           },
           "status": {
             "type": "string",
@@ -4322,6 +4373,43 @@
                 "description": "消耗总tokens数"
               }
             }
+          }
+        },
+        "example": {
+          "agent_id": "doc_translation_agent",
+          "async_id": "VHJhbnNsYXRvckVudGl0eVRhc2s6OTI5OTY5",
+          "status": "success",
+          "choices": [
+            {
+              "messages": [
+                {
+                  "role": "assistant",
+                  "content": [
+                    {
+                      "type": "file_url",
+                      "file_url": "http://batch-api-dev.cn-wlcb.ufileos.com/17509232614dd864-976dd3acd16a4cbeb0aa61e577960c22.xlsx?ufileattname=%25E4%25BF%25A1%25E7%2594%25A8%25E8%25B4%25A6%25E6%2588%25B7%25E5%25AF%25B9%25E8%25B4%25A6%25E5%258D%2595.xlsx",
+                      "tag_cn": "原文档的 URL",
+                      "tag_en": "originalFileUrl"
+                    },
+                    {
+                      "type": "file_url",
+                      "file_url": "http://batch-api-dev.cn-wlcb.ufileos.com/1750923264dd2050-24fb03eaef954e5badadd32a015d42d8.xlsx?ufileattname=%25E4%25BF%25A1%25E7%2594%25A8%25E8%25B4%25A6%25E6%2588%25B7%25E5%25AF%25B9%25E8%25B4%25A6%25E5%258D%2595.en.xlsx",
+                      "tag_cn": "译文文档的 URL，翻译完成才有",
+                      "tag_en": "translatedFileUrl"
+                    },
+                    {
+                      "type": "file_url",
+                      "file_url": "http://batch-api-dev.cn-wlcb.ufileos.com/17509232dx562284-0f5b7f07f6774060b634b0653533dbd1.xlsx?ufileattname=%25E4%25BF%25A1%25E7%2594%25A8%25E8%25B4%25A6%25E6%2588%25B7%25E5%25AF%25B9%25E8%25B4%25A6%25E5%258D%2595.zh-CN_en.xlsx",
+                      "tag_cn": "双语文档的 URL，翻译完成才有",
+                      "tag_en": "bilingualFileUrl"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "usage": {
+            "total_tokens": 250
           }
         }
       },
