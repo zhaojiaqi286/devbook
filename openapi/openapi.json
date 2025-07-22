@@ -133,50 +133,6 @@
         }
       }
     },
-    "/paas/v4/images/generations": {
-      "post": {
-        "tags": ["图像 API"],
-        "summary": "图像生成",
-        "description": "使用 CogView-4 系列模型从文本提示生成高质量图像。CogView-4 适用于图像生成任务，通过对用户文字描述快速、精准的理解，让AI的图像表达更加精确和个性化。支持cogview-4-250304、cogview-4、cogview-3-flash等模型。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateImageRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImageGenerationResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/paas/v4/embeddings": {
       "post": {
         "tags": ["嵌入 API"],
@@ -221,11 +177,11 @@
         }
       }
     },
-    "/paas/v4/rerank": {
+    "/paas/v4/images/generations": {
       "post": {
-        "tags": ["知识库 API"],
-        "summary": "文本重排序",
-        "description": "Rerank 用于文本重排序，通过接收用户的查询文本及候选文本列表，使用模型计算候选文本与查询文本的相关性得分并返回分数。适用于智能问答、信息检索等场景。",
+        "tags": ["图像 API"],
+        "summary": "图像生成",
+        "description": "使用 CogView-4 系列模型从文本提示生成高质量图像。CogView-4 适用于图像生成任务，通过对用户文字描述快速、精准的理解，让AI的图像表达更加精确和个性化。支持cogview-4-250304、cogview-4、cogview-3-flash等模型。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -235,7 +191,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RerankRequest"
+                "$ref": "#/components/schemas/CreateImageRequest"
               }
             }
           },
@@ -247,7 +203,539 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RerankResponse"
+                  "$ref": "#/components/schemas/ImageGenerationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/audio/speech": {
+      "post": {
+        "tags": ["音频 API"],
+        "summary": "文本转语音",
+        "description": "使用 CogTTS 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AudioSpeechRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "audio/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/audio/transcriptions": {
+      "post": {
+        "tags": ["音频 API"],
+        "summary": "语音转文本",
+        "description": "使用 GLM ASR 模型将音频文件转录为文本，支持多语言和实时流式转录。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AudioTranscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioTranscriptionResponse"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioTranscriptionStreamResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/videos/generations": {
+      "post": {
+        "tags": ["视频 API"],
+        "summary": "生成视频",
+        "description": "通过文本或图像生成视频内容。支持多种视频生成方式，包括文本转视频、图像转视频等。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "title": "CogVideoX-3",
+                    "$ref": "#/components/schemas/CogVideoX3Request"
+                  },
+                  {
+                    "title": "CogVideoX",
+                    "$ref": "#/components/schemas/CogVideoXRequest"
+                  },
+                  {
+                    "title": "Vidu: Text to Video",
+                    "$ref": "#/components/schemas/ViduText2VideoRequest"
+                  },
+                  {
+                    "title": "Vidu: Image to Video",
+                    "$ref": "#/components/schemas/ViduImage2VideoRequest"
+                  },
+                  {
+                    "title": "Vidu: First & Last Frame to Video",
+                    "$ref": "#/components/schemas/ViduFrames2VideoRequest"
+                  },
+                  {
+                    "title": "Vidu: Ref to Video",
+                    "$ref": "#/components/schemas/ViduReference2VideoRequest"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/async-result/{id}": {
+      "get": {
+        "tags": ["视频 API"],
+        "summary": "查询视频异步结果",
+        "description": "查询异步请求的处理结果和状态。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "任务 ID。"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "description": "模型名称。"
+                    },
+                    "video_result": {
+                      "type": "array",
+                      "description": "视频生成结果。",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "description": "视频链接。"
+                          },
+                          "cover_image_url": {
+                            "type": "string",
+                            "description": "视频封面链接。"
+                          }
+                        }
+                      }
+                    },
+                    "task_status": {
+                      "type": "string",
+                      "description": "处理状态，`PROCESSING (处理中)`、`SUCCESS (成功)`、`FAIL (失败)`。注意：处理状态需要通过查询获取。"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "description": "客户端请求时用户提交的任务编号或平台生成的任务编号。"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/web_search": {
+      "post": {
+        "tags": ["网络搜索 API"],
+        "summary": "网络搜索",
+        "description": "Web Search API 是一个专给大模型用的搜索引擎，在传统搜索引擎网页抓取、排序的能力基础上，增强了意图识别能力，返回更适合大模型处理的结果（网页标题、网页URL、网页摘要、网站名称、网站图标等）。支持意图增强检索、结构化输出和多引擎支持。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebSearchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。可能的错误码：1701-网络搜索并发已达上限，请稍后重试或减少并发请求；1702-系统未找到可用的搜索引擎服务，请检查配置或联系管理员；1703-搜索引擎未返回有效数据，请调整查询条件。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/agents": {
+      "post": {
+        "tags": ["Agent API"],
+        "summary": "智能体对话",
+        "description": "与智能体进行对话交互。支持同步和流式调用，提供智能体的专业能力。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/agents/async-result": {
+      "post": {
+        "tags": ["Agent API"],
+        "summary": "查询异步结果",
+        "description": "查询智能体异步任务的处理结果和状态。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["async_id", "agent_id"],
+                "properties": {
+                  "async_id": {
+                    "type": "string",
+                    "description": "任务ID",
+                    "example": "VHJhbnNsYXRvckVudGl0eVRhc2s6OTI5OTY5"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "description": "智能体ID，如 doc_translation_agent (专业文档翻译智能体)",
+                    "example": "doc_translation_agent"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentAsyncResultResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/assistant": {
+      "post": {
+        "tags": ["智能体 API"],
+        "summary": "助手对话",
+        "deprecated": true,
+        "description": "与AI助手进行对话，支持流式和同步模式。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          },
+          {
+            "name": "stream",
+            "in": "query",
+            "description": "是否启用流式响应",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantResponse"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "流式响应数据"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/assistant/list": {
+      "post": {
+        "tags": ["智能体 API"],
+        "deprecated": true,
+        "summary": "查询助手支持能力",
+        "description": "查询助手支持的功能和能力列表。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantSupportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantSupportResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/assistant/conversation/list": {
+      "post": {
+        "tags": ["智能体 API"],
+        "deprecated": true,
+        "summary": "查询对话使用统计",
+        "description": "查询助手对话的使用统计信息。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationUsageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationUsageResponse"
                 }
               }
             }
@@ -445,535 +933,6 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/videos/generations": {
-      "post": {
-        "tags": ["视频 API"],
-        "summary": "生成视频",
-        "description": "通过文本或图像生成视频内容。支持多种视频生成方式，包括文本转视频、图像转视频等。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "title": "CogVideoX-3",
-                    "$ref": "#/components/schemas/CogVideoX3Request"
-                  },
-                  {
-                    "title": "CogVideoX",
-                    "$ref": "#/components/schemas/CogVideoXRequest"
-                  },
-                  {
-                    "title": "Vidu: Text to Video",
-                    "$ref": "#/components/schemas/ViduText2VideoRequest"
-                  },
-                  {
-                    "title": "Vidu: Image to Video",
-                    "$ref": "#/components/schemas/ViduImage2VideoRequest"
-                  },
-                  {
-                    "title": "Vidu: First & Last Frame to Video",
-                    "$ref": "#/components/schemas/ViduFrames2VideoRequest"
-                  },
-                  {
-                    "title": "Vidu: Ref to Video",
-                    "$ref": "#/components/schemas/ViduReference2VideoRequest"
-                  }
-                ]
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VideoResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/async-result/{id}": {
-      "get": {
-        "tags": ["视频 API"],
-        "summary": "查询异步结果",
-        "description": "查询异步请求的处理结果和状态。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "任务 ID。"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "model": {
-                      "type": "string",
-                      "description": "模型名称。"
-                    },
-                    "video_result": {
-                      "type": "array",
-                      "description": "视频生成结果。",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "url": {
-                            "type": "string",
-                            "description": "视频链接。"
-                          },
-                          "cover_image_url": {
-                            "type": "string",
-                            "description": "视频封面链接。"
-                          }
-                        }
-                      }
-                    },
-                    "task_status": {
-                      "type": "string",
-                      "description": "处理状态，`PROCESSING (处理中)`、`SUCCESS (成功)`、`FAIL (失败)`。注意：处理状态需要通过查询获取。"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "description": "客户端请求时用户提交的任务编号或平台生成的任务编号。"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/web_search": {
-      "post": {
-        "tags": ["网络搜索 API"],
-        "summary": "网络搜索",
-        "description": "Web Search API 是一个专给大模型用的搜索引擎，在传统搜索引擎网页抓取、排序的能力基础上，增强了意图识别能力，返回更适合大模型处理的结果（网页标题、网页URL、网页摘要、网站名称、网站图标等）。支持意图增强检索、结构化输出和多引擎支持。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WebSearchRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WebSearchResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。可能的错误码：1701-网络搜索并发已达上限，请稍后重试或减少并发请求；1702-系统未找到可用的搜索引擎服务，请检查配置或联系管理员；1703-搜索引擎未返回有效数据，请调整查询条件。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/audio/speech": {
-      "post": {
-        "tags": ["音频 API"],
-        "summary": "文本转语音",
-        "description": "使用 CogTTS 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AudioSpeechRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "audio/*": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/audio/transcriptions": {
-      "post": {
-        "tags": ["音频 API"],
-        "summary": "语音转文本",
-        "description": "使用 GLM ASR 模型将音频文件转录为文本，支持多语言和实时流式转录。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/AudioTranscriptionRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AudioTranscriptionResponse"
-                }
-              },
-              "text/event-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/AudioTranscriptionStreamResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/agents": {
-      "post": {
-        "tags": ["Agent API"],
-        "summary": "智能体对话",
-        "description": "与智能体进行对话交互。支持同步和流式调用，提供智能体的专业能力。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AgentRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AgentResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/agents/async-result": {
-      "post": {
-        "tags": ["Agent API"],
-        "summary": "查询异步结果",
-        "description": "查询智能体异步任务的处理结果和状态。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["async_id", "agent_id"],
-                "properties": {
-                  "async_id": {
-                    "type": "string",
-                    "description": "任务ID",
-                    "example": "VHJhbnNsYXRvckVudGl0eVRhc2s6OTI5OTY5"
-                  },
-                  "agent_id": {
-                    "type": "string",
-                    "description": "智能体ID，如 doc_translation_agent (专业文档翻译智能体)",
-                    "example": "doc_translation_agent"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AgentAsyncResultResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/assistant": {
-      "post": {
-        "tags": ["智能体 API"],
-        "summary": "助手对话",
-        "description": "与AI助手进行对话，支持流式和同步模式。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          },
-          {
-            "name": "stream",
-            "in": "query",
-            "description": "是否启用流式响应",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssistantRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AssistantResponse"
-                }
-              },
-              "text/event-stream": {
-                "schema": {
-                  "type": "string",
-                  "description": "流式响应数据"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/assistant/list": {
-      "post": {
-        "tags": ["智能体 API"],
-        "summary": "查询助手支持能力",
-        "description": "查询助手支持的功能和能力列表。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssistantSupportRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AssistantSupportResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paas/v4/assistant/conversation/list": {
-      "post": {
-        "tags": ["智能体 API"],
-        "summary": "查询对话使用统计",
-        "description": "查询助手对话的使用统计信息。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConversationUsageRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConversationUsageResponse"
                 }
               }
             }
@@ -1486,13 +1445,105 @@
         }
       }
     },
+    "/document/slice/image_list/{id}": {
+      "post": {
+        "tags": ["知识库 API"],
+        "summary": "获取文件解析到的图片列表",
+        "description": "用于获取文件下解析到的图片序号和图片链接映射关系。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "知识id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/KnowledgeImageListResponse" },
+                "example": {
+                  "data": {
+                    "images": [
+                      {
+                        "text": "【示意图序号_1829473032620613632_103】",
+                        "cos_url": "https://cdn.bigmodel.cn/knowledge_pdf_image/de7163a7-c67f-4e33-8810-97a6d5a83378.png"
+                      }
+                    ]
+                  },
+                  "code": 200,
+                  "message": "请求成功",
+                  "timestamp": 1725070689634
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paas/v4/rerank": {
+      "post": {
+        "tags": ["知识库 API"],
+        "summary": "文本重排序",
+        "description": "Rerank 用于文本重排序，通过接收用户的查询文本及候选文本列表，使用模型计算候选文本与查询文本的相关性得分并返回分数。适用于智能问答、信息检索等场景。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RerankRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "业务处理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RerankResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/llm-application/open/v2/application/{app_id}/variables": {
       "get": {
         "tags": [
           "清流智能体 API"
         ],
-        "summary": "获取智能体（应用）输入参数",
-        "description": "获取指定智能体（应用）的输入参数列表。",
+        "summary": "获取智能体输入参数",
+        "description": "获取指定智能体应用的输入参数列表。",
         "parameters": [
           {
             "name": "app_id",
@@ -2046,54 +2097,6 @@
                   "code": 200,
                   "message": "请求成功",
                   "timestamp": 1689649504996
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/document/slice/image_list/{id}": {
-      "post": {
-        "tags": ["知识库 API"],
-        "summary": "获取文件解析到的图片列表",
-        "description": "用于获取文件下解析到的图片序号和图片链接映射关系。",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "知识id",
-            "schema": { "type": "string" }
-          },
-          { "$ref": "#/components/parameters/AcceptLanguage" }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/KnowledgeImageListResponse" },
-                "example": {
-                  "data": {
-                    "images": [
-                      {
-                        "text": "【示意图序号_1829473032620613632_103】",
-                        "cos_url": "https://cdn.bigmodel.cn/knowledge_pdf_image/de7163a7-c67f-4e33-8810-97a6d5a83378.png"
-                      }
-                    ]
-                  },
-                  "code": 200,
-                  "message": "请求成功",
-                  "timestamp": 1725070689634
                 }
               }
             }
