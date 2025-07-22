@@ -374,9 +374,7 @@
             "description": "按用途过滤文件",
             "schema": {
               "type": "string",
-              "enum": [ "batch",
-               "file-extract",
-               "code-interpreter"]
+              "enum": ["batch", "file-extract", "code-interpreter"]
             }
           },
           {
@@ -528,8 +526,8 @@
                     "$ref": "#/components/schemas/CogVideoX3Request"
                   },
                   {
-                    "title": "CogVideoX-2",
-                    "$ref": "#/components/schemas/CogVideoX2Request"
+                    "title": "CogVideoX",
+                    "$ref": "#/components/schemas/CogVideoXRequest"
                   },
                   {
                     "title": "Vidu: Text to Video",
@@ -2463,7 +2461,7 @@
           }
         ]
       },
-      "CogVideoX2Request": {
+      "CogVideoXRequest": {
         "allOf": [
           {
             "type": "object",
@@ -2471,7 +2469,7 @@
               "model": {
                 "type": "string",
                 "description": "要调用的代码。",
-                "enum": ["cogvideox-2"]
+                "enum": ["cogvideox-2", "cogvideox-flash"]
               },
               "prompt": {
                 "type": "string",
