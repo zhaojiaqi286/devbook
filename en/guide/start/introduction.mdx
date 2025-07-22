@@ -1,0 +1,163 @@
+---
+title: "平台介绍"
+description: "Z智谱·一站式大模型开发平台"
+---
+
+<Frame>
+  <img
+    className="block dark:hidden"
+    src="/resource/dark.svg"
+    alt="智谱AI开放平台"
+  />
+  <img
+    className="hidden dark:block"
+    src="/resource/light.svg"
+    alt="智谱AI开放平台"
+  />
+</Frame>
+
+## 🚀 平台概览
+
+智谱 AI 开放平台提供一系列具有不同功能和定价的大模型，包括通用大模型、超拟人大模型、图像大模型、向量大模型等，并且支持使用您的私有数据对模型进行微调。
+
+<Info>
+  **重要里程碑**：2024年01月16日，我们在「智谱AI技术开放日(ZHIPU DevDay)」推出新一代基座大模型 GLM-4。
+</Info>
+
+## 📹 GLM-4 发布会
+
+<video src="https://cdn.bigmodel.cn/static/platform/videos/usage-guide/GLM4-press-conference.mp4" controls></video>
+
+## 📚 快速开始
+
+<CardGroup cols={2}>
+  <Card
+    title="查看模型接口文档"
+    icon="book-open"
+    href="/cn/guide/models"
+  >
+    了解各种模型的详细API文档和使用方法
+  </Card>
+  <Card
+    title="体验中心"
+    icon="flask"
+    href="/experience"
+  >
+    在体验中心直接体验模型能力
+  </Card>
+  <Card
+    title="API Key 管理"
+    icon="key"
+    href="/api-keys"
+  >
+    查看和管理您的 API Key
+  </Card>
+  <Card
+    title="应用中心"
+    icon="rocket"
+    href="/applications"
+  >
+    在应用中心创建和管理您的应用
+  </Card>
+</CardGroup>
+
+## 🔑 核心概念
+
+<Tabs>
+  <Tab title="GLM 大语言模型">
+    <Card title="GLM - General Language Model" icon="brain">
+      GLM 是一款基于自回归填空的预训练语言模型。ChatGLM系列模型支持相对复杂的自然语言指令，并且能够解决困难的推理类问题。
+      
+      <AccordionGroup>
+        <Accordion title="主要特性">
+          - 支持复杂自然语言指令
+          - 强大的推理能力
+          - 易于使用的 API 接口
+          - 广泛的应用场景支持
+        </Accordion>
+        <Accordion title="应用场景">
+          - 智能客服系统
+          - 虚拟主播
+          - 聊天机器人
+          - 内容生成
+          - 代码助手
+        </Accordion>
+      </AccordionGroup>
+    </Card>
+  </Tab>
+  
+  <Tab title="Embedding 向量化">
+    <Card title="Embedding - 文本向量化" icon="vector-square">
+      Embedding 是一种将数据（如文本）转化为向量形式的表示方法，确保相似数据在向量空间中彼此接近。
+      
+      <AccordionGroup>
+        <Accordion title="工作原理">
+          通过将文本字符串转换为高维向量，使得语义相似的文本在向量空间中距离更近，而不相关的文本则相距较远。
+        </Accordion>
+        <Accordion title="应用场景">
+          - 语义搜索
+          - 文本聚类
+          - 推荐系统
+          - 异常检测
+          - 文本分类
+        </Accordion>
+      </AccordionGroup>
+    </Card>
+  </Tab>
+  
+  <Tab title="Token 计费单位">
+    <Card title="Token - 文本处理单位" icon="coins">
+      Token 是模型用来表示自然语言文本的基本单位，可以直观理解为"字"或"词"。
+      
+      <Tip>
+        **换算比例**：GLM 系列模型中 token 和字数的换算比例约为 **1:1.6**
+      </Tip>
+      
+      <AccordionGroup>
+        <Accordion title="Token 计算规则">
+          - 1 个中文词语 = 1 个 token
+          - 1 个英文单词 = 1 个 token  
+          - 1 个数字 = 1 个 token
+          - 1 个符号 = 1 个 token
+        </Accordion>
+        <Accordion title="注意事项">
+          - 不同模型的分词方式可能不同
+          - 实际 token 数量以模型返回为准
+          - 可从返回结果的 `usage` 字段查看具体消耗
+        </Accordion>
+      </AccordionGroup>
+    </Card>
+  </Tab>
+  
+  <Tab title="上下文窗口">
+    <Card title="Context Window - 上下文窗口" icon="window">
+      上下文窗口是指模型在一次对话中能够处理的最大文本长度。
+      
+      <AccordionGroup>
+        <Accordion title="包含内容">
+          - 用户输入的内容
+          - 模型生成的回复
+          - 模型推理或调用工具时产生的中间内容（如：GLM-4-AllTools）
+        </Accordion>
+        <Accordion title="超出限制的影响">
+          <Warning>
+            **超出部分被截断**：如果总文本量超过上下文窗口限制，超出部分将被自动丢弃，无法被处理。
+          </Warning>
+          
+          <Warning>
+            **影响对话质量**：被丢弃的部分可能影响模型的回答质量或上下文的连贯性。
+          </Warning>
+        </Accordion>
+        <Accordion title="如何管理">
+          - 查看模型的上下文限制
+          - 使用 Tokenizer 工具估算上下文长度
+          - 合理规划对话内容长度
+        </Accordion>
+      </AccordionGroup>
+    </Card>
+  </Tab>
+</Tabs>
+
+<Note>
+  **重要提醒**：以上内容主要适用于GLM-4系列语言模型。对于多模态模型，输入内容有严格长度限制，若超出限制，系统将提示"prompt超长"。
+</Note>

@@ -3,209 +3,392 @@ title: "模型概况"
 description: "智谱AI开放平台模型详细介绍"
 ---
 
-# 模型概况
+<Tip>
+  智谱AI开放平台提供多种类型的模型，满足不同场景的需求。选择合适的模型可以帮助您更高效地完成任务。
+</Tip>
 
-智谱AI开放平台提供多种类型的模型，满足不同场景的需求。以下是各类模型的详细介绍：
+## 🔠 语言模型
 
-## 语言模型
+<CardGroup cols={2}>
+  <Card title="GLM-4-Plus" icon="star">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">最强大的通用语言模型，具备强大的理解和生成能力。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 强大的推理能力
+            - 支持复杂指令理解
+            - 适合高质量内容生成
+            - 支持多轮对话
+          </Accordion>
+          <Accordion title="适用场景">
+            - 复杂问答
+            - 内容创作
+            - 代码生成
+            - 逻辑推理
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-4-Air-250414" icon="wind">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">轻量级高效模型，平衡性能与速度。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 响应速度快
+            - 成本较低
+            - 性能稳定
+          </Accordion>
+          <Accordion title="适用场景">
+            - 日常对话
+            - 简单问答
+            - 批量处理
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-4-AirX" icon="feather">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">超轻量级模型，专注于快速响应。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 极快响应速度
+            - 超低延迟
+            - 成本最优
+          </Accordion>
+          <Accordion title="适用场景">
+            - 实时对话
+            - 简单任务
+            - 高并发场景
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-4-Long" icon="file-lines">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">长文本处理专用模型，支持超长上下文。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 支持超长文本输入
+            - 保持长距离依赖关系
+            - 适合文档分析
+          </Accordion>
+          <Accordion title="适用场景">
+            - 长文档分析
+            - 书籍摘要
+            - 法律文件处理
+            - 学术论文分析
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-4-FlashX-250414" icon="bolt">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">超快响应模型，专为低延迟场景设计。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 毫秒级响应
+            - 高并发支持
+            - 稳定性强
+          </Accordion>
+          <Accordion title="适用场景">
+            - 实时应用
+            - 游戏NPC对话
+            - 客服机器人
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+</CardGroup>
 
-### GLM-4-Plus
-最强大的通用语言模型，具备强大的理解和生成能力。
+## 🧠 推理模型
 
-**特点：**
-- 强大的推理能力
-- 支持复杂指令理解
-- 适合高质量内容生成
-- 支持多轮对话
+<CardGroup cols={3}>
+  <Card title="GLM-Z1-Air" icon="brain">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">专业推理模型，擅长逻辑分析和数学计算。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 强化推理能力
+            - 数学计算准确
+            - 逻辑分析清晰
+          </Accordion>
+          <Accordion title="适用场景">
+            - 数学题解答
+            - 逻辑推理
+            - 科学计算
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-Z1-AirX" icon="calculator">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">轻量级推理模型，快速推理响应。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 快速推理
+            - 成本优化
+            - 准确率高
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+  
+  <Card title="GLM-Z1-FlashX" icon="bolt-lightning">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="mt-2">超快推理模型，专为实时推理场景设计。</p>
+        
+        <AccordionGroup className="mt-4">
+          <Accordion title="特点">
+            - 极速推理
+            - 实时响应
+            - 高效处理
+          </Accordion>
+        </AccordionGroup>
+      </div>
+    </div>
+  </Card>
+</CardGroup>
 
-**适用场景：**
-- 复杂问答
-- 内容创作
-- 代码生成
-- 逻辑推理
+## 👁️ 视觉模型
 
-### GLM-4-Air-250414
-轻量级高效模型，平衡性能与速度。
+<Tabs>
+  <Tab title="视觉理解">
+    <Card title="GLM-4V-Plus-0111" icon="eye">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="mt-2">多模态理解模型，支持图像和文本的联合理解。</p>
+          
+          <AccordionGroup className="mt-4">
+            <Accordion title="特点">
+              - 图像理解能力强
+              - 支持图文对话
+              - 场景识别准确
+            </Accordion>
+            <Accordion title="适用场景">
+              - 图像描述
+              - 视觉问答
+              - 图像分析
+              - OCR识别
+            </Accordion>
+          </AccordionGroup>
+        </div>
+      </div>
+    </Card>
+  </Tab>
+  
+  <Tab title="视觉推理">
+    <Card title="GLM-4.1V-Thinking" icon="magnifying-glass-chart">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="mt-2">具备视觉推理能力的高级模型。</p>
+          
+          <AccordionGroup className="mt-4">
+            <Accordion title="特点">
+              - 视觉推理能力
+              - 复杂场景理解
+              - 多步骤分析
+            </Accordion>
+            <Accordion title="适用场景">
+              - 复杂图像分析
+              - 视觉推理任务
+              - 图表解读
+            </Accordion>
+          </AccordionGroup>
+        </div>
+      </div>
+    </Card>
+  </Tab>
+  
+  <Tab title="图像生成">
+    <Card title="CogView-4" icon="image">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="mt-2">专业图像生成模型，支持高质量图像创作。</p>
+          
+          <AccordionGroup className="mt-4">
+            <Accordion title="特点">
+              - 高质量图像生成
+              - 风格多样化
+              - 细节丰富
+            </Accordion>
+            <Accordion title="适用场景">
+              - 艺术创作
+              - 设计辅助
+              - 概念图生成
+            </Accordion>
+          </AccordionGroup>
+        </div>
+      </div>
+    </Card>
+  </Tab>
+  
+  <Tab title="视频生成">
+    <CardGroup cols={2}>
+      <Card title="CogVideoX-2" icon="video">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="mt-2">先进的视频生成模型，支持高质量视频创作。</p>
+            
+            <AccordionGroup className="mt-4">
+              <Accordion title="特点">
+                - 高质量视频生成
+                - 动作连贯性好
+                - 支持多种风格
+              </Accordion>
+              <Accordion title="适用场景">
+                - 短视频创作
+                - 动画制作
+                - 营销视频
+              </Accordion>
+            </AccordionGroup>
+          </div>
+        </div>
+      </Card>
+      
+      <Card title="ViduQ1" icon="film">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="mt-2">专业视频生成模型，适合商业应用。</p>
+            
+            <AccordionGroup className="mt-4">
+              <Accordion title="特点">
+                - 商业级质量
+                - 稳定性强
+                - 批量处理
+              </Accordion>
+            </AccordionGroup>
+          </div>
+        </div>
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
 
-**特点：**
-- 响应速度快
-- 成本较低
-- 性能稳定
+## 📊 模型选择指南
 
-**适用场景：**
-- 日常对话
-- 简单问答
-- 批量处理
+<Tabs>
+  <Tab title="按任务类型选择">
+    <div className="overflow-auto">
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>任务类型</th>
+            <th>推荐模型</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>复杂对话</td>
+            <td>GLM-4-Plus</td>
+            <td>最强理解和生成能力</td>
+          </tr>
+          <tr>
+            <td>快速问答</td>
+            <td>GLM-4-AirX</td>
+            <td>速度与成本平衡</td>
+          </tr>
+          <tr>
+            <td>长文档处理</td>
+            <td>GLM-4-Long</td>
+            <td>支持超长上下文</td>
+          </tr>
+          <tr>
+            <td>数学推理</td>
+            <td>GLM-Z1-Air</td>
+            <td>专业推理能力</td>
+          </tr>
+          <tr>
+            <td>图像理解</td>
+            <td>GLM-4V-Plus</td>
+            <td>多模态理解</td>
+          </tr>
+          <tr>
+            <td>视频生成</td>
+            <td>CogVideoX-2</td>
+            <td>高质量视频创作</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Tab>
+  
+  <Tab title="按性能需求选择">
+    <CardGroup cols={2}>
+      <Card title="高质量优先" icon="crown">
+        <div className="p-2">
+          <p>GLM-4-Plus, GLM-Z1-Air</p>
+          <p className="text-sm text-gray-500 mt-2">适合对结果质量要求较高的场景</p>
+        </div>
+      </Card>
+      <Card title="速度优先" icon="gauge-high">
+        <div className="p-2">
+          <p>GLM-4-AirX, GLM-4-FlashX</p>
+          <p className="text-sm text-gray-500 mt-2">适合对响应速度要求较高的场景</p>
+        </div>
+      </Card>
+      <Card title="成本优先" icon="sack-dollar">
+        <div className="p-2">
+          <p>GLM-4-Air, GLM-Z1-AirX</p>
+          <p className="text-sm text-gray-500 mt-2">适合对成本控制要求较高的场景</p>
+        </div>
+      </Card>
+      <Card title="特殊需求" icon="wand-magic-sparkles">
+        <div className="p-2">
+          <p>GLM-4-Long（长文本）, GLM-4V-Plus（多模态）</p>
+          <p className="text-sm text-gray-500 mt-2">适合特定场景需求</p>
+        </div>
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
 
-### GLM-4-AirX
-超轻量级模型，专注于快速响应。
-
-**特点：**
-- 极快响应速度
-- 超低延迟
-- 成本最优
-
-**适用场景：**
-- 实时对话
-- 简单任务
-- 高并发场景
-
-### GLM-4-Long
-长文本处理专用模型，支持超长上下文。
-
-**特点：**
-- 支持超长文本输入
-- 保持长距离依赖关系
-- 适合文档分析
-
-**适用场景：**
-- 长文档分析
-- 书籍摘要
-- 法律文件处理
-- 学术论文分析
-
-### GLM-4-FlashX-250414
-超快响应模型，专为低延迟场景设计。
-
-**特点：**
-- 毫秒级响应
-- 高并发支持
-- 稳定性强
-
-**适用场景：**
-- 实时应用
-- 游戏NPC对话
-- 客服机器人
-
-## 推理模型
-
-### GLM-Z1-Air
-专业推理模型，擅长逻辑分析和数学计算。
-
-**特点：**
-- 强化推理能力
-- 数学计算准确
-- 逻辑分析清晰
-
-**适用场景：**
-- 数学题解答
-- 逻辑推理
-- 科学计算
-
-### GLM-Z1-AirX
-轻量级推理模型，快速推理响应。
-
-**特点：**
-- 快速推理
-- 成本优化
-- 准确率高
-
-### GLM-Z1-FlashX
-超快推理模型，专为实时推理场景设计。
-
-**特点：**
-- 极速推理
-- 实时响应
-- 高效处理
-
-## 视觉理解模型
-
-### GLM-4V-Plus-0111
-多模态理解模型，支持图像和文本的联合理解。
-
-**特点：**
-- 图像理解能力强
-- 支持图文对话
-- 场景识别准确
-
-**适用场景：**
-- 图像描述
-- 视觉问答
-- 图像分析
-- OCR识别
-
-## 视觉推理模型
-
-### GLM-4.1V-Thinking
-具备视觉推理能力的高级模型。
-
-**特点：**
-- 视觉推理能力
-- 复杂场景理解
-- 多步骤分析
-
-**适用场景：**
-- 复杂图像分析
-- 视觉推理任务
-- 图表解读
-
-## 图像生成模型
-
-### CogView-4
-专业图像生成模型，支持高质量图像创作。
-
-**特点：**
-- 高质量图像生成
-- 风格多样化
-- 细节丰富
-
-**适用场景：**
-- 艺术创作
-- 设计辅助
-- 概念图生成
-
-## 视频生成模型
-
-### CogVideoX-2
-先进的视频生成模型，支持高质量视频创作。
-
-**特点：**
-- 高质量视频生成
-- 动作连贯性好
-- 支持多种风格
-
-**适用场景：**
-- 短视频创作
-- 动画制作
-- 营销视频
-
-### ViduQ1
-专业视频生成模型，适合商业应用。
-
-**特点：**
-- 商业级质量
-- 稳定性强
-- 批量处理
-
-## 模型选择建议
-
-### 根据任务类型选择
-
-| 任务类型 | 推荐模型 | 说明 |
-|---------|---------|------|
-| 复杂对话 | GLM-4-Plus | 最强理解和生成能力 |
-| 快速问答 | GLM-4-AirX | 速度与成本平衡 |
-| 长文档处理 | GLM-4-Long | 支持超长上下文 |
-| 数学推理 | GLM-Z1-Air | 专业推理能力 |
-| 图像理解 | GLM-4V-Plus | 多模态理解 |
-| 视频生成 | CogVideoX-2 | 高质量视频创作 |
-
-### 根据性能需求选择
-
-- **高质量优先**：GLM-4-Plus, GLM-Z1-Air
-- **速度优先**：GLM-4-AirX, GLM-4-FlashX
-- **成本优先**：GLM-4-Air, GLM-Z1-AirX
-- **特殊需求**：GLM-4-Long（长文本）, GLM-4V-Plus（多模态）
-
-## 定价说明
+## 💰 定价说明
 
 不同模型的定价策略不同，具体价格请参考[定价页面](https://bigmodel.cn/pricing)。一般来说：
 
-- Plus系列：功能最强，价格较高
-- Air系列：性价比平衡
-- FlashX系列：速度优先，价格适中
-- 专业模型：按特殊功能定价
+<CardGroup cols={2}>
+  <Card title="Plus系列" icon="diamond">
+    功能最强，价格较高
+  </Card>
+  <Card title="Air系列" icon="cloud">
+    性价比平衡
+  </Card>
+  <Card title="FlashX系列" icon="bolt">
+    速度优先，价格适中
+  </Card>
+  <Card title="专业模型" icon="gear">
+    按特殊功能定价
+  </Card>
+</CardGroup>
 
 <Tip>
-建议在开发阶段使用Air系列模型进行测试，在生产环境根据实际需求选择合适的模型。
+  建议在开发阶段使用Air系列模型进行测试，在生产环境根据实际需求选择合适的模型。
 </Tip>

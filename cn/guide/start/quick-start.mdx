@@ -1,108 +1,196 @@
 ---
-title: "快速上手"
-description: "快速开始使用智谱AI开放平台"
+title: "快速开始"
+description: "智谱AI开放平台快速上手指南"
 ---
 
-# 快速上手
 
-本指南将帮助您快速开始使用智谱AI开放平台的各项功能。
+<Tip>
+  本指南将帮助您快速上手智谱AI开放平台，从注册账号到发起第一次API调用，只需几分钟即可完成。
+</Tip>
 
-## 第一步：注册账号
+## 开始使用
 
-1. 访问 [智谱AI开放平台](https://bigmodel.cn/)
-2. 点击注册按钮创建您的账号
-3. 完成邮箱验证和实名认证
-
-## 第二步：获取API Key
-
-1. 登录您的账号
-2. 进入控制台
-3. 在API管理页面创建新的API Key
-4. 妥善保存您的API Key，请勿泄露给他人
-
-<Warning>
-API Key 是您访问智谱AI服务的凭证，请务必保密。如果泄露，请立即重新生成。
-</Warning>
-
-## 第三步：选择合适的模型
-
-根据您的需求选择合适的模型：
-
-- **GLM-4-Plus**：最强大的通用模型，适合复杂任务
-- **GLM-4-Air**：轻量级模型，响应速度快
-- **GLM-4-Long**：长文本处理专用模型
-- **GLM-4-FlashX**：超快响应模型
-
-## 第四步：发起第一次API调用
-
-### 使用curl
-
-```bash
-curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{
-    "model": "glm-4-plus",
-    "messages": [
-      {
-        "role": "user",
-        "content": "你好，请介绍一下你自己"
-      }
-    ]
-  }'
-```
-
-### 使用Python
-
-```python
-import requests
-import json
-
-url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer YOUR_API_KEY"
-}
-
-data = {
-    "model": "glm-4-plus",
-    "messages": [
-        {
-            "role": "user",
-            "content": "你好，请介绍一下你自己"
+<Steps>
+  <Step title="注册账号">
+    访问[智谱AI开放平台](https://open.bigmodel.cn)，点击右上角的「注册/登录」按钮，按照提示完成账号注册流程。
+    
+    <Frame>
+      <img src="/images/register.png" alt="注册账号" />
+    </Frame>
+  </Step>
+  
+  <Step title="获取API Key">
+    登录后，在个人中心页面，点击「API Key管理」，创建一个新的API Key。
+    
+    <Warning>
+      请妥善保管您的API Key，不要泄露给他人，也不要直接硬编码在代码中。建议使用环境变量或配置文件来存储API Key。
+    </Warning>
+    
+    <Frame>
+      <img src="/images/api-key.png" alt="获取API Key" />
+    </Frame>
+  </Step>
+  
+  <Step title="选择模型">
+    智谱AI开放平台提供多种模型，您可以根据自己的需求选择合适的模型。详细的模型介绍请参考[模型概况](/guide/start/model-overview)。
+    
+    <CardGroup cols={2}>
+      <Card title="GLM-4" icon="star">
+        最强大的通用大语言模型，适合复杂任务
+      </Card>
+      <Card title="GLM-4-Air" icon="wind">
+        轻量级模型，平衡性能与速度
+      </Card>
+      <Card title="GLM-4V" icon="eye">
+        多模态模型，支持图像理解
+      </Card>
+      <Card title="CogView-4" icon="image">
+        图像生成模型，支持文本到图像生成
+      </Card>
+    </CardGroup>
+  </Step>
+  
+  <Step title="发起API调用">
+    准备好API Key和模型后，您可以开始发起API调用。以下是使用curl和Python的示例：
+    
+    <Tabs>
+      <Tab title="curl">
+        ```bash
+        curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer YOUR_API_KEY" \
+          -d '{
+            "model": "glm-4",
+            "messages": [
+              {"role": "system", "content": "你是一个有用的AI助手。"},
+              {"role": "user", "content": "你好，请介绍一下自己。"}
+            ],
+            "temperature": 0.7,
+            "top_p": 0.8
+          }'
+        ```
+      </Tab>
+      <Tab title="Python">
+        ```python
+        import requests
+        import json
+        
+        url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+        api_key = "YOUR_API_KEY"  # 替换为您的API Key
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
         }
-    ]
-}
+        
+        data = {
+            "model": "glm-4",
+            "messages": [
+                {"role": "system", "content": "你是一个有用的AI助手。"},
+                {"role": "user", "content": "你好，请介绍一下自己。"}
+            ],
+            "temperature": 0.7,
+            "top_p": 0.8
+        }
+        
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        print(response.json())
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
 
-response = requests.post(url, headers=headers, data=json.dumps(data))
-print(response.json())
-```
+## 探索更多功能
 
-## 第五步：探索更多功能
-
-- **工具调用**：让模型使用外部工具，如网络搜索
-- **视频生成**：使用CogVideoX等模型生成视频内容
-- **图像理解**：上传图片让模型进行分析
-- **知识库**：创建专属知识库，提升回答准确性
+<CardGroup cols={3}>
+  <Card title="流式输出" icon="stream">
+    启用流式输出，获得更自然的对话体验。
+    
+    ```json
+    {
+      "model": "glm-4",
+      "messages": [...],
+      "stream": true
+    }
+    ```
+  </Card>
+  
+  <Card title="多模态输入" icon="images">
+    使用GLM-4V模型处理图像和文本的混合输入。
+    
+    ```json
+    {
+      "model": "glm-4v",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {"type": "text", "text": "这张图片是什么?"},
+            {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}
+          ]
+        }
+      ]
+    }
+    ```
+  </Card>
+  
+  <Card title="函数调用" icon="function">
+    使用函数调用功能，让模型调用您定义的函数。
+    
+    ```json
+    {
+      "model": "glm-4",
+      "messages": [...],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_weather",
+            "description": "获取指定城市的天气信息",
+            "parameters": {...}
+          }
+        }
+      ]
+    }
+    ```
+  </Card>
+</CardGroup>
 
 ## 常见问题
 
-### 如何查看API使用量？
+<AccordionGroup>
+  <Accordion title="如何处理API调用错误？">
+    当API调用出现错误时，服务器会返回相应的HTTP状态码和错误信息。常见的错误包括：
+    
+    - **401 Unauthorized**: API Key无效或已过期
+    - **400 Bad Request**: 请求参数错误
+    - **429 Too Many Requests**: 超出API调用频率限制
+    - **500 Internal Server Error**: 服务器内部错误
+    
+    建议实现适当的错误处理和重试机制，特别是对于429和500错误。
+  </Accordion>
+  
+  <Accordion title="如何优化API调用成本？">
+    以下是一些优化API调用成本的建议：
+    
+    1. 选择适合任务的模型，不同模型的价格不同
+    2. 减少不必要的上下文信息，降低token消耗
+    3. 使用缓存机制，避免重复调用
+    4. 设置合理的max_tokens参数，避免生成过长的回复
+    5. 在开发阶段使用较小的模型进行测试
+  </Accordion>
+  
+  <Accordion title="如何处理长文本输入？">
+    对于超过模型上下文窗口大小的长文本，可以采用以下策略：
+    
+    1. 使用GLM-4-Long等支持更长上下文的模型
+    2. 对文本进行分段处理，然后合并结果
+    3. 使用文本嵌入模型进行相关性检索，只保留最相关的部分
+    4. 对文本进行摘要，提取关键信息后再输入模型
+  </Accordion>
+</AccordionGroup>
 
-在控制台的使用统计页面可以查看详细的API调用记录和费用统计。
-
-### 如何处理API错误？
-
-请参考我们的[常见问题](/cn/issue/common-issue)页面，或查看API文档中的错误码说明。
-
-### 如何优化API调用成本？
-
-- 选择合适的模型：根据任务复杂度选择对应的模型
-- 控制输入长度：避免不必要的长文本输入
-- 使用缓存：对于重复的请求可以使用缓存机制
-
-## 下一步
-
-- 查看[模型概况](/cn/guide/start/model-overview)了解各个模型的详细信息
-- 学习[调用方式](/cn/guide/start/api-usage)掌握更多API使用技巧
-- 探索[语言模型](/cn/guide/llm/chat-completions)的高级功能
+<Tip>
+  如果您在使用过程中遇到任何问题，可以查阅[完整文档](/guide)或联系我们的[技术支持](mailto:support@zhipuai.cn)。
+</Tip>

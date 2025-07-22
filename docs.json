@@ -42,10 +42,9 @@
               {
                 "group": "开始使用",
                 "pages": [
-                  "cn/guide/start/bigmodel-introduction",
+                  "cn/guide/start/introduction",
                   "cn/guide/start/quick-start",
-                  "cn/guide/start/model-overview",
-                  "cn/guide/start/api-usage"
+                  "cn/guide/start/model-overview"
                 ]
               },
               {
@@ -248,7 +247,7 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "en/guide/start/bigmodel-introduction",
+                  "en/guide/start/introduction",
                   "en/guide/overview/pricing"
                 ]
               },
@@ -319,11 +318,5 @@
     "dark": "/resource/light.svg",
     "href": "https://bigmodel.cn/"
   },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/Zai_org",
-      "github": "https://github.com/THUDM",
-      "discord": "https://discord.com/channels/1346756824233148527/1359832169333395496"
-    }
-  }
+  "footer": {}
 }
