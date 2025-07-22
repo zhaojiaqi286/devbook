@@ -1,0 +1,681 @@
+---
+title: 'Realtime WebSocket Connection'
+openapi: 'GET /v4/realtime'
+---
+
+Establish a WebSocket connection for real-time AI conversations. Supports multimodal interactions including audio, video, and text with low-latency real-time conversation experience.
+
+## Features
+
+- **Multimodal Support**: Supports audio, video, and text inputs
+- **Real-time Interaction**: Low-latency real-time conversation experience
+- **Event-driven**: Communication through JSON format event messages
+- **Model Selection**: Supports multiple real-time conversation models
+- **Voice Synthesis**: Supports multiple voice types and audio formats
+- **Audio Noise Reduction**: Built-in audio noise reduction functionality
+- **Transcription**: Supports audio-to-text transcription
+- **Tool Calling**: Supports function tool invocation
+
+## Supported Models
+
+- `glm-4-realtime`: General-purpose real-time conversation model with text and audio support
+- `glm-4-voice`: Voice-specific real-time model optimized for voice conversations
+- `glm-4-video`: Video-specific real-time model with video content understanding
+
+## Connection Flow
+
+### 1. Establish WebSocket Connection
+
+```javascript
+const ws = new WebSocket('wss://open.bigmodel.cn/api/v4/realtime?model=glm-4-realtime', [], {
+  headers: {
+    'Authorization': 'Bearer your-api-key',
+    'Accept-Language': 'en'
+  }
+});
+```
+
+### 2. Configure Session After Connection
+
+```javascript
+ws.onopen = function() {
+  // Send session configuration
+  const sessionConfig = {
+    type: 'session.update',
+    session: {
+      model: 'glm-4-realtime',
+      modalities: ['text', 'audio'],
+      instructions: 'You are a helpful AI assistant. Please answer questions concisely.',
+      voice: 'tongtong',
+      input_audio_format: 'pcm16',
+      output_audio_format: 'pcm16',
+      turn_detection: {
+        type: 'server_vad',
+        threshold: 0.5,
+        prefix_padding_ms: 300,
+        silence_duration_ms: 500
+      },
+      temperature: 0.8
+    }
+  };
+  
+  ws.send(JSON.stringify(sessionConfig));
+};
+```
+
+### 3. Handle Server Events
+
+```javascript
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  switch(data.type) {
+    case 'session.created':
+      console.log('Session created:', data.session);
+      break;
+    case 'conversation.created':
+      console.log('Conversation created:', data.conversation);
+      break;
+    case 'response.text.delta':
+      console.log('Text delta:', data.delta);
+      break;
+    case 'response.audio.delta':
+      // Handle audio data
+      playAudioChunk(data.delta);
+      break;
+    case 'response.done':
+      console.log('Response completed:', data.response);
+      break;
+    case 'error':
+      console.error('Error:', data.error);
+      break;
+  }
+};
+```
+
+## Session Configuration Parameters
+
+### Basic Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Model name, e.g., `glm-4-realtime` |
+| `modalities` | array | No | Interaction modes, default `["text", "audio"]` |
+| `instructions` | string | No | System instructions to guide model behavior |
+| `voice` | string | No | Voice type: `tongtong`(female) or `xiaochen`(male) |
+
+### Audio Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `input_audio_format` | string | No | Input audio format: `pcm16`, `g711_ulaw`, `g711_alaw` |
+| `output_audio_format` | string | No | Output audio format: `pcm16`, `g711_ulaw`, `g711_alaw` |
+| `input_audio_noise_reduction` | object | No | Audio noise reduction configuration |
+| `input_audio_transcription` | object | No | Audio transcription configuration |
+
+### Advanced Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `turn_detection` | object | No | Turn detection configuration |
+| `tools` | array | No | Available tool functions list |
+| `tool_choice` | string/object | No | Tool calling strategy |
+| `temperature` | number | No | Sampling temperature, range [0.6, 1.2] |
+| `max_response_output_tokens` | number/string | No | Maximum output tokens |
+
+## Client Event Types
+
+### Session Management
+
+#### `session.update`
+Update session configuration
+
+```json
+{
+  "type": "session.update",
+  "session": {
+    "model": "glm-4-realtime",
+    "modalities": ["text", "audio"],
+    "instructions": "You are a helpful AI assistant",
+    "voice": "tongtong",
+    "temperature": 0.8
+  }
+}
+```
+
+### Conversation Management
+
+#### `conversation.item.create`
+Create conversation item (send user input)
+
+```json
+{
+  "type": "conversation.item.create",
+  "item": {
+    "type": "message",
+    "role": "user",
+    "content": [
+      {
+        "type": "input_text",
+        "text": "Hello, please introduce yourself"
+      }
+    ]
+  }
+}
+```
+
+#### `conversation.item.delete`
+Delete specified conversation item
+
+```json
+{
+  "type": "conversation.item.delete",
+  "item_id": "item_001"
+}
+```
+
+### Audio Processing
+
+#### `input_audio_buffer.append`
+Append audio data to buffer
+
+```json
+{
+  "type": "input_audio_buffer.append",
+  "audio": "base64-encoded audio data"
+}
+```
+
+#### `input_audio_buffer.commit`
+Commit audio buffer (indicates user finished speaking)
+
+```json
+{
+  "type": "input_audio_buffer.commit"
+}
+```
+
+#### `input_audio_buffer.clear`
+Clear audio buffer
+
+```json
+{
+  "type": "input_audio_buffer.clear"
+}
+```
+
+### Response Control
+
+#### `response.create`
+Request response generation
+
+```json
+{
+  "type": "response.create",
+  "response": {
+    "modalities": ["text", "audio"],
+    "instructions": "Please answer concisely",
+    "voice": "tongtong",
+    "output_audio_format": "pcm16"
+  }
+}
+```
+
+#### `response.cancel`
+Cancel current response generation
+
+```json
+{
+  "type": "response.cancel"
+}
+```
+
+## Server Event Types
+
+### Session Events
+
+#### `session.created`
+Session created successfully
+
+```json
+{
+  "type": "session.created",
+  "session": {
+    "id": "session_001",
+    "object": "realtime.session",
+    "model": "glm-4-realtime",
+    "expires_at": 1700000000,
+    "modalities": ["text", "audio"],
+    "instructions": "You are a helpful AI assistant",
+    "voice": "tongtong",
+    "input_audio_format": "pcm16",
+    "output_audio_format": "pcm16",
+    "turn_detection": {
+      "type": "server_vad",
+      "threshold": 0.5
+    },
+    "temperature": 0.8
+  }
+}
+```
+
+#### `session.updated`
+Session configuration updated
+
+```json
+{
+  "type": "session.updated",
+  "session": {
+    "id": "session_001",
+    "object": "realtime.session",
+    // ... updated session configuration
+  }
+}
+```
+
+### Conversation Events
+
+#### `conversation.created`
+Conversation created successfully
+
+```json
+{
+  "type": "conversation.created",
+  "conversation": {
+    "id": "conv_001",
+    "object": "realtime.conversation"
+  }
+}
+```
+
+#### `conversation.item.created`
+Conversation item created
+
+```json
+{
+  "type": "conversation.item.created",
+  "item": {
+    "id": "item_001",
+    "object": "realtime.item",
+    "type": "message",
+    "status": "completed",
+    "role": "user",
+    "content": [
+      {
+        "type": "input_text",
+        "text": "Hello, please introduce yourself"
+      }
+    ]
+  }
+}
+```
+
+### Response Events
+
+#### `response.created`
+Response generation started
+
+```json
+{
+  "type": "response.created",
+  "response": {
+    "id": "resp_001",
+    "object": "realtime.response",
+    "status": "in_progress",
+    "status_details": null,
+    "output": [],
+    "usage": null
+  }
+}
+```
+
+#### `response.text.delta`
+Text response delta update
+
+```json
+{
+  "type": "response.text.delta",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "delta": "Hello! I am"
+}
+```
+
+#### `response.text.done`
+Text response completed
+
+```json
+{
+  "type": "response.text.done",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "text": "Hello! I am GLM-4, an AI assistant developed by Zhipu AI."
+}
+```
+
+#### `response.audio.delta`
+Audio response delta update
+
+```json
+{
+  "type": "response.audio.delta",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "delta": "base64-encoded audio data"
+}
+```
+
+#### `response.audio.done`
+Audio response completed
+
+```json
+{
+  "type": "response.audio.done",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0
+}
+```
+
+#### `response.done`
+Response fully completed
+
+```json
+{
+  "type": "response.done",
+  "response": {
+    "id": "resp_001",
+    "object": "realtime.response",
+    "status": "completed",
+    "status_details": null,
+    "output": [
+      {
+        "id": "item_002",
+        "object": "realtime.item",
+        "type": "message",
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "Hello! I am GLM-4, an AI assistant developed by Zhipu AI."
+          },
+          {
+            "type": "audio",
+            "audio": "base64-encoded complete audio data"
+          }
+        ]
+      }
+    ],
+    "usage": {
+      "total_tokens": 156,
+      "input_tokens": 128,
+      "output_tokens": 28
+    }
+  }
+}
+```
+
+### Audio Events
+
+#### `input_audio_buffer.speech_started`
+User speech detected started
+
+```json
+{
+  "type": "input_audio_buffer.speech_started",
+  "audio_start_ms": 1000,
+  "item_id": "item_003"
+}
+```
+
+#### `input_audio_buffer.speech_stopped`
+User speech detected stopped
+
+```json
+{
+  "type": "input_audio_buffer.speech_stopped",
+  "audio_end_ms": 3000,
+  "item_id": "item_003"
+}
+```
+
+#### `input_audio_buffer.committed`
+Audio buffer committed
+
+```json
+{
+  "type": "input_audio_buffer.committed",
+  "item_id": "item_003"
+}
+```
+
+#### `conversation.item.input_audio_transcription.completed`
+Audio transcription completed
+
+```json
+{
+  "type": "conversation.item.input_audio_transcription.completed",
+  "item_id": "item_003",
+  "content_index": 0,
+  "transcript": "Hello, please introduce yourself"
+}
+```
+
+### Error Events
+
+#### `error`
+Error information
+
+```json
+{
+  "type": "error",
+  "error": {
+    "type": "invalid_request_error",
+    "code": "invalid_event",
+    "message": "Invalid event type",
+    "param": "type",
+    "event_id": "event_001"
+  }
+}
+```
+
+## Usage Examples
+
+### Text Conversation Example
+
+```javascript
+// Send text message
+const textMessage = {
+  type: 'conversation.item.create',
+  item: {
+    type: 'message',
+    role: 'user',
+    content: [
+      {
+        type: 'input_text',
+        text: 'Please explain what artificial intelligence is'
+      }
+    ]
+  }
+};
+ws.send(JSON.stringify(textMessage));
+
+// Request response generation
+const createResponse = {
+  type: 'response.create',
+  response: {
+    modalities: ['text']
+  }
+};
+ws.send(JSON.stringify(createResponse));
+```
+
+### Voice Conversation Example
+
+```javascript
+// Configure voice conversation
+const voiceSession = {
+  type: 'session.update',
+  session: {
+    modalities: ['audio'],
+    voice: 'tongtong',
+    input_audio_format: 'pcm16',
+    output_audio_format: 'pcm16',
+    turn_detection: {
+      type: 'server_vad',
+      threshold: 0.5,
+      prefix_padding_ms: 300,
+      silence_duration_ms: 500
+    }
+  }
+};
+ws.send(JSON.stringify(voiceSession));
+
+// Send audio data (need to get from microphone)
+navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(stream => {
+    const mediaRecorder = new MediaRecorder(stream);
+    
+    mediaRecorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        // Convert audio data to base64 and send
+        const reader = new FileReader();
+        reader.onload = () => {
+          const audioData = {
+            type: 'input_audio_buffer.append',
+            audio: reader.result.split(',')[1] // Remove data: prefix
+          };
+          ws.send(JSON.stringify(audioData));
+        };
+        reader.readAsDataURL(event.data);
+      }
+    };
+    
+    mediaRecorder.start(100); // Send data every 100ms
+  });
+```
+
+### Tool Calling Example
+
+```javascript
+// Configure tool functions
+const toolSession = {
+  type: 'session.update',
+  session: {
+    tools: [
+      {
+        type: 'function',
+        name: 'get_weather',
+        description: 'Get weather information for a specified city',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: 'string',
+              description: 'City name'
+            }
+          },
+          required: ['city']
+        }
+      }
+    ],
+    tool_choice: 'auto'
+  }
+};
+ws.send(JSON.stringify(toolSession));
+
+// Handle tool call responses
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  if (data.type === 'response.function_call_arguments.done') {
+    // Execute tool function
+    const functionCall = data.call;
+    if (functionCall.name === 'get_weather') {
+      const args = JSON.parse(functionCall.arguments);
+      const weatherResult = getWeather(args.city); // Actually call weather API
+      
+      // Send tool execution result
+      const toolResult = {
+        type: 'conversation.item.create',
+        item: {
+          type: 'function_call_output',
+          call_id: functionCall.call_id,
+          output: JSON.stringify(weatherResult)
+        }
+      };
+      ws.send(JSON.stringify(toolResult));
+      
+      // Request to continue response generation
+      ws.send(JSON.stringify({ type: 'response.create' }));
+    }
+  }
+};
+```
+
+## Error Handling
+
+### Common Error Types
+
+- `invalid_request_error`: Request format error
+- `authentication_error`: Authentication failed
+- `permission_error`: Insufficient permissions
+- `rate_limit_error`: Request rate exceeded
+- `server_error`: Server internal error
+
+### Error Handling Example
+
+```javascript
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  if (data.type === 'error') {
+    const error = data.error;
+    
+    switch(error.type) {
+      case 'rate_limit_error':
+        console.log('Too many requests, please retry later');
+        // Implement backoff retry logic
+        break;
+      case 'authentication_error':
+        console.error('Authentication failed, please check API key');
+        break;
+      case 'invalid_request_error':
+        console.error('Request format error:', error.message);
+        break;
+      default:
+        console.error('Unknown error:', error);
+    }
+  }
+};
+
+ws.onerror = function(error) {
+  console.error('WebSocket error:', error);
+};
+
+ws.onclose = function(event) {
+  console.log('Connection closed:', event.code, event.reason);
+  // Implement reconnection logic
+  if (event.code !== 1000) { // Non-normal closure
+    setTimeout(() => {
+      // Re-establish connection
+      connectWebSocket();
+    }, 1000);
+  }
+};
+```
+
+## Best Practices
+
+1. **Connection Management**: Implement heartbeat detection and auto-reconnection
+2. **Audio Processing**: Use appropriate audio sample rates and formats
+3. **Error Handling**: Handle all possible error types
+4. **Resource Management**: Clean up audio resources and event listeners promptly
+5. **Performance Optimization**: Control audio data sending frequency, avoid overly frequent requests 

@@ -108,6 +108,12 @@
                 ]
               },
               {
+                "group": "实时对话 API",
+                "pages": [
+                  "cn/api/realtime/realtime"
+                ]
+              },
+              {
                 "group": "助手 API",
                 "pages": [
                   "cn/api/assistant/assistant",
@@ -250,6 +256,12 @@
                 "pages": [
                   "en/api/tools/web-search",
                   "en/api/tools/tools"
+                ]
+              },
+              {
+                "group": "Realtime API",
+                "pages": [
+                  "en/api/realtime/realtime"
                 ]
               },
               {

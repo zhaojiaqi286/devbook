@@ -72,6 +72,10 @@
     {
       "url": "https://open.bigmodel.cn/api/",
       "description": "开放平台服务"
+    },
+    {
+      "url": "wss://open.bigmodel.cn/api/",
+      "description": "WebSocket 实时服务"
     }
   ],
   "security": [
@@ -1643,6 +1647,94 @@
           },
           "default": {
             "description": "请求失败。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/realtime": {
+      "get": {
+        "tags": [
+          "realtime"
+        ],
+        "summary": "建立实时对话WebSocket连接",
+        "description": "建立WebSocket连接以进行实时AI对话。支持音频、视频和文本多模态交互，提供低延迟的实时对话体验。连接建立后，客户端和服务端通过JSON格式的事件消息进行通信。",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AcceptLanguage"
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "description": "指定使用的AI模型",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "glm-4-realtime",
+              "enum": [
+                "glm-4-realtime",
+                "glm-4-voice",
+                "glm-4-video"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "101": {
+            "description": "WebSocket连接升级成功",
+            "headers": {
+              "Upgrade": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["websocket"]
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Upgrade"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "权限不足",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求频率限制",
             "content": {
               "application/json": {
                 "schema": {
@@ -4539,6 +4631,1521 @@
             "type": "string"
           }
         }
+      },
+      "RealtimeBaseEvent": {
+        "type": "object",
+        "description": "实时API事件基础结构",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "description": "事件唯一标识符"
+          },
+          "type": {
+            "type": "string",
+            "description": "事件类型"
+          },
+          "client_timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "客户端时间戳（毫秒）",
+            "nullable": true
+          }
+        },
+        "required": ["type"]
+      },
+      "RealtimeClientEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          }
+        ],
+        "description": "客户端发送的实时事件",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "session.update": "#/components/schemas/SessionUpdateEvent",
+            "conversation.item.create": "#/components/schemas/ConversationItemCreateEvent",
+            "conversation.item.delete": "#/components/schemas/ConversationItemDeleteEvent",
+            "conversation.item.truncate": "#/components/schemas/ConversationItemTruncateEvent",
+            "input_audio_buffer.append": "#/components/schemas/InputAudioBufferAppendEvent",
+            "input_audio_buffer.clear": "#/components/schemas/InputAudioBufferClearEvent",
+            "input_audio_buffer.commit": "#/components/schemas/InputAudioBufferCommitEvent",
+            "input_audio_buffer.pre_commit": "#/components/schemas/InputAudioBufferPreCommitEvent",
+            "input_audio_buffer.append_video_frame": "#/components/schemas/InputVideoBufferAppendEvent",
+            "response.create": "#/components/schemas/ResponseCreateEvent",
+            "response.cancel": "#/components/schemas/ResponseCancelEvent"
+          }
+        }
+      },
+      "RealtimeServerEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          }
+        ],
+        "description": "服务端发送的实时事件",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "session.created": "#/components/schemas/SessionCreatedEvent",
+            "session.updated": "#/components/schemas/SessionUpdatedEvent",
+            "conversation.created": "#/components/schemas/ConversationCreatedEvent",
+            "conversation.item.created": "#/components/schemas/ConversationItemCreatedEvent",
+            "conversation.item.deleted": "#/components/schemas/ConversationItemDeletedEvent",
+            "conversation.item.input_audio_transcription.completed": "#/components/schemas/ConversationItemInputAudioTranscriptionCompletedEvent",
+            "input_audio_buffer.committed": "#/components/schemas/InputAudioBufferCommittedEvent",
+            "input_audio_buffer.cleared": "#/components/schemas/InputAudioBufferClearedEvent",
+            "input_audio_buffer.speech_started": "#/components/schemas/InputAudioBufferSpeechStartedEvent",
+            "input_audio_buffer.speech_stopped": "#/components/schemas/InputAudioBufferSpeechStoppedEvent",
+            "response.created": "#/components/schemas/ResponseCreatedEvent",
+            "response.done": "#/components/schemas/ResponseDoneEvent",
+            "response.output_item.added": "#/components/schemas/ResponseOutputItemAddedEvent",
+            "response.output_item.done": "#/components/schemas/ResponseOutputItemDoneEvent",
+            "response.content_part.added": "#/components/schemas/ResponseContentPartAddedEvent",
+            "response.content_part.done": "#/components/schemas/ResponseContentPartDoneEvent",
+            "response.text.delta": "#/components/schemas/ResponseTextDeltaEvent",
+            "response.text.done": "#/components/schemas/ResponseTextDoneEvent",
+            "response.audio.delta": "#/components/schemas/ResponseAudioDeltaEvent",
+            "response.audio.done": "#/components/schemas/ResponseAudioDoneEvent",
+            "response.audio_transcript.delta": "#/components/schemas/ResponseAudioTranscriptDeltaEvent",
+            "response.audio_transcript.done": "#/components/schemas/ResponseAudioTranscriptDoneEvent",
+            "response.function_call_arguments.delta": "#/components/schemas/ResponseFunctionCallArgumentsDeltaEvent",
+            "response.function_call_arguments.done": "#/components/schemas/ResponseFunctionCallArgumentsDoneEvent",
+            "error": "#/components/schemas/ServerErrorEvent",
+            "heartbeat": "#/components/schemas/HeartbeatEvent"
+          }
+        }
+      },
+      "SessionObject": {
+        "type": "object",
+        "description": "会话配置对象",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "会话ID"
+          },
+          "object": {
+            "type": "string",
+            "description": "对象类型",
+            "enum": ["realtime.session"]
+          },
+          "model": {
+            "type": "string",
+            "description": "使用的模型",
+            "default": "glm-4-realtime"
+          },
+          "modalities": {
+            "type": "array",
+            "description": "支持的模态",
+            "items": {
+              "type": "string",
+              "enum": ["text", "audio", "video"]
+            },
+            "default": ["text", "audio"]
+          },
+          "voice": {
+            "type": "string",
+            "description": "语音类型",
+            "enum": ["tongtong", "xiaoxiao", "xiaoyan"],
+            "default": "tongtong"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "系统指令",
+            "nullable": true
+          },
+          "input_audio_format": {
+            "type": "string",
+            "description": "输入音频格式",
+            "enum": ["pcm16", "g711_ulaw", "g711_alaw"],
+            "default": "pcm16"
+          },
+          "output_audio_format": {
+            "type": "string",
+            "description": "输出音频格式",
+            "enum": ["pcm16", "g711_ulaw", "g711_alaw"],
+            "default": "pcm16"
+          },
+          "input_audio_transcription": {
+            "$ref": "#/components/schemas/InputAudioTranscriptionObject"
+          },
+          "turn_detection": {
+            "$ref": "#/components/schemas/TurnDetectionObject"
+          },
+          "tools": {
+            "type": "array",
+            "description": "可用工具列表",
+            "items": {
+              "$ref": "#/components/schemas/ToolObject"
+            }
+          },
+          "tool_choice": {
+            "type": "string",
+            "description": "工具选择策略",
+            "enum": ["auto", "none", "required"],
+            "default": "auto"
+          },
+          "temperature": {
+            "type": "number",
+            "description": "采样温度",
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "default": 0.8
+          },
+          "max_response_output_tokens": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "string",
+                "enum": ["inf"]
+              }
+            ],
+            "description": "最大响应输出token数",
+            "default": "inf"
+          }
+        }
+      },
+      "InputAudioTranscriptionObject": {
+        "type": "object",
+        "description": "输入音频转录配置",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "转录模型",
+            "default": "whisper-1"
+          }
+        }
+      },
+      "TurnDetectionObject": {
+        "type": "object",
+        "description": "语音检测配置",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "检测类型",
+            "enum": ["server_vad", "none"],
+            "default": "server_vad"
+          },
+          "threshold": {
+            "type": "number",
+            "description": "检测阈值",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "default": 0.5
+          },
+          "prefix_padding_ms": {
+            "type": "integer",
+            "description": "前缀填充毫秒数",
+            "default": 300
+          },
+          "silence_duration_ms": {
+            "type": "integer",
+            "description": "静音持续时间毫秒数",
+            "default": 500
+          }
+        }
+      },
+      "ToolObject": {
+        "type": "object",
+        "description": "工具定义",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["function"]
+          },
+          "name": {
+            "type": "string",
+            "description": "工具名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "工具描述"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "工具参数（JSON Schema格式）"
+          }
+        },
+        "required": ["type", "name", "description", "parameters"]
+      },
+      "SessionUpdateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["session.update"]
+              },
+              "session": {
+                "$ref": "#/components/schemas/SessionObject"
+              }
+            },
+            "required": ["session"]
+          }
+        ],
+        "description": "客户端会话更新事件"
+      },
+      "SessionCreatedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["session.created"]
+              },
+              "session": {
+                "$ref": "#/components/schemas/SessionObject"
+              }
+            },
+            "required": ["session"]
+          }
+        ],
+        "description": "服务端会话创建事件"
+      },
+      "SessionUpdatedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["session.updated"]
+              },
+              "session": {
+                "$ref": "#/components/schemas/SessionObject"
+              }
+            },
+            "required": ["session"]
+          }
+        ],
+        "description": "服务端会话更新事件"
+      },
+      "ConversationCreatedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.created"]
+              },
+              "conversation": {
+                "$ref": "#/components/schemas/ConversationObject"
+              }
+            },
+            "required": ["conversation"]
+          }
+        ],
+        "description": "服务端对话创建事件"
+      },
+      "ConversationObject": {
+        "type": "object",
+        "description": "对话对象",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "对话ID"
+          },
+          "object": {
+            "type": "string",
+            "enum": ["realtime.conversation"]
+          }
+        },
+        "required": ["id", "object"]
+      },
+      "InputAudioBufferAppendEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.append"]
+              },
+              "audio": {
+                "type": "string",
+                "description": "Base64编码的音频数据"
+              }
+            },
+            "required": ["audio"]
+          }
+        ],
+        "description": "客户端音频缓冲区追加事件"
+      },
+      "InputAudioBufferClearEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.clear"]
+              }
+            }
+          }
+        ],
+        "description": "客户端音频缓冲区清空事件"
+      },
+      "InputAudioBufferCommitEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.commit"]
+              }
+            }
+          }
+        ],
+        "description": "客户端音频缓冲区提交事件"
+      },
+      "InputAudioBufferPreCommitEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.pre_commit"]
+              }
+            }
+          }
+        ],
+        "description": "客户端音频缓冲区预提交事件"
+      },
+      "InputVideoBufferAppendEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.append_video_frame"]
+              },
+              "video": {
+                "type": "string",
+                "description": "Base64编码的视频帧数据"
+              }
+            },
+            "required": ["video"]
+          }
+        ],
+        "description": "客户端视频缓冲区追加事件"
+      },
+      "ConversationItemCreateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.create"]
+              },
+              "previous_item_id": {
+                "type": "string",
+                "description": "前一个项目ID",
+                "nullable": true
+              },
+              "item": {
+                "$ref": "#/components/schemas/ConversationItemObject"
+              }
+            },
+            "required": ["item"]
+          }
+        ],
+        "description": "客户端对话项目创建事件"
+      },
+      "ConversationItemDeleteEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.delete"]
+              },
+              "item_id": {
+                "type": "string",
+                "description": "要删除的项目ID"
+              }
+            },
+            "required": ["item_id"]
+          }
+        ],
+        "description": "客户端对话项目删除事件"
+      },
+      "ConversationItemTruncateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.truncate"]
+              },
+              "item_id": {
+                "type": "string",
+                "description": "要截断的项目ID"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "audio_end_ms": {
+                "type": "integer",
+                "description": "音频结束时间（毫秒）"
+              }
+            },
+            "required": ["item_id", "content_index", "audio_end_ms"]
+          }
+        ],
+        "description": "客户端对话项目截断事件"
+      },
+      "ConversationItemObject": {
+        "type": "object",
+        "description": "对话项目对象",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "项目ID"
+          },
+          "object": {
+            "type": "string",
+            "enum": ["realtime.item"]
+          },
+          "type": {
+            "type": "string",
+            "description": "项目类型",
+            "enum": ["message", "function_call", "function_call_output"]
+          },
+          "status": {
+            "type": "string",
+            "description": "项目状态",
+            "enum": ["completed", "incomplete", "failed"]
+          },
+          "role": {
+            "type": "string",
+            "description": "角色",
+            "enum": ["user", "assistant", "system"]
+          },
+          "content": {
+            "type": "array",
+            "description": "内容列表",
+            "items": {
+              "$ref": "#/components/schemas/ContentPartObject"
+            }
+          },
+          "call_id": {
+            "type": "string",
+            "description": "函数调用ID",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "函数名称",
+            "nullable": true
+          },
+          "arguments": {
+            "type": "string",
+            "description": "函数参数",
+            "nullable": true
+          },
+          "output": {
+            "type": "string",
+            "description": "函数输出",
+            "nullable": true
+          }
+        },
+        "required": ["id", "object", "type"]
+      },
+      "ContentPartObject": {
+        "type": "object",
+        "description": "内容部分对象",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "内容类型",
+            "enum": ["text", "audio", "video"]
+          },
+          "text": {
+            "type": "string",
+            "description": "文本内容",
+            "nullable": true
+          },
+          "audio": {
+            "type": "string",
+            "description": "Base64编码的音频数据",
+            "nullable": true
+          },
+          "video": {
+            "type": "string",
+            "description": "Base64编码的视频数据",
+            "nullable": true
+          },
+          "transcript": {
+            "type": "string",
+            "description": "音频转录文本",
+            "nullable": true
+          }
+        },
+        "required": ["type"]
+      },
+      "ResponseCreateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.create"]
+              },
+              "response": {
+                "$ref": "#/components/schemas/ResponseObject"
+              }
+            },
+            "required": ["response"]
+          }
+        ],
+        "description": "客户端响应创建事件"
+      },
+      "ResponseCancelEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.cancel"]
+              }
+            }
+          }
+        ],
+        "description": "客户端响应取消事件"
+      },
+      "ResponseObject": {
+        "type": "object",
+        "description": "响应对象",
+        "properties": {
+          "modalities": {
+            "type": "array",
+            "description": "响应模态",
+            "items": {
+              "type": "string",
+              "enum": ["text", "audio", "video"]
+            }
+          },
+          "instructions": {
+            "type": "string",
+            "description": "响应指令",
+            "nullable": true
+          },
+          "voice": {
+            "type": "string",
+            "description": "语音类型",
+            "enum": ["tongtong", "xiaoxiao", "xiaoyan"],
+            "nullable": true
+          },
+          "output_audio_format": {
+            "type": "string",
+            "description": "输出音频格式",
+            "enum": ["pcm16", "g711_ulaw", "g711_alaw"],
+            "nullable": true
+          },
+          "tools": {
+            "type": "array",
+            "description": "可用工具",
+            "items": {
+              "$ref": "#/components/schemas/ToolObject"
+            }
+          },
+          "tool_choice": {
+            "type": "string",
+            "description": "工具选择",
+            "enum": ["auto", "none", "required"],
+            "nullable": true
+          },
+          "temperature": {
+            "type": "number",
+            "description": "采样温度",
+            "minimum": 0.0,
+            "maximum": 2.0,
+            "nullable": true
+          },
+          "max_output_tokens": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "string",
+                "enum": ["inf"]
+              }
+            ],
+            "description": "最大输出token数",
+            "nullable": true
+          }
+        }
+      },
+      "ResponseCreatedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.created"]
+              },
+              "response": {
+                "$ref": "#/components/schemas/ResponseStatusObject"
+              }
+            },
+            "required": ["response"]
+          }
+        ],
+        "description": "服务端响应创建事件"
+      },
+      "ResponseDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.done"]
+              },
+              "response": {
+                "$ref": "#/components/schemas/ResponseStatusObject"
+              }
+            },
+            "required": ["response"]
+          }
+        ],
+        "description": "服务端响应完成事件"
+      },
+      "ResponseStatusObject": {
+        "type": "object",
+        "description": "响应状态对象",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "响应ID"
+          },
+          "object": {
+            "type": "string",
+            "enum": ["realtime.response"]
+          },
+          "status": {
+            "type": "string",
+            "description": "响应状态",
+            "enum": ["in_progress", "completed", "cancelled", "failed", "incomplete"]
+          },
+          "status_details": {
+            "type": "object",
+            "description": "状态详情",
+            "nullable": true
+          },
+          "output": {
+            "type": "array",
+            "description": "输出项目列表",
+            "items": {
+              "$ref": "#/components/schemas/ConversationItemObject"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageObject"
+          }
+        },
+        "required": ["id", "object", "status"]
+      },
+      "UsageObject": {
+        "type": "object",
+        "description": "使用统计对象",
+        "properties": {
+          "total_tokens": {
+            "type": "integer",
+            "description": "总token数"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "description": "输入token数"
+          },
+          "output_tokens": {
+            "type": "integer",
+            "description": "输出token数"
+          },
+          "input_token_details": {
+            "type": "object",
+            "properties": {
+              "cached_tokens": {
+                "type": "integer",
+                "description": "缓存token数"
+              },
+              "text_tokens": {
+                "type": "integer",
+                "description": "文本token数"
+              },
+              "audio_tokens": {
+                "type": "integer",
+                "description": "音频token数"
+              }
+            }
+          },
+          "output_token_details": {
+            "type": "object",
+            "properties": {
+              "text_tokens": {
+                "type": "integer",
+                "description": "文本token数"
+              },
+              "audio_tokens": {
+                "type": "integer",
+                "description": "音频token数"
+              }
+            }
+          }
+        }
+      },
+      "ResponseTextDeltaEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.text.delta"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "delta": {
+                "type": "string",
+                "description": "文本增量"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "delta"]
+          }
+        ],
+        "description": "服务端文本增量事件"
+      },
+      "ResponseTextDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.text.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "text": {
+                "type": "string",
+                "description": "完整文本"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "text"]
+          }
+        ],
+        "description": "服务端文本完成事件"
+      },
+      "ResponseAudioDeltaEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.audio.delta"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "delta": {
+                "type": "string",
+                "description": "Base64编码的音频增量数据"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "delta"]
+          }
+        ],
+        "description": "服务端音频增量事件"
+      },
+      "ResponseAudioDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.audio.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index"]
+          }
+        ],
+        "description": "服务端音频完成事件"
+      },
+      "ServerErrorEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["error"]
+              },
+              "error": {
+                "$ref": "#/components/schemas/RealtimeErrorObject"
+              }
+            },
+            "required": ["error"]
+          }
+        ],
+        "description": "服务端错误事件"
+      },
+      "RealtimeErrorObject": {
+        "type": "object",
+        "description": "实时API错误对象",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "错误类型",
+            "enum": [
+              "invalid_request_error",
+              "authentication_error",
+              "permission_error",
+              "not_found_error",
+              "rate_limit_error",
+              "api_error",
+              "overloaded_error",
+              "network_error"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "description": "错误代码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误消息"
+          },
+          "param": {
+            "type": "string",
+            "description": "相关参数",
+            "nullable": true
+          },
+          "event_id": {
+            "type": "string",
+            "description": "相关事件ID",
+            "nullable": true
+          }
+        },
+        "required": ["type", "code", "message"]
+      },
+      "HeartbeatEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["heartbeat"]
+              }
+            }
+          }
+        ],
+        "description": "服务端心跳事件"
+      },
+      "InputAudioBufferCommittedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.committed"]
+              },
+              "previous_item_id": {
+                "type": "string",
+                "description": "前一个项目ID",
+                "nullable": true
+              },
+              "item_id": {
+                "type": "string",
+                "description": "创建的项目ID"
+              }
+            },
+            "required": ["item_id"]
+          }
+        ],
+        "description": "服务端音频缓冲区已提交事件"
+      },
+      "InputAudioBufferClearedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.cleared"]
+              }
+            }
+          }
+        ],
+        "description": "服务端音频缓冲区已清空事件"
+      },
+      "InputAudioBufferSpeechStartedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.speech_started"]
+              },
+              "audio_start_ms": {
+                "type": "integer",
+                "description": "语音开始时间（毫秒）"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              }
+            },
+            "required": ["audio_start_ms", "item_id"]
+          }
+        ],
+        "description": "服务端检测到语音开始事件"
+      },
+      "InputAudioBufferSpeechStoppedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["input_audio_buffer.speech_stopped"]
+              },
+              "audio_end_ms": {
+                "type": "integer",
+                "description": "语音结束时间（毫秒）"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              }
+            },
+            "required": ["audio_end_ms", "item_id"]
+          }
+        ],
+        "description": "服务端检测到语音结束事件"
+      },
+      "ConversationItemCreatedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.created"]
+              },
+              "previous_item_id": {
+                "type": "string",
+                "description": "前一个项目ID",
+                "nullable": true
+              },
+              "item": {
+                "$ref": "#/components/schemas/ConversationItemObject"
+              }
+            },
+            "required": ["item"]
+          }
+        ],
+        "description": "服务端对话项目创建事件"
+      },
+      "ConversationItemDeletedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.deleted"]
+              },
+              "item_id": {
+                "type": "string",
+                "description": "已删除的项目ID"
+              }
+            },
+            "required": ["item_id"]
+          }
+        ],
+        "description": "服务端对话项目删除事件"
+      },
+      "ConversationItemInputAudioTranscriptionCompletedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["conversation.item.input_audio_transcription.completed"]
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "transcript": {
+                "type": "string",
+                "description": "转录文本"
+              }
+            },
+            "required": ["item_id", "content_index", "transcript"]
+          }
+        ],
+        "description": "服务端音频转录完成事件"
+      },
+      "ResponseOutputItemAddedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.output_item.added"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "item": {
+                "$ref": "#/components/schemas/ConversationItemObject"
+              }
+            },
+            "required": ["response_id", "output_index", "item"]
+          }
+        ],
+        "description": "服务端响应输出项目添加事件"
+      },
+      "ResponseOutputItemDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.output_item.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "item": {
+                "$ref": "#/components/schemas/ConversationItemObject"
+              }
+            },
+            "required": ["response_id", "output_index", "item"]
+          }
+        ],
+        "description": "服务端响应输出项目完成事件"
+      },
+      "ResponseContentPartAddedEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.content_part.added"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "part": {
+                "$ref": "#/components/schemas/ContentPartObject"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "part"]
+          }
+        ],
+        "description": "服务端响应内容部分添加事件"
+      },
+      "ResponseContentPartDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.content_part.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "part": {
+                "$ref": "#/components/schemas/ContentPartObject"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "part"]
+          }
+        ],
+        "description": "服务端响应内容部分完成事件"
+      },
+      "ResponseAudioTranscriptDeltaEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.audio_transcript.delta"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "delta": {
+                "type": "string",
+                "description": "转录文本增量"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "delta"]
+          }
+        ],
+        "description": "服务端音频转录增量事件"
+      },
+      "ResponseAudioTranscriptDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.audio_transcript.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "content_index": {
+                "type": "integer",
+                "description": "内容索引"
+              },
+              "transcript": {
+                "type": "string",
+                "description": "完整转录文本"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "content_index", "transcript"]
+          }
+        ],
+        "description": "服务端音频转录完成事件"
+      },
+      "ResponseFunctionCallArgumentsDeltaEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.function_call_arguments.delta"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "call_id": {
+                "type": "string",
+                "description": "函数调用ID"
+              },
+              "delta": {
+                "type": "string",
+                "description": "函数参数增量"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "call_id", "delta"]
+          }
+        ],
+        "description": "服务端函数调用参数增量事件"
+      },
+      "ResponseFunctionCallArgumentsDoneEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RealtimeBaseEvent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["response.function_call_arguments.done"]
+              },
+              "response_id": {
+                "type": "string",
+                "description": "响应ID"
+              },
+              "item_id": {
+                "type": "string",
+                "description": "项目ID"
+              },
+              "output_index": {
+                "type": "integer",
+                "description": "输出索引"
+              },
+              "call_id": {
+                "type": "string",
+                "description": "函数调用ID"
+              },
+              "name": {
+                "type": "string",
+                "description": "函数名称"
+              },
+              "arguments": {
+                "type": "string",
+                "description": "完整函数参数"
+              }
+            },
+            "required": ["response_id", "item_id", "output_index", "call_id", "name", "arguments"]
+          }
+        ],
+        "description": "服务端函数调用参数完成事件"
       }
     },
     "securitySchemes": {

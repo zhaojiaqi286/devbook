@@ -1,0 +1,681 @@
+---
+title: '实时对话 WebSocket 连接'
+openapi: 'GET /v4/realtime'
+---
+
+建立WebSocket连接以进行实时AI对话。支持音频、视频和文本多模态交互，提供低延迟的实时对话体验。
+
+## 功能特性
+
+- **多模态支持**: 支持音频、视频和文本输入
+- **实时交互**: 低延迟的实时对话体验
+- **事件驱动**: 通过JSON格式的事件消息进行通信
+- **模型选择**: 支持多种实时对话模型
+- **语音合成**: 支持多种语音类型和音频格式
+- **音频降噪**: 内置音频降噪功能
+- **转写功能**: 支持音频转文本功能
+- **工具调用**: 支持函数工具调用
+
+## 支持的模型
+
+- `glm-4-realtime`: 通用实时对话模型，支持文本和语音交互
+- `glm-4-voice`: 语音专用实时模型，针对语音对话优化
+- `glm-4-video`: 视频专用实时模型，支持视频内容理解
+
+## 连接流程
+
+### 1. 建立 WebSocket 连接
+
+```javascript
+const ws = new WebSocket('wss://open.bigmodel.cn/api/v4/realtime?model=glm-4-realtime', [], {
+  headers: {
+    'Authorization': 'Bearer your-api-key',
+    'Accept-Language': 'cn'
+  }
+});
+```
+
+### 2. 连接成功后配置会话
+
+```javascript
+ws.onopen = function() {
+  // 发送会话配置
+  const sessionConfig = {
+    type: 'session.update',
+    session: {
+      model: 'glm-4-realtime',
+      modalities: ['text', 'audio'],
+      instructions: '你是一个有用的AI助手，请简洁地回答问题。',
+      voice: 'tongtong',
+      input_audio_format: 'pcm16',
+      output_audio_format: 'pcm16',
+      turn_detection: {
+        type: 'server_vad',
+        threshold: 0.5,
+        prefix_padding_ms: 300,
+        silence_duration_ms: 500
+      },
+      temperature: 0.8
+    }
+  };
+  
+  ws.send(JSON.stringify(sessionConfig));
+};
+```
+
+### 3. 处理服务端事件
+
+```javascript
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  switch(data.type) {
+    case 'session.created':
+      console.log('会话已创建:', data.session);
+      break;
+    case 'conversation.created':
+      console.log('对话已创建:', data.conversation);
+      break;
+    case 'response.text.delta':
+      console.log('文本增量:', data.delta);
+      break;
+    case 'response.audio.delta':
+      // 处理音频数据
+      playAudioChunk(data.delta);
+      break;
+    case 'response.done':
+      console.log('响应完成:', data.response);
+      break;
+    case 'error':
+      console.error('错误:', data.error);
+      break;
+  }
+};
+```
+
+## 会话配置参数
+
+### 基础配置
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `model` | string | 是 | 模型名称，如 `glm-4-realtime` |
+| `modalities` | array | 否 | 交互模式，默认 `["text", "audio"]` |
+| `instructions` | string | 否 | 系统指令，引导模型行为 |
+| `voice` | string | 否 | 语音类型：`tongtong`(女声) 或 `xiaochen`(男声) |
+
+### 音频配置
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `input_audio_format` | string | 否 | 输入音频格式：`pcm16`、`g711_ulaw`、`g711_alaw` |
+| `output_audio_format` | string | 否 | 输出音频格式：`pcm16`、`g711_ulaw`、`g711_alaw` |
+| `input_audio_noise_reduction` | object | 否 | 音频降噪配置 |
+| `input_audio_transcription` | object | 否 | 音频转写配置 |
+
+### 高级配置
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `turn_detection` | object | 否 | 对话轮次检测配置 |
+| `tools` | array | 否 | 可用工具函数列表 |
+| `tool_choice` | string/object | 否 | 工具调用策略 |
+| `temperature` | number | 否 | 采样温度，范围 [0.6, 1.2] |
+| `max_response_output_tokens` | number/string | 否 | 最大输出token数 |
+
+## 客户端事件类型
+
+### 会话管理
+
+#### `session.update`
+更新会话配置
+
+```json
+{
+  "type": "session.update",
+  "session": {
+    "model": "glm-4-realtime",
+    "modalities": ["text", "audio"],
+    "instructions": "你是一个有用的AI助手",
+    "voice": "tongtong",
+    "temperature": 0.8
+  }
+}
+```
+
+### 对话管理
+
+#### `conversation.item.create`
+创建对话项（发送用户输入）
+
+```json
+{
+  "type": "conversation.item.create",
+  "item": {
+    "type": "message",
+    "role": "user",
+    "content": [
+      {
+        "type": "input_text",
+        "text": "你好，请介绍一下你自己"
+      }
+    ]
+  }
+}
+```
+
+#### `conversation.item.delete`
+删除指定对话项
+
+```json
+{
+  "type": "conversation.item.delete",
+  "item_id": "item_001"
+}
+```
+
+### 音频处理
+
+#### `input_audio_buffer.append`
+追加音频数据到缓冲区
+
+```json
+{
+  "type": "input_audio_buffer.append",
+  "audio": "base64编码的音频数据"
+}
+```
+
+#### `input_audio_buffer.commit`
+提交音频缓冲区（表示用户说话结束）
+
+```json
+{
+  "type": "input_audio_buffer.commit"
+}
+```
+
+#### `input_audio_buffer.clear`
+清空音频缓冲区
+
+```json
+{
+  "type": "input_audio_buffer.clear"
+}
+```
+
+### 响应控制
+
+#### `response.create`
+请求生成响应
+
+```json
+{
+  "type": "response.create",
+  "response": {
+    "modalities": ["text", "audio"],
+    "instructions": "请简洁回答",
+    "voice": "tongtong",
+    "output_audio_format": "pcm16"
+  }
+}
+```
+
+#### `response.cancel`
+取消当前响应生成
+
+```json
+{
+  "type": "response.cancel"
+}
+```
+
+## 服务端事件类型
+
+### 会话事件
+
+#### `session.created`
+会话创建成功
+
+```json
+{
+  "type": "session.created",
+  "session": {
+    "id": "session_001",
+    "object": "realtime.session",
+    "model": "glm-4-realtime",
+    "expires_at": 1700000000,
+    "modalities": ["text", "audio"],
+    "instructions": "你是一个有用的AI助手",
+    "voice": "tongtong",
+    "input_audio_format": "pcm16",
+    "output_audio_format": "pcm16",
+    "turn_detection": {
+      "type": "server_vad",
+      "threshold": 0.5
+    },
+    "temperature": 0.8
+  }
+}
+```
+
+#### `session.updated`
+会话配置已更新
+
+```json
+{
+  "type": "session.updated",
+  "session": {
+    "id": "session_001",
+    "object": "realtime.session",
+    // ... 更新后的会话配置
+  }
+}
+```
+
+### 对话事件
+
+#### `conversation.created`
+对话创建成功
+
+```json
+{
+  "type": "conversation.created",
+  "conversation": {
+    "id": "conv_001",
+    "object": "realtime.conversation"
+  }
+}
+```
+
+#### `conversation.item.created`
+对话项已创建
+
+```json
+{
+  "type": "conversation.item.created",
+  "item": {
+    "id": "item_001",
+    "object": "realtime.item",
+    "type": "message",
+    "status": "completed",
+    "role": "user",
+    "content": [
+      {
+        "type": "input_text",
+        "text": "你好，请介绍一下你自己"
+      }
+    ]
+  }
+}
+```
+
+### 响应事件
+
+#### `response.created`
+响应生成开始
+
+```json
+{
+  "type": "response.created",
+  "response": {
+    "id": "resp_001",
+    "object": "realtime.response",
+    "status": "in_progress",
+    "status_details": null,
+    "output": [],
+    "usage": null
+  }
+}
+```
+
+#### `response.text.delta`
+文本响应增量更新
+
+```json
+{
+  "type": "response.text.delta",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "delta": "你好！我是"
+}
+```
+
+#### `response.text.done`
+文本响应完成
+
+```json
+{
+  "type": "response.text.done",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "text": "你好！我是GLM-4，一个由智谱AI开发的人工智能助手。"
+}
+```
+
+#### `response.audio.delta`
+音频响应增量更新
+
+```json
+{
+  "type": "response.audio.delta",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0,
+  "delta": "base64编码的音频数据"
+}
+```
+
+#### `response.audio.done`
+音频响应完成
+
+```json
+{
+  "type": "response.audio.done",
+  "response_id": "resp_001",
+  "item_id": "item_002",
+  "output_index": 0,
+  "content_index": 0
+}
+```
+
+#### `response.done`
+响应完全完成
+
+```json
+{
+  "type": "response.done",
+  "response": {
+    "id": "resp_001",
+    "object": "realtime.response",
+    "status": "completed",
+    "status_details": null,
+    "output": [
+      {
+        "id": "item_002",
+        "object": "realtime.item",
+        "type": "message",
+        "role": "assistant",
+        "content": [
+          {
+            "type": "text",
+            "text": "你好！我是GLM-4，一个由智谱AI开发的人工智能助手。"
+          },
+          {
+            "type": "audio",
+            "audio": "base64编码的完整音频数据"
+          }
+        ]
+      }
+    ],
+    "usage": {
+      "total_tokens": 156,
+      "input_tokens": 128,
+      "output_tokens": 28
+    }
+  }
+}
+```
+
+### 音频事件
+
+#### `input_audio_buffer.speech_started`
+检测到用户开始说话
+
+```json
+{
+  "type": "input_audio_buffer.speech_started",
+  "audio_start_ms": 1000,
+  "item_id": "item_003"
+}
+```
+
+#### `input_audio_buffer.speech_stopped`
+检测到用户停止说话
+
+```json
+{
+  "type": "input_audio_buffer.speech_stopped",
+  "audio_end_ms": 3000,
+  "item_id": "item_003"
+}
+```
+
+#### `input_audio_buffer.committed`
+音频缓冲区已提交
+
+```json
+{
+  "type": "input_audio_buffer.committed",
+  "item_id": "item_003"
+}
+```
+
+#### `conversation.item.input_audio_transcription.completed`
+音频转写完成
+
+```json
+{
+  "type": "conversation.item.input_audio_transcription.completed",
+  "item_id": "item_003",
+  "content_index": 0,
+  "transcript": "你好，请介绍一下你自己"
+}
+```
+
+### 错误事件
+
+#### `error`
+错误信息
+
+```json
+{
+  "type": "error",
+  "error": {
+    "type": "invalid_request_error",
+    "code": "invalid_event",
+    "message": "Invalid event type",
+    "param": "type",
+    "event_id": "event_001"
+  }
+}
+```
+
+## 使用示例
+
+### 文本对话示例
+
+```javascript
+// 发送文本消息
+const textMessage = {
+  type: 'conversation.item.create',
+  item: {
+    type: 'message',
+    role: 'user',
+    content: [
+      {
+        type: 'input_text',
+        text: '请解释一下什么是人工智能'
+      }
+    ]
+  }
+};
+ws.send(JSON.stringify(textMessage));
+
+// 请求生成响应
+const createResponse = {
+  type: 'response.create',
+  response: {
+    modalities: ['text']
+  }
+};
+ws.send(JSON.stringify(createResponse));
+```
+
+### 语音对话示例
+
+```javascript
+// 配置语音对话
+const voiceSession = {
+  type: 'session.update',
+  session: {
+    modalities: ['audio'],
+    voice: 'tongtong',
+    input_audio_format: 'pcm16',
+    output_audio_format: 'pcm16',
+    turn_detection: {
+      type: 'server_vad',
+      threshold: 0.5,
+      prefix_padding_ms: 300,
+      silence_duration_ms: 500
+    }
+  }
+};
+ws.send(JSON.stringify(voiceSession));
+
+// 发送音频数据（需要从麦克风获取）
+navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(stream => {
+    const mediaRecorder = new MediaRecorder(stream);
+    
+    mediaRecorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        // 将音频数据转换为base64并发送
+        const reader = new FileReader();
+        reader.onload = () => {
+          const audioData = {
+            type: 'input_audio_buffer.append',
+            audio: reader.result.split(',')[1] // 移除data:前缀
+          };
+          ws.send(JSON.stringify(audioData));
+        };
+        reader.readAsDataURL(event.data);
+      }
+    };
+    
+    mediaRecorder.start(100); // 每100ms发送一次数据
+  });
+```
+
+### 工具调用示例
+
+```javascript
+// 配置工具函数
+const toolSession = {
+  type: 'session.update',
+  session: {
+    tools: [
+      {
+        type: 'function',
+        name: 'get_weather',
+        description: '获取指定城市的天气信息',
+        parameters: {
+          type: 'object',
+          properties: {
+            city: {
+              type: 'string',
+              description: '城市名称'
+            }
+          },
+          required: ['city']
+        }
+      }
+    ],
+    tool_choice: 'auto'
+  }
+};
+ws.send(JSON.stringify(toolSession));
+
+// 处理工具调用响应
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  if (data.type === 'response.function_call_arguments.done') {
+    // 执行工具函数
+    const functionCall = data.call;
+    if (functionCall.name === 'get_weather') {
+      const args = JSON.parse(functionCall.arguments);
+      const weatherResult = getWeather(args.city); // 实际调用天气API
+      
+      // 发送工具执行结果
+      const toolResult = {
+        type: 'conversation.item.create',
+        item: {
+          type: 'function_call_output',
+          call_id: functionCall.call_id,
+          output: JSON.stringify(weatherResult)
+        }
+      };
+      ws.send(JSON.stringify(toolResult));
+      
+      // 请求继续生成响应
+      ws.send(JSON.stringify({ type: 'response.create' }));
+    }
+  }
+};
+```
+
+## 错误处理
+
+### 常见错误类型
+
+- `invalid_request_error`: 请求格式错误
+- `authentication_error`: 认证失败
+- `permission_error`: 权限不足
+- `rate_limit_error`: 请求频率超限
+- `server_error`: 服务器内部错误
+
+### 错误处理示例
+
+```javascript
+ws.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  
+  if (data.type === 'error') {
+    const error = data.error;
+    
+    switch(error.type) {
+      case 'rate_limit_error':
+        console.log('请求过于频繁，请稍后重试');
+        // 实现退避重试逻辑
+        break;
+      case 'authentication_error':
+        console.error('认证失败，请检查API密钥');
+        break;
+      case 'invalid_request_error':
+        console.error('请求格式错误:', error.message);
+        break;
+      default:
+        console.error('未知错误:', error);
+    }
+  }
+};
+
+ws.onerror = function(error) {
+  console.error('WebSocket错误:', error);
+};
+
+ws.onclose = function(event) {
+  console.log('连接关闭:', event.code, event.reason);
+  // 实现重连逻辑
+  if (event.code !== 1000) { // 非正常关闭
+    setTimeout(() => {
+      // 重新建立连接
+      connectWebSocket();
+    }, 1000);
+  }
+};
+```
+
+## 最佳实践
+
+1. **连接管理**: 实现心跳检测和自动重连机制
+2. **音频处理**: 使用适当的音频采样率和格式
+3. **错误处理**: 对所有可能的错误类型进行处理
+4. **资源管理**: 及时清理音频资源和事件监听器
+5. **性能优化**: 控制音频数据发送频率，避免过于频繁的请求 
