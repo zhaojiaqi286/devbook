@@ -133,50 +133,6 @@
         }
       }
     },
-    "/paas/v4/audio/customization": {
-      "post": {
-        "tags": ["音频 API"],
-        "summary": "语音定制",
-        "description": "使用高级神经模型进行语音克隆和定制，创建个性化语音模型。",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/AcceptLanguage"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/AudioCustomizationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "业务处理成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AudioCustomizationResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "请求失败。",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/paas/v4/images/generations": {
       "post": {
         "tags": ["图像 API"],
