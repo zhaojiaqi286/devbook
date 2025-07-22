@@ -267,7 +267,7 @@
     },
     "/paas/v4/rerank": {
       "post": {
-        "tags":["知识库 API"],
+        "tags": ["知识库 API"],
         "summary": "文本重排序",
         "description": "Rerank 用于文本重排序，通过接收用户的查询文本及候选文本列表，使用模型计算候选文本与查询文本的相关性得分并返回分数。适用于智能问答、信息检索等场景。",
         "parameters": [
@@ -296,7 +296,7 @@
               }
             }
           },
-         "default": {
+          "default": {
             "description": "请求失败。",
             "content": {
               "application/json": {
@@ -305,8 +305,9 @@
                 }
               }
             }
-          }}
-    }
+          }
+        }
+      }
     },
     "/paas/v4/files": {
       "post": {
@@ -522,6 +523,10 @@
             "application/json": {
               "schema": {
                 "oneOf": [
+                  {
+                    "title": "CogVideoX-3",
+                    "$ref": "#/components/schemas/CogVideoX3Request"
+                  },
                   {
                     "title": "CogVideoX-2",
                     "$ref": "#/components/schemas/CogVideoX2Request"
@@ -831,7 +836,7 @@
     "/v1/agents/async-result": {
       "post": {
         "tags": ["Agent API"],
-        "summary": "查询异步结果",
+        "summary": "查询异步结果 (WIP)",
         "description": "查询智能体异步任务的处理结果和状态。",
         "parameters": [
           {
@@ -1643,7 +1648,12 @@
                           "type": {
                             "type": "string",
                             "description": "内容类型，可以是文本、图片URL、视频URL或音频输入",
-                            "enum": ["text", "image_url", "video_url", "input_audio"]
+                            "enum": [
+                              "text",
+                              "image_url",
+                              "video_url",
+                              "input_audio"
+                            ]
                           },
                           "text": {
                             "type": "string",
@@ -1901,18 +1911,13 @@
           "type": {
             "type": "string",
             "default": "web_search",
-            "enum": [
-              "web_search"
-            ]
+            "enum": ["web_search"]
           },
           "web_search": {
             "$ref": "#/components/schemas/WebSearchObject"
           }
         },
-        "required": [
-          "type",
-          "web_search"
-        ],
+        "required": ["type", "web_search"],
         "additionalProperties": false
       },
       "WebSearchObject": {
@@ -1939,7 +1944,7 @@
             "description": "强制触发搜索"
           },
           "search_intent": {
-            "type": "string", 
+            "type": "string",
             "description": "是否进行搜索意图识别，默认执行搜索意图识别。true：执行搜索意图识别，有搜索意图后执行搜索；false：跳过搜索意图识别，直接执行搜索"
           },
           "count": {
@@ -1955,29 +1960,17 @@
           "search_recency_filter": {
             "type": "string",
             "description": "搜索指定时间范围内的网页。默认为noLimit。可填值：oneDay（一天内）、oneWeek（一周内）、oneMonth（一个月内）、oneYear（一年内）、noLimit（不限，默认）。支持的搜索引擎：search_std、search_pro、search_pro_sogou、search_pro_quark",
-            "enum": [
-              "oneDay",
-              "oneWeek",
-              "oneMonth",
-              "oneYear",
-              "noLimit"
-            ]
+            "enum": ["oneDay", "oneWeek", "oneMonth", "oneYear", "noLimit"]
           },
           "content_size": {
             "type": "string",
             "description": "控制网页摘要的字数。默认值为medium。medium：返回摘要信息，满足大模型的基础推理需求。high：最大化上下文，信息量较大但内容详细，适合需要信息细节的场景。",
-            "enum": [
-              "medium",
-              "high"
-            ]
+            "enum": ["medium", "high"]
           },
           "result_sequence": {
             "type": "string",
             "description": "指定搜索结果返回的顺序是在模型回复结果之前还是之后，可选值：before、after，默认 after",
-            "enum": [
-              "before",
-              "after"
-            ]
+            "enum": ["before", "after"]
           },
           "search_result": {
             "type": "boolean",
@@ -1992,9 +1985,7 @@
             "description": "用于定制搜索结果处理的Prompt，默认Prompt：\n\n你是一位智能问答专家，具备整合信息的能力，能够进行时间识别、语义理解与矛盾信息清洗处理。\n当前日期是{{current_date}}，请以此时间为唯一基准，参考以下信息，全面、准确地回答用户问题。\n仅提炼有价值的内容用于回答，确保答案具有实时性与权威性，直接陈述答案，无需说明数据来源或内部处理过程。"
           }
         },
-        "required": [
-          "search_engine"
-        ]
+        "required": ["search_engine"]
       },
       "ChatCompletionResponse": {
         "type": "object",
@@ -2124,7 +2115,7 @@
                 "description": "当前对话文本内容。如果调用函数则为 null，否则返回推理结果。对于GLM-Z1系列模型，返回内容可能包含 <think> 标签内的思考过程，标签外的内容为最终输出。"
               },
               {
-                "type": "array", 
+                "type": "array",
                 "description": "多模态回复内容，适用于GLM-4V系列模型",
                 "items": {
                   "type": "object",
@@ -2335,7 +2326,13 @@
                 "finish_reason": {
                   "type": "string",
                   "description": "模型推理终止的原因。'stop'表示自然结束或触发stop词，'tool_calls'表示模型命中函数，'length'表示达到token长度限制，'sensitive'表示内容被安全审核接口拦截（用户应判断并决定是否撤回公开内容），'network_error'表示模型推理异常。",
-                  "enum": ["stop", "length", "tool_calls", "sensitive", "network_error"]
+                  "enum": [
+                    "stop",
+                    "length",
+                    "tool_calls",
+                    "sensitive",
+                    "network_error"
+                  ]
                 }
               }
             }
@@ -2376,6 +2373,95 @@
             }
           }
         }
+      },
+      "CogVideoX3Request": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string",
+                "description": "要调用的模型编码。",
+                "enum": ["cogvideox-3"]
+              },
+              "prompt": {
+                "type": "string",
+                "description": "视频的文本描述，最大输入长度为 512 Tokens, image_url和prompt二选一或者同时传入。"
+              },
+              "quality": {
+                "type": "string",
+                "description": "输出模式，默认为 \"speed\"。 \"quality\"：质量优先，生成质量高。 \"speed\"：速度优先，生成时间更快，质量相对稍低。",
+                "example": "speed",
+                "enum": ["speed", "quality"]
+              },
+              "with_audio": {
+                "type": "boolean",
+                "description": "是否生成 AI 音效。默认值：False （不生成音效）。",
+                "example": false
+              },
+              "image_url": {
+                "description": "提供基于其生成内容的图像，如果传入此参数，系统将以该图像为基础进行操作。支持通过URL或Base64编码传入图片。图片要求如下：图片支持.png、.jpeg、.jpg 格式、图片大小：不超过5M, image_url和prompt二选一或者同时传入。",
+                "oneOf": [
+                  {
+                    "title": "Image URL",
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://example.com/image.png"
+                  },
+                  {
+                    "title": "Base64 Encoded Image",
+                    "type": "string",
+                    "format": "byte",
+                    "example": "data:image/png;base64, XXX"
+                  },
+                  {
+                    "title": "Image URLs Array (First & Last Frame)",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "description": "首尾帧：支持输入两张图，上传的第一张图片视作首帧图，第二张图片视作尾帧图，模型将以此参数中传入的图片来生成视频。首尾帧模式只支持 speed 模式。",
+                    "example": [
+                      "https://example.com/first_frame.jpg",
+                      "https://example.com/last_frame.jpg"
+                    ]
+                  }
+                ]
+              },
+              "size": {
+                "type": "string",
+                "description": "默认值：若不指定，默认生成视频的短边为 1080，长边根据原图片比例确认。最高支持 4K 分辨率。",
+                "example": "1920x1080",
+                "enum": [
+                  "1280x720",
+                  "720x1280",
+                  "1024x1024",
+                  "1920x1080",
+                  "1080x1920",
+                  "2048x1080",
+                  "3840x2160"
+                ]
+              },
+              "fps": {
+                "type": "integer",
+                "description": "视频帧率（FPS），可选值为 30 或 60。默认值：30。",
+                "example": 30,
+                "enum": [30, 60]
+              },
+              "duration": {
+                "type": "integer",
+                "description": "视频持续时长，默认5秒，支持5、10",
+                "example": 5,
+                "enum": [5, 10]
+              }
+            },
+            "required": ["model"]
+          },
+          {
+            "$ref": "#/components/schemas/VideoCommonRequest"
+          }
+        ]
       },
       "CogVideoX2Request": {
         "allOf": [
@@ -3192,11 +3278,7 @@
           },
           "purpose": {
             "type": "string",
-            "enum": [
-              "batch",
-              "file-extract",
-              "code-interpreter"
-            ],
+            "enum": ["batch", "file-extract", "code-interpreter"],
             "description": "文件的预期用途。\nbatch：用于批量任务处理，支持 .jsonl 文件格式，，单个文件大小限制为100 MB，文件数不超过 1000 个。Batch指南。\nfile-extract：用于文档内容抽取，支持的格式包括：pdf、docx、doc、xls、xlsx、ppt、pptx、png、jpg、jpeg、csv，单个文件大小限制为 50 M，图片大小不超过5M，文件数不超过 100 个。\ncode-interpreter：文件上传给代码沙盒CI使用，支持的格式包括：pdf、docx、doc、xls、xlsx、txt、png、jpg、jpeg、csv，单个文件大小限制为 20 M，图片大小不超过5M，文件数不超过 100 个。"
           }
         }
@@ -3487,13 +3569,9 @@
           }
         }
       },
-       "RerankRequest": {
+      "RerankRequest": {
         "type": "object",
-        "required": [
-          "model",
-          "query",
-          "documents"
-        ],
+        "required": ["model", "query", "documents"],
         "properties": {
           "model": {
             "type": "string",
@@ -3532,82 +3610,91 @@
           }
         }
       },
-       "RerankResponse": {
-      "type": "object",
-      "properties": {
-        "created": {
-          "type": "integer",
-          "format": "int64",
-          "example": 1732083164
-        },
-        "id": {
-          "type": "string",
-          "example": "20241120141244890ab4ee4af84acf",
-          "description":"智谱 AI 开放平台生成的任务订单号，调用请求结果接口时请使用此订单号"
-        },
-        "request_id": {
-          "type": "string",
-          "example": "1111111111",
-          "description":"用户在客户端请求时提交的任务编号或者平台生成的任务编号"
-        },
-        "results": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/RerankResult"
+      "RerankResponse": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1732083164
+          },
+          "id": {
+            "type": "string",
+            "example": "20241120141244890ab4ee4af84acf",
+            "description": "智谱 AI 开放平台生成的任务订单号，调用请求结果接口时请使用此订单号"
+          },
+          "request_id": {
+            "type": "string",
+            "example": "1111111111",
+            "description": "用户在客户端请求时提交的任务编号或者平台生成的任务编号"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RerankResult"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/RerankUsage"
           }
         },
-        "usage": {
-          "$ref": "#/components/schemas/RerankUsage"
-        }
+        "required": ["id", "results", "usage"]
       },
-      "required": ["id", "results", "usage"]
-    },  
-    "RerankResult": {
-      "type": "object",
-      "properties": {
-        "document": {
-          "type": "string",
-          "example": "Washington, D.C. is the capital of the United States.",
-          "description":"原文本"
+      "RerankResult": {
+        "type": "object",
+        "properties": {
+          "document": {
+            "type": "string",
+            "example": "Washington, D.C. is the capital of the United States.",
+            "description": "原文本"
+          },
+          "index": {
+            "type": "integer",
+            "example": 1
+          },
+          "relevance_score": {
+            "type": "number",
+            "format": "float",
+            "example": 0.99866986
+          }
         },
-        "index": {
-          "type": "integer",
-          "example": 1
-        },
-        "relevance_score": {
-          "type": "number",
-          "format": "float",
-          "example": 0.99866986
-        }
+        "required": ["document", "index", "relevance_score"]
       },
-      "required": ["document", "index", "relevance_score"]
-    },
-    "RerankUsage": {
-      "type": "object",
-      "properties": {
-        "prompt_tokens": {
-          "type": "integer",
-          "example": 72
+      "RerankUsage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer",
+            "example": 72
+          },
+          "total_tokens": {
+            "type": "integer",
+            "example": 72
+          }
         },
-        "total_tokens": {
-          "type": "integer",
-          "example": 72
-        }
+        "required": ["prompt_tokens", "total_tokens"]
       },
-      "required": ["prompt_tokens", "total_tokens"]
-    },
       "AgentRequest": {
         "type": "object",
         "required": ["agent_id", "messages"],
         "properties": {
           "agent_id": {
-            "type": "string",
-            "description": "智能体 ID。例如：翻译智能体ID为 general_translation；专业文档翻译智能体ID为： doc_translation_agent。",
-            "example": "general_translation"
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": ["general_translation"],
+                "description": "**请切换变量类型至string以输入其他智能体ID**\n 此处提供 通用翻译智能体 (general_translation) 作为示例。"
+              },
+              {
+                "type": "string",
+                "description": "自定义智能体ID"
+              }
+            ],
+            "description": "智能体 ID"
           },
           "stream": {
             "type": "boolean",
-            "description": "使用同步调用时，此参数应当设置为 false 或者省略。表示模型生成完所有内容后一次性返回所有内容。默认值为 false。如果设置为 true，模型将通过标准 Event Stream，逐块返回模型生成内容。Event Stream 结束时会返回一条 data: [DONE] 消息。",
+            "description": "使用同步调用时，此参数应当设置为 false 或者省略。表示模型生成完所有内容后一次性返回所有内容。默认值为 false。如果设置为 true，模型将通过标准 Event Stream，逐块返回模型生成内容。Event Stream 结束时会返回一条 data: [DONE] 消息。注意：在模型流式输出生成内容的过程中，我们会分批对模型生成内容进行检测，当检测到违法及不良信息时，API会返回错误码（1301）。开发者识别到错误码（1301），应及时采取（清屏、重启对话）等措施删除生成内容，并确保不将含有违法及不良信息的内容传递给模型继续生成，避免其造成负面影响。",
             "default": false,
             "example": false
           },
@@ -3650,9 +3737,50 @@
             "minItems": 1
           },
           "custom_variables": {
-            "type": "object",
             "description": "智能体扩展参数。根据不同智能体的需求提供相应的参数配置。",
-            "additionalProperties": true
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TranslationAgentCustomVariables"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "自定义扩展参数",
+                "example": {
+                  "custom_param1": "value1",
+                  "custom_param2": 42,
+                  "options": {
+                    "detailed": true,
+                    "format": "json"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "example": {
+          "agent_id": "general_translation",
+          "stream": false,
+          "messages": [
+            {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Please translate the following text into Chinese: Machine learning is a subset of artificial intelligence that provides systems the ability to automatically learn and improve from experience without being explicitly programmed."
+                }
+              ]
+            }
+          ],
+          "custom_variables": {
+            "source_lang": "en",
+            "target_lang": "zh-CN",
+            "strategy": "cot",
+            "strategy_config": {
+              "cot": {
+                "reason_lang": "to"
+              }
+            }
           }
         }
       },
@@ -3704,6 +3832,164 @@
           },
           "usage": {
             "$ref": "#/components/schemas/UsageStatistics"
+          }
+        }
+      },
+      "TranslationAgentCustomVariables": {
+        "type": "object",
+        "description": "**当前为 通用翻译智能体 (general_translation) 扩展参数预设\n请切换切换至 Option 2 以手动输入其他智能体扩展参数**",
+        "properties": {
+          "source_lang": {
+            "type": "string",
+            "description": "待翻译文本的源语言代码，默认值为 auto",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "zh-CN",
+              "zh-TW",
+              "wyw",
+              "yue",
+              "en",
+              "ja",
+              "ko",
+              "fr",
+              "de",
+              "es",
+              "ru",
+              "pt",
+              "it",
+              "ar",
+              "hi",
+              "bg",
+              "cs",
+              "da",
+              "el",
+              "et",
+              "fi",
+              "hu",
+              "id",
+              "lt",
+              "lv",
+              "nl",
+              "no",
+              "pl",
+              "ro",
+              "sk",
+              "sl",
+              "sv",
+              "th",
+              "tr",
+              "uk",
+              "vi",
+              "my",
+              "ms",
+              "Pinyin",
+              "IPA"
+            ]
+          },
+          "target_lang": {
+            "type": "string",
+            "description": "待翻译文本的目标语言代码，默认为 zh-CN",
+            "default": "zh-CN",
+            "enum": [
+              "zh-CN",
+              "zh-TW",
+              "wyw",
+              "yue",
+              "en",
+              "en-GB",
+              "en-US",
+              "ja",
+              "ko",
+              "fr",
+              "de",
+              "es",
+              "ru",
+              "pt",
+              "it",
+              "ar",
+              "hi",
+              "bg",
+              "cs",
+              "da",
+              "el",
+              "et",
+              "fi",
+              "hu",
+              "id",
+              "lt",
+              "lv",
+              "nl",
+              "no",
+              "pl",
+              "ro",
+              "sk",
+              "sl",
+              "sv",
+              "th",
+              "tr",
+              "uk",
+              "vi",
+              "my",
+              "ms",
+              "Pinyin",
+              "IPA"
+            ]
+          },
+          "glossary": {
+            "type": "string",
+            "description": "术语表id"
+          },
+          "strategy": {
+            "type": "string",
+            "description": "翻译策略",
+            "default": "general",
+            "enum": [
+              "general",
+              "paraphrase",
+              "two_step",
+              "three_step",
+              "reflection",
+              "cot"
+            ]
+          },
+          "strategy_config": {
+            "type": "object",
+            "description": "翻译策略对应的参数",
+            "properties": {
+              "general": {
+                "type": "object",
+                "description": "当翻译策略指定为general时生效",
+                "properties": {
+                  "suggestion": {
+                    "type": "string",
+                    "description": "翻译建议或风格要求，如术语对照、文体规范等"
+                  }
+                }
+              },
+              "cot": {
+                "type": "object",
+                "description": "当翻译策略指定为cot时生效",
+                "properties": {
+                  "reason_lang": {
+                    "type": "string",
+                    "description": "翻译理由的语言，取值 [\"from\"｜\"to\"]，默认 \"to\"",
+                    "default": "to",
+                    "enum": ["from", "to"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "source_lang": "en",
+          "target_lang": "zh-CN",
+          "strategy": "general",
+          "strategy_config": {
+            "general": {
+              "suggestion": "专业技术文档翻译风格"
+            }
           }
         }
       },
