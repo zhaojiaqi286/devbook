@@ -696,8 +696,8 @@
     "/paas/v4/audio/speech": {
       "post": {
         "tags": ["音频 API"],
-        "summary": "文本转语音 (Deprecated)",
-        "description": "使用 GLM-4-Voice 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
+        "summary": "文本转语音",
+        "description": "使用 CogTTS 将文本转换为自然语音，支持多种声音、情感控制和语调调整。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -2988,6 +2988,10 @@
         "properties": {
           "model": {
             "type": "string",
+             "enum": [
+              "cogtts"
+            ],
+            "default": "cogtts",
             "description": "要使用的TTS模型"
           },
           "input": {
@@ -2997,21 +3001,17 @@
           },
           "voice": {
             "type": "string",
-            "enum": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+            "enum": [
+              "tongtong"
+            ],
+            "default": "tongtong",
             "description": "用于生成音频的语音"
           },
           "response_format": {
             "type": "string",
-            "enum": ["mp3", "opus", "aac", "flac"],
-            "default": "mp3",
+            "enum": ["wav"],
+            "default": "wav",
             "description": "音频输出格式"
-          },
-          "speed": {
-            "type": "number",
-            "minimum": 0.25,
-            "maximum": 4.0,
-            "default": 1.0,
-            "description": "生成音频的速度"
           }
         }
       },
