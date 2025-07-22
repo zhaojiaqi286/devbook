@@ -116,39 +116,7 @@
                 ]
               },
               {
-                "group": "智能体开发",
-                "pages": [
-                  "cn/guide/agent/introduction",
-                  "cn/guide/agent/web-search",
-                  "cn/guide/agent/function-calling",
-                  "cn/guide/agent/retrieval",
-                  "cn/guide/agent/code-interpreter",
-                  "cn/guide/agent/drawing",
-                  "cn/guide/agent/json-mode"
-                ]
-              },
-              {
-                "group": "Prompt工程",
-                "pages": [
-                  "cn/guide/prompt/introduction",
-                  "cn/guide/prompt/best-practices",
-                  "cn/guide/prompt/examples",
-                  "cn/guide/prompt/optimization",
-                  "cn/guide/prompt/troubleshooting",
-                  "cn/guide/prompt/advanced-techniques"
-                ]
-              },
-              {
-                "group": "平台能力",
-                "pages": [
-                  "cn/guide/platform/introduction",
-                  "cn/guide/platform/batch-api",
-                  "cn/guide/platform/fine-tuning",
-                  "cn/guide/platform/knowledge-base"
-                ]
-              },
-              {
-                "group": "开发工具",
+                "group": "模型工具",
                 "pages": [
                   "cn/guide/tools/document-management",
                   "cn/guide/tools/web-search",
@@ -160,9 +128,12 @@
                 ]
               },
               {
-                "group": "智能体开发工具",
+                "group": "平台服务",
                 "pages": [
-                  "cn/guide/agent-dev-tools/introduction"
+                  "cn/guide/platform/introduction",
+                  "cn/guide/platform/batch-api",
+                  "cn/guide/platform/fine-tuning",
+                  "cn/guide/platform/knowledge-base"
                 ]
               },
               {
@@ -175,6 +146,22 @@
                 "group": "Java工具",
                 "pages": [
                   "cn/guide/java-tools/introduction"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "最佳实践",
+            "pages": [
+              {
+                "group": "Prompt 工程",
+                "pages": [
+                  "cn/best-practice/prompt/batch-prompt",
+                  "cn/best-practice/prompt/jsonformat",
+                  "cn/best-practice/prompt/video-prompt",
+                  "cn/best-practice/prompt/image-prompt",
+                  "cn/best-practice/prompt/talk-prompt",
+                  "cn/best-practice/prompt/modelevaluation"
                 ]
               }
             ]
