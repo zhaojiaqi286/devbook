@@ -48,10 +48,6 @@
       "description": "Assistant endpoints"
     },
     {
-      "name": "Document API",
-      "description": "Document processing endpoints"
-    },
-    {
       "name": "File API",
       "description": "File management endpoints"
     },
@@ -1291,7 +1287,7 @@
         }
       }
     },
-    "/knowledge": {
+    "/llm-application/open/knowledge": {
       "post": {
         "tags": [
           "Knowledge API"
@@ -1389,7 +1385,7 @@
         }
       }
     },
-    "/knowledge/{id}": {
+    "/llm-application/open/knowledge/{id}": {
       "put": {
         "tags": [
           "Knowledge API"
@@ -1530,7 +1526,7 @@
         }
       }
     },
-    "/knowledge/capacity": {
+    "/llm-application/open/knowledge/capacity": {
       "get": {
         "tags": [
           "Knowledge API"
@@ -1566,10 +1562,10 @@
         }
       }
     },
-    "/document/upload_document/{id}": {
+    "/llm-application/open/document/upload_document/{id}": {
       "post": {
         "tags": [
-          "Document API"
+          "Knowledge API"
         ],
         "summary": "Upload document to knowledge base",
         "description": "Upload a document to the specified knowledge base, supporting multiple slicing methods and callbacks.",
@@ -1925,6 +1921,364 @@
         "security": [
           { "bearerAuth": [] }
         ]
+      }
+    },
+    "/llm-application/open/document/{id}": {
+      "put": {
+        "tags": ["Knowledge API"],
+        "summary": "Edit Knowledge",
+        "description": "Edit personal knowledge and reconstruct knowledge.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EditKnowledgeRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EditKnowledgeResponse" }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Knowledge API"],
+        "summary": "Get document detail",
+        "description": "Get document detail by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Document id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/KnowledgeDocumentDetailResponse" },
+                "example": {
+                  "data": {
+                    "id": "12121212121212",
+                    "knowledge_type": 1,
+                    "custom_separator": ["\n"],
+                    "sentence_size": 300,
+                    "length": 0,
+                    "word_num": 100,
+                    "name": "",
+                    "url": "",
+                    "embedding_stat": 0,
+                    "failInfo": {
+                      "embedding_code": 10002,
+                      "embedding_msg": "Word count exceeds the limit"
+                    }
+                  },
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1689649504996
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Knowledge API"],
+        "summary": "Delete knowledge",
+        "description": "Delete knowledge by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteKnowledgeResponse" },
+                "example": {
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1689649504996
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llm-application/open/document": {
+      "get": {
+        "tags": ["Knowledge API"],
+        "summary": "Get knowledge base document list",
+        "description": "Get the document list of the specified knowledge base.",
+        "parameters": [
+          {
+            "name": "knowledge_id",
+            "in": "query",
+            "required": true,
+            "description": "Knowledge base id",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number, default 1",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "Page size, default 10",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "word",
+            "in": "query",
+            "required": false,
+            "description": "Document name",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/KnowledgeDocumentListResponse" },
+                "example": {
+                  "data": {
+                    "list": [
+                      {
+                        "id": "12312121212",
+                        "knowledge_type": 1,
+                        "custom_separator": ["\n"],
+                        "sentence_size": 300,
+                        "length": 0,
+                        "word_num": 100,
+                        "name": "",
+                        "url": "",
+                        "embedding_stat": 0,
+                        "failInfo": {
+                          "embedding_code": 10002,
+                          "embedding_msg": "Word count exceeds the limit"
+                        }
+                      }
+                    ],
+                    "total": 1
+                  },
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1689649504996
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llm-application/open/document/upload_url": {
+      "post": {
+        "tags": ["Knowledge API"],
+        "summary": "Upload URL to build knowledge",
+        "description": "Create personal knowledge from web pages.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UploadUrlKnowledgeRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UploadUrlKnowledgeResponse" },
+                "example": {
+                  "data": {
+                    "successInfos": [
+                      { "documentId": "122121212", "url": "xxx.com" },
+                      { "documentId": "12121212121", "url": "xxx.com" }
+                    ],
+                    "failedInfos": [
+                      { "url": "xxx.com", "failReason": "Unsupported document type" }
+                    ]
+                  },
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1689649504996
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llm-application/open/document/embedding/{id}": {
+      "post": {
+        "tags": ["Knowledge API"],
+        "summary": "Re-embedding",
+        "description": "Re-embed a document (retry, etc). Synchronous return means the call is accepted; embedding completion will notify via callback_url, or you can query the document detail API for results. Mainly used for URL knowledge scenarios.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReEmbeddingRequest" }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ReEmbeddingResponse" },
+                "example": {
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1689649504996
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/document/slice/image_list/{id}": {
+      "post": {
+        "tags": ["Knowledge API"],
+        "summary": "Get parsed image list from file",
+        "description": "Get the mapping of image indices and image URLs parsed from a file.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Knowledge id",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/AcceptLanguage" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/KnowledgeImageListResponse" },
+                "example": {
+                  "data": {
+                    "images": [
+                      {
+                        "text": "[Image Index_1829473032620613632_103]",
+                        "cos_url": "https://cdn.bigmodel.cn/knowledge_pdf_image/de7163a7-c67f-4e33-8810-97a6d5a83378.png"
+                      }
+                    ]
+                  },
+                  "code": 200,
+                  "message": "Request successful",
+                  "timestamp": 1725070689634
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Request failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -5072,6 +5426,204 @@
           "msg": { "type": "string", "description": "Description" }
         },
         "required": ["file_id", "code", "msg"]
+      },
+      "EditKnowledgeRequest": {
+        "type": "object",
+        "properties": {
+          "knowledge_type": {
+            "type": "integer",
+            "description": "Knowledge slice type. 1: By title/paragraph; 2: By Q&A pair; 3: By row; 5: Custom slice; 6: By page; 7: By single slice."
+          },
+          "custom_separator": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Custom slice separator, only valid when knowledge_type=5, default is \n"
+          },
+          "sentence_size": {
+            "type": "integer",
+            "description": "Custom slice size, only valid when knowledge_type=5, range: 20-2000, default 300"
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Callback URL"
+          },
+          "callback_header": {
+            "type": "object",
+            "description": "Callback header k-v object"
+          }
+        },
+        "required": ["knowledge_type"]
+      },
+      "EditKnowledgeResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "KnowledgeDocumentListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "list": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/KnowledgeDocumentItem" }
+              },
+              "total": { "type": "integer", "description": "Total count" }
+            }
+          },
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "KnowledgeDocumentItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Document id" },
+          "knowledge_type": { "type": "integer", "description": "Knowledge slice type" },
+          "custom_separator": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Custom separator"
+          },
+          "sentence_size": { "type": "integer", "description": "Slice size" },
+          "length": { "type": "integer", "description": "Document length" },
+          "word_num": { "type": "integer", "description": "Word count" },
+          "name": { "type": "string", "description": "Document name" },
+          "url": { "type": "string", "description": "Document URL" },
+          "embedding_stat": { "type": "integer", "description": "Embedding status" },
+          "failInfo": { "$ref": "#/components/schemas/KnowledgeDocumentFailInfo" }
+        }
+      },
+      "KnowledgeDocumentFailInfo": {
+        "type": "object",
+        "properties": {
+          "embedding_code": { "type": "integer", "description": "Embedding failure code" },
+          "embedding_msg": { "type": "string", "description": "Embedding failure message" }
+        }
+      },
+      "KnowledgeDocumentDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/KnowledgeDocumentItem" },
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "DeleteKnowledgeResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "UploadUrlKnowledgeRequest": {
+        "type": "object",
+        "properties": {
+          "upload_detail": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/UrlData" },
+            "description": "URL list"
+          },
+          "knowledge_id": { "type": "string", "description": "Knowledge base id" }
+        },
+        "required": ["upload_detail", "knowledge_id"]
+      },
+      "UrlData": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string", "description": "URL" },
+          "knowledge_type": { "type": "integer", "description": "Knowledge slice type" },
+          "custom_separator": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Custom slice separator, only valid when knowledge_type=5, default is \n"
+          },
+          "sentence_size": {
+            "type": "integer",
+            "description": "Custom slice size, only valid when knowledge_type=5, range: 20-2000, default 300"
+          },
+          "callback_url": { "type": "string", "description": "Callback URL" },
+          "callback_header": { "type": "object", "description": "Callback header k-v object" }
+        },
+        "required": ["url", "knowledge_type"]
+      },
+      "UploadUrlKnowledgeResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "successInfos": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "documentId": { "type": "string", "description": "Document id" },
+                    "url": { "type": "string", "description": "URL" }
+                  }
+                }
+              },
+              "failedInfos": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string", "description": "URL" },
+                    "failReason": { "type": "string", "description": "Failure reason" }
+                  }
+                }
+              }
+            }
+          },
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "ReEmbeddingRequest": {
+        "type": "object",
+        "properties": {
+          "callback_url": { "type": "string", "description": "Callback URL" },
+          "callback_header": { "type": "object", "description": "Callback header k-v object" }
+        }
+      },
+      "ReEmbeddingResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
+      },
+      "KnowledgeImageListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "images": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": { "type": "string", "description": "Image index text" },
+                    "cos_url": { "type": "string", "description": "Image URL" }
+                  }
+                }
+              }
+            }
+          },
+          "code": { "type": "integer", "description": "Status code" },
+          "message": { "type": "string", "description": "Message" },
+          "timestamp": { "type": "integer", "description": "Timestamp" }
+        }
       }
     },
     "securitySchemes": {
