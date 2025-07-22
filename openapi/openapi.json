@@ -313,7 +313,7 @@
       "post": {
         "tags": ["文件 API"],
         "summary": "上传文件",
-        "description": "Upload files to the platform for batch, file extraction, or other AI tasks.",
+        "description": "上传用于 Batch 任务、文件内容抽取等功能的文件。注意： “Try it”功能仅支持小文件上传，实际支持的文件大小请参见下文 purpose 相关说明。",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"

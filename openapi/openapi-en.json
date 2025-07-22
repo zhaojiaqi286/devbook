@@ -313,7 +313,7 @@
           "File API"
         ],
         "summary": "Upload file",
-        "description": "Upload files to the platform for batch, file extraction, or other AI tasks.",
+        "description": "Upload files to the platform for batch, file extraction, or other AI tasks.Note: The \"Try it\" feature only supports uploading small files. For actual file size limits, please refer to the \"purpose\" section below.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
