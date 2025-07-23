@@ -40,9 +40,9 @@ JSON模式为智能体提供了结构化输出能力，确保AI返回符合预�
 ### 简单JSON输出
 
 ```python
-from zhipuai import ZhipuAI
+from zai import ZaiClient
 
-client = ZhipuAI(api_key="your_api_key")
+client = ZaiClient(api_key="your-api-key")
 
 # 基础JSON模式
 response = client.chat.completions.create(
@@ -191,7 +191,7 @@ if result:
 ```python
 class DataExtractor:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def extract_contact_info(self, text):
         """提取联系信息"""
@@ -245,7 +245,7 @@ class DataExtractor:
         )
         
         try:
-            result = json.loads(response.choices[0].message.content)
+            result = json.loads(response.choices[0].message.content)["properties"]
             validate(instance=result, schema=schema)
             return result
         except Exception as e:
@@ -425,7 +425,7 @@ if contacts:
 ```python
 class APIResponseFormatter:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def format_search_results(self, query, raw_results):
         """格式化搜索结果"""
@@ -636,8 +636,8 @@ if formatted_results:
 ```python
 class ConfigurationManager:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
-    
+        self.client = ZaiClient(api_key=api_key)
+
     def parse_config_file(self, config_text, config_type="general"):
         """解析配置文件"""
         schemas = {
@@ -851,7 +851,7 @@ if config:
 ```python
 class DynamicSchemaGenerator:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def generate_schema_from_example(self, example_data, schema_name="generated_schema"):
         """从示例数据生成Schema"""
@@ -1002,7 +1002,7 @@ def retry_on_failure(max_retries=3, delay=1, backoff=2):
 
 class RobustJSONProcessor:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     @retry_on_failure(max_retries=3)
     def process_with_fallback(self, prompt, primary_schema, fallback_schema=None):

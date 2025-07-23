@@ -72,20 +72,65 @@ CogVideoX-2 是智谱新一代视频生成大模型，图生视频能力大幅�
 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
-```python
-from zhipuai import ZhipuAI
-client = ZhipuAI(api_key="") # 请填写您自己的APIKey
-
-response = client.videos.generations(
-model="cogvideox-2",
-prompt="比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
-quality="quality",  # 输出模式，"quality"为质量优先，"speed"为速度优先
-with_audio=True,
-size="1920x1080",  # 视频分辨率，支持最高4K（如: "3840x2160"）
-fps=30,  # 帧率，可选为30或60
-)
-print(response)
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
+    
+    client = ZhipuAI(api_key="your_api_key")  # 请填写您自己的APIKey
+    
+    response = client.videos.generations(
+        model="cogvideox-2",
+        prompt="一只可爱的小猫在花园里玩耍",
+    )
+    
+    print(response)
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    
+    public class CogVideoX2Example {
+        public static void main(String[] args) {
+            String apiKey = "your_api_key"; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            VideoGenerationCreateParams request = VideoGenerationCreateParams.builder()
+                .model("cogvideox-2")
+                .prompt("一只可爱的小猫在花园里玩耍")
+                .build();
+            
+            VideoGenerationResponse response = client.videos().createVideoGeneration(request);
+            
+            if (response.isSuccess()) {
+                System.out.println(response.getData());
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="旧版 Python">
+    ```python
+    import zhipuai
+    
+    zhipuai.api_key = "your_api_key"  # 请填写您自己的APIKey
+    
+    response = zhipuai.model_api.invoke(
+        model="cogvideox-2",
+        prompt="一只可爱的小猫在花园里玩耍",
+    )
+    
+    print(response)
+    ```
+  </Tab>
+</Tabs>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益
 

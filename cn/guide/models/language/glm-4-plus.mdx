@@ -90,18 +90,81 @@ GLM-4-Plus 语言模型是智谱 BigModel 开放平台迄今为止最强高智�
 
 以下是一个完整的调用示例，帮助您快速上手 GLM-4-Plus 模型。
 
-```python
-from zhipuai import ZhipuAI
-client = ZhipuAI(api_key="") # 填写您自己的APIKey
-response = client.chat.completions.create(
-    model="glm-4-plus",  # 填写需要调用的模型编码
-    messages=[
-        {"role": "system", "content": "你是一个乐于解答各种问题的助手，你的任务是为用户提供专业、准确、有见地的建议。"},
-        {"role": "user", "content": "农夫需要把狼、羊和白菜都带过河，但每次只能带一样物品，而且狼和羊不能单独相处，羊和白菜也不能单独相处，问农夫该如何过河。"}
-    ],
-)
-print(response.choices[0].message)
-```
+<Tabs>
+    <Tab title="Python">
+        ```python
+        from zai import ZaiClient
+
+        # 初始化客户端
+        client = ZaiClient(api_key="your-api-key").zhipu
+
+        # 创建聊天完成请求
+        response = client.chat.completions.create(
+            model="glm-4-plus",
+            messages=[
+                {"role": "user", "content": "你好，请介绍一下自己"}
+            ]
+        )
+
+        # 获取回复
+        print(response.choices[0].message.content)
+        ```
+    </Tab>
+    <Tab title="Java">
+        ```java
+        import ai.z.openapi.ZaiClient;
+        import ai.z.openapi.service.model.*;
+        import ai.z.openapi.core.Constants;
+        import java.util.Arrays;
+
+        public class BasicChat {
+            public static void main(String[] args) {
+                // 初始化客户端
+                ZaiClient client = ZaiClient.builder().ofZHIPU()
+                    .apiKey("your-api-key")
+                    .build();
+
+                // 创建聊天完成请求
+                ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                    .model("glm-4-plus")
+                    .messages(Arrays.asList(
+                        ChatMessage.builder()
+                            .role(ChatMessageRole.USER.value())
+                            .content("你好，请介绍一下自己")
+                            .build()
+                    ))
+                    .build();
+
+                // 发送请求
+                ChatCompletionResponse response = client.chat().createChatCompletion(request);
+
+                // 获取回复
+                if (response.isSuccess()) {
+                    String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                    System.out.println("AI回复: " + reply);
+                } else {
+                    System.err.println("错误: " + response.getMsg());
+                }
+            }
+        }
+        ```
+    </Tab>
+    <Tab title="Python(旧)">
+        ```python
+        from zhipuai import ZhipuAI
+        
+        client = ZhipuAI(api_key="") # 填写您自己的APIKey
+        response = client.chat.completions.create(
+            model="glm-4-plus",  # 填写需要调用的模型编码
+            messages=[
+                {"role": "system", "content": "你是一个乐于解答各种问题的助手，你的任务是为用户提供专业、准确、有见地的建议。"},
+                {"role": "user", "content": "农夫需要把狼、羊和白菜都带过河，但每次只能带一样物品，而且狼和羊不能单独相处，羊和白菜也不能单独相处，问农夫该如何过河。"}
+            ],
+        )
+        print(response.choices[0].message)
+        ```
+    </Tab>
+</Tabs>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益
 

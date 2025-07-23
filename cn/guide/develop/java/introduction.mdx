@@ -103,9 +103,9 @@ SDK采用模块化设计，您可以根据需要选择性引入功能模块：
     
 ```xml
 <dependency>
-    <groupId>com.zhipuai</groupId>
-    <artifactId>zai-sdk-java</artifactId>
-    <version>1.0.0</version>
+    <groupId>ai.z.openapi</groupId>
+    <artifactId>zai-sdk</artifactId>
+    <version>0.0.1</version>
 </dependency>
 ```
 
@@ -113,14 +113,14 @@ SDK采用模块化设计，您可以根据需要选择性引入功能模块：
   <Tab title="Gradle">
     
 ```gradle
-implementation 'com.zhipuai:zai-sdk-java:1.0.0'
+implementation 'ai.z:zai-sdk:0.0.1'
 ```
 
   </Tab>
   <Tab title="Gradle (Kotlin DSL)">
     
 ```kotlin
-implementation("com.zhipuai:zai-sdk-java:1.0.0")
+implementation("ai.z:zai-sdk:0.0.1")
 ```
 
   </Tab>
@@ -145,17 +145,17 @@ implementation("com.zhipuai:zai-sdk-java:1.0.0")
   <Tab title="环境变量">
     
 ```java
-import com.zhipuai.ZaiClient;
+import ai.z.openapi.ZaiClient;
 
 public class QuickStart {
     public static void main(String[] args) {
         // 从环境变量读取 API Key
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 或者直接使用（如果已设置环境变量）
-        ZaiClient client2 = ZaiClient.builder().build();
+        ZaiClient client2 = ZaiClient.builder().ofZHIPU().build();
     }
 }
 ```
@@ -164,13 +164,13 @@ public class QuickStart {
   <Tab title="直接设置">
     
 ```java
-import com.zhipuai.ZaiClient;
+import ai.z.openapi.ZaiClient;
 
 public class QuickStart {
     public static void main(String[] args) {
         // 直接设置 API Key
-        ZaiClient client = ZaiClient.builder()
-            .apiKey("your-api-key")
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
+            .apiKey("YOUR_API_KEY")
             .build();
     }
 }
@@ -182,33 +182,39 @@ public class QuickStart {
 #### 基础对话
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.ChatCompletionRequest;
-import com.zhipuai.model.ChatCompletionResponse;
-import com.zhipuai.model.ChatMessage;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.Arrays;
 
 public class BasicChat {
     public static void main(String[] args) {
         // 初始化客户端
-        ZaiClient client = ZaiClient.builder()
-            .apiKey("your-api-key")
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
+            .apiKey("YOUR_API_KEY")
             .build();
         
         // 创建聊天完成请求
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-            .model("glm-4")
+        ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4)
             .messages(Arrays.asList(
-                ChatMessage.userMessage("你好，请介绍一下自己")
+                ChatMessage.builder()
+                    .role(ChatMessageRole.USER.value())
+                    .content("你好，请介绍一下自己")
+                    .build()
             ))
             .build();
         
         // 发送请求
-        ChatCompletionResponse response = client.chatCompletions().create(request);
+        ChatCompletionResponse response = client.chat().createChatCompletion(request);
         
         // 获取回复
-        String reply = response.getChoices().get(0).getMessage().getContent();
-        System.out.println("AI回复: " + reply);
+        if (response.isSuccess()) {
+            String reply = response.getData().getChoices().get(0).getMessage().getContent();
+            System.out.println("AI回复: " + reply);
+        } else {
+            System.err.println("错误: " + response.getMsg());
+        }
     }
 }
 ```
@@ -216,37 +222,47 @@ public class BasicChat {
 #### 流式对话
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.ChatCompletionRequest;
-import com.zhipuai.model.ChatCompletionChunk;
-import com.zhipuai.model.ChatMessage;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.Arrays;
 
 public class StreamingChat {
     public static void main(String[] args) {
-        ZaiClient client = ZaiClient.builder()
-            .apiKey("your-api-key")
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
+            .apiKey("YOUR_API_KEY")
             .build();
         
         // 创建流式聊天请求
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-            .model("glm-4")
+        ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4)
             .messages(Arrays.asList(
-                ChatMessage.userMessage("写一首关于春天的诗")
+                ChatMessage.builder()
+                    .role(ChatMessageRole.USER.value())
+                    .content("写一首关于春天的诗")
+                    .build()
             ))
             .stream(true)
             .build();
         
         // 处理流式响应
-        client.chatCompletions().createStream(request)
-            .forEach(chunk -> {
-                if (chunk.getChoices() != null && !chunk.getChoices().isEmpty()) {
-                    String content = chunk.getChoices().get(0).getDelta().getContent();
-                    if (content != null) {
-                        System.out.print(content);
+        ChatCompletionResponse response = client.chat().createChatCompletion(request);
+        
+        if (response.isSuccess() && response.getFlowable() != null) {
+            response.getFlowable().subscribe(
+                data -> {
+                    // 处理流式数据块
+                    if (data.getChoices() != null && !data.getChoices().isEmpty()) {
+                        String content = data.getChoices().get(0).getDelta().getContent();
+                        if (content != null) {
+                            System.out.print(content);
+                        }
                     }
-                }
-            });
+                },
+                error -> System.err.println("\n流式错误: " + error.getMessage()),
+                () -> System.out.println("\n流式完成")
+            );
+        }
         
         System.out.println(); // 换行
     }
@@ -256,47 +272,60 @@ public class StreamingChat {
 ### 完整示例
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ChatBot {
     private final ZaiClient client;
     private final List<ChatMessage> conversation;
     
     public ChatBot(String apiKey) {
-        this.client = ZaiClient.builder()
+        this.client = ZaiClient.builder().ofZHIPU()
             .apiKey(apiKey)
             .build();
         this.conversation = new ArrayList<>();
         // 添加系统消息
-        this.conversation.add(ChatMessage.systemMessage("你是一个友好的AI助手"));
+        this.conversation.add(ChatMessage.builder()
+            .role(ChatMessageRole.SYSTEM.value())
+            .content("你是一个友好的AI助手")
+            .build());
     }
     
     public String chat(String userInput) {
         try {
             // 添加用户消息
-            conversation.add(ChatMessage.userMessage(userInput));
+            conversation.add(ChatMessage.builder()
+                .role(ChatMessageRole.USER.value())
+                .content(userInput)
+                .build());
             
             // 创建请求
-            ChatCompletionRequest request = ChatCompletionRequest.builder()
-                .model("glm-4")
+            ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model(Constants.ModelChatGLM4)
                 .messages(conversation)
-                .temperature(0.7)
+                .temperature(0.7f)
                 .maxTokens(1000)
                 .build();
             
             // 发送请求
-            ChatCompletionResponse response = client.chatCompletions().create(request);
+            ChatCompletionResponse response = client.chat().createChatCompletion(request);
             
-            // 获取AI回复
-            String aiResponse = response.getChoices().get(0).getMessage().getContent();
-            
-            // 添加AI回复到对话历史
-            conversation.add(ChatMessage.assistantMessage(aiResponse));
-            
-            return aiResponse;
+            if (response.isSuccess()) {
+                // 获取AI回复
+                String aiResponse = response.getData().getChoices().get(0).getMessage().getContent();
+                
+                // 添加AI回复到对话历史
+                conversation.add(ChatMessage.builder()
+                    .role(ChatMessageRole.ASSISTANT.value())
+                    .content(aiResponse)
+                    .build());
+                
+                return aiResponse;
+            } else {
+                return "发生错误: " + response.getMsg();
+            }
             
         } catch (Exception e) {
             return "发生错误: " + e.getMessage();
@@ -336,13 +365,12 @@ public class ChatBot {
 #### 定义和使用函数
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.*;
 
 public class FunctionCallingExample {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     
     // 模拟天气API
     public static Map<String, Object> getWeather(String location, String date) {
@@ -365,90 +393,66 @@ public class FunctionCallingExample {
     }
     
     public static void main(String[] args) {
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 定义函数工具
-        List<Tool> tools = Arrays.asList(
-            Tool.function(
-                Function.builder()
-                    .name("get_weather")
-                    .description("获取指定地点的天气信息")
-                    .parameters(Parameters.builder()
-                        .type("object")
-                        .properties(Map.of(
-                            "location", Property.builder()
-                                .type("string")
-                                .description("地点名称")
-                                .build(),
-                            "date", Property.builder()
-                                .type("string")
-                                .description("日期，格式为YYYY-MM-DD")
-                                .build()
-                        ))
-                        .required(Arrays.asList("location"))
-                        .build())
-                    .build()
-            ),
-            Tool.function(
-                Function.builder()
-                    .name("get_stock_price")
-                    .description("获取股票当前价格")
-                    .parameters(Parameters.builder()
-                        .type("object")
-                        .properties(Map.of(
-                            "symbol", Property.builder()
-                                .type("string")
-                                .description("股票代码")
-                                .build()
-                        ))
-                        .required(Arrays.asList("symbol"))
-                        .build())
-                    .build()
-            )
-        );
+        ChatTool weatherTool = ChatTool.builder()
+            .type(ChatToolType.FUNCTION.value())
+            .function(ChatFunction.builder()
+                .name("get_weather")
+                .description("获取指定地点的天气信息")
+                .parameters(ChatFunctionParameters.builder()
+                    .type("object")
+                    .properties(Map.of(
+                        "location", Map.of(
+                            "type", "string",
+                            "description", "地点名称"
+                        ),
+                        "date", Map.of(
+                            "type", "string",
+                            "description", "日期，格式为YYYY-MM-DD"
+                        )
+                    ))
+                    .required(Arrays.asList("location"))
+                    .build())
+                .build())
+            .build();
         
         // 创建请求
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-            .model("glm-4")
+        ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4)
             .messages(Arrays.asList(
-                ChatMessage.userMessage("北京今天天气怎么样？")
+                ChatMessage.builder()
+                    .role(ChatMessageRole.USER.value())
+                    .content("北京今天天气怎么样？")
+                    .build()
             ))
-            .tools(tools)
+            .tools(Arrays.asList(weatherTool))
             .toolChoice("auto")
             .build();
         
         // 发送请求
-        ChatCompletionResponse response = client.chatCompletions().create(request);
+        ChatCompletionResponse response = client.chat().createChatCompletion(request);
         
-        // 处理函数调用
-        ChatMessage assistantMessage = response.getChoices().get(0).getMessage();
-        if (assistantMessage.getToolCalls() != null && !assistantMessage.getToolCalls().isEmpty()) {
-            for (ToolCall toolCall : assistantMessage.getToolCalls()) {
-                String functionName = toolCall.getFunction().getName();
-                String arguments = toolCall.getFunction().getArguments();
-                
-                try {
-                    Map<String, Object> args = objectMapper.readValue(arguments, Map.class);
-                    Map<String, Object> result;
+        if (response.isSuccess()) {
+            // 处理函数调用
+            ChatMessage assistantMessage = response.getData().getChoices().get(0).getMessage();
+            if (assistantMessage.getToolCalls() != null && !assistantMessage.getToolCalls().isEmpty()) {
+                for (ChatToolCall toolCall : assistantMessage.getToolCalls()) {
+                    String functionName = toolCall.getFunction().getName();
                     
                     if ("get_weather".equals(functionName)) {
-                        result = getWeather(
-                            (String) args.get("location"),
-                            (String) args.get("date")
-                        );
+                        Map<String, Object> result = getWeather("北京", null);
                         System.out.println("天气信息: " + result);
-                    } else if ("get_stock_price".equals(functionName)) {
-                        result = getStockPrice((String) args.get("symbol"));
-                        System.out.println("股票信息: " + result);
                     }
-                } catch (Exception e) {
-                    System.err.println("函数调用错误: " + e.getMessage());
                 }
+            } else {
+                System.out.println(assistantMessage.getContent());
             }
         } else {
-            System.out.println(assistantMessage.getContent());
+            System.err.println("错误: " + response.getMsg());
         }
     }
 }
@@ -459,8 +463,9 @@ public class FunctionCallingExample {
 #### 图像理解
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -468,46 +473,44 @@ import java.util.Base64;
 
 public class ImageUnderstanding {
     public static void main(String[] args) throws Exception {
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 方式1：使用图像URL
-        ChatCompletionRequest request1 = ChatCompletionRequest.builder()
-            .model("glm-4v")
+        ChatCompletionCreateParams request1 = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4V)
             .messages(Arrays.asList(
                 ChatMessage.builder()
-                    .role("user")
-                    .content(Arrays.asList(
-                        Content.text("这张图片里有什么？请详细描述。"),
-                        Content.imageUrl("https://example.com/image.jpg")
-                    ))
+                    .role(ChatMessageRole.USER.value())
+                    .content("这张图片里有什么？请详细描述。")
                     .build()
             ))
             .build();
         
-        ChatCompletionResponse response1 = client.chatCompletions().create(request1);
-        System.out.println(response1.getChoices().get(0).getMessage().getContent());
+        ChatCompletionResponse response1 = client.chat().createChatCompletion(request1);
+        if (response1.isSuccess()) {
+            System.out.println(response1.getData().getChoices().get(0).getMessage().getContent());
+        }
         
         // 方式2：使用base64编码的图像
         byte[] imageBytes = Files.readAllBytes(Paths.get("path/to/your/image.jpg"));
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         
-        ChatCompletionRequest request2 = ChatCompletionRequest.builder()
-            .model("glm-4v")
+        ChatCompletionCreateParams request2 = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4V)
             .messages(Arrays.asList(
                 ChatMessage.builder()
-                    .role("user")
-                    .content(Arrays.asList(
-                        Content.text("分析这张图片中的内容"),
-                        Content.imageUrl("data:image/jpeg;base64," + base64Image)
-                    ))
+                    .role(ChatMessageRole.USER.value())
+                    .content("分析这张图片中的内容")
                     .build()
             ))
             .build();
         
-        ChatCompletionResponse response2 = client.chatCompletions().create(request2);
-        System.out.println(response2.getChoices().get(0).getMessage().getContent());
+        ChatCompletionResponse response2 = client.chat().createChatCompletion(request2);
+        if (response2.isSuccess()) {
+            System.out.println(response2.getData().getChoices().get(0).getMessage().getContent());
+        }
     }
 }
 ```
@@ -515,28 +518,31 @@ public class ImageUnderstanding {
 #### 图像生成
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 
 public class ImageGeneration {
     public static void main(String[] args) {
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 图像生成
-        ImageGenerationRequest request = ImageGenerationRequest.builder()
-            .model("cogview-3")
+        ImageCreateParams request = ImageCreateParams.builder()
+            .model(Constants.ModelCogView3)
             .prompt("一幅美丽的山水画，中国传统风格，水墨画")
             .size("1024x1024")
             .quality("standard")
             .n(1)
             .build();
         
-        ImageGenerationResponse response = client.images().generate(request);
+        ImageResponse response = client.images().createImage(request);
         
-        String imageUrl = response.getData().get(0).getUrl();
-        System.out.println("生成的图像URL: " + imageUrl);
+        if (response.isSuccess()) {
+            String imageUrl = response.getData().getData().get(0).getUrl();
+            System.out.println("生成的图像URL: " + imageUrl);
+        }
     }
 }
 ```
@@ -544,19 +550,20 @@ public class ImageGeneration {
 ### 文本嵌入
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.*;
 
 public class TextEmbedding {
     public static void main(String[] args) {
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 基础文本嵌入
-        EmbeddingRequest request = EmbeddingRequest.builder()
-            .model("embedding-2")
+        EmbeddingCreateParams request = EmbeddingCreateParams.builder()
+            .model(Constants.ModelEmbedding2)
             .input(Arrays.asList(
                 "这是第一段文本",
                 "这是第二段文本",
@@ -564,12 +571,14 @@ public class TextEmbedding {
             ))
             .build();
         
-        EmbeddingResponse response = client.embeddings().create(request);
+        EmbeddingResponse response = client.embeddings().createEmbedding(request);
         
-        for (int i = 0; i < response.getData().size(); i++) {
-            EmbeddingData embedding = response.getData().get(i);
-            System.out.println("文本" + (i + 1) + "的嵌入向量维度: " + embedding.getEmbedding().size());
-            System.out.println("前5个维度的值: " + embedding.getEmbedding().subList(0, 5));
+        if (response.isSuccess()) {
+            for (int i = 0; i < response.getData().getData().size(); i++) {
+                EmbeddingData embedding = response.getData().getData().get(i);
+                System.out.println("文本" + (i + 1) + "的嵌入向量维度: " + embedding.getEmbedding().size());
+                System.out.println("前5个维度的值: " + embedding.getEmbedding().subList(0, 5));
+            }
         }
     }
 }
@@ -578,33 +587,39 @@ public class TextEmbedding {
 ### 异步编程
 
 ```java
-import com.zhipuai.ZaiClient;
-import com.zhipuai.model.*;
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.model.*;
+import ai.z.openapi.core.Constants;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.*;
 
 public class AsyncExample {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        ZaiClient client = ZaiClient.builder()
+        ZaiClient client = ZaiClient.builder().ofZHIPU()
             .apiKey(System.getenv("ZAI_API_KEY"))
             .build();
         
         // 异步聊天请求
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-            .model("glm-4")
+        ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+            .model(Constants.ModelChatGLM4)
             .messages(Arrays.asList(
-                ChatMessage.userMessage("你好")
+                ChatMessage.builder()
+                    .role(ChatMessageRole.USER.value())
+                    .content("你好")
+                    .build()
             ))
             .build();
         
         CompletableFuture<ChatCompletionResponse> future = 
-            client.chatCompletions().createAsync(request);
+            client.chat().createChatCompletionAsync(request);
         
         // 异步处理结果
         future.thenAccept(response -> {
-            String reply = response.getChoices().get(0).getMessage().getContent();
-            System.out.println("异步回复: " + reply);
+            if (response.isSuccess()) {
+                String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                System.out.println("异步回复: " + reply);
+            }
         }).exceptionally(throwable -> {
             System.err.println("异步请求失败: " + throwable.getMessage());
             return null;
@@ -623,12 +638,17 @@ public class AsyncExample {
         List<CompletableFuture<ChatCompletionResponse>> futures = new ArrayList<>();
         
         for (String question : questions) {
-            ChatCompletionRequest req = ChatCompletionRequest.builder()
-                .model("glm-4")
-                .messages(Arrays.asList(ChatMessage.userMessage(question)))
+            ChatCompletionCreateParams req = ChatCompletionCreateParams.builder()
+                .model(Constants.ModelChatGLM4)
+                .messages(Arrays.asList(
+                    ChatMessage.builder()
+                        .role(ChatMessageRole.USER.value())
+                        .content(question)
+                        .build()
+                ))
                 .build();
             
-            futures.add(client.chatCompletions().createAsync(req));
+            futures.add(client.chat().createChatCompletionAsync(req));
         }
         
         // 等待所有请求完成
@@ -640,8 +660,10 @@ public class AsyncExample {
             for (int i = 0; i < futures.size(); i++) {
                 try {
                     ChatCompletionResponse response = futures.get(i).get();
-                    String answer = response.getChoices().get(0).getMessage().getContent();
-                    System.out.println("问题" + (i + 1) + "的回答: " + answer);
+                    if (response.isSuccess()) {
+                        String answer = response.getData().getChoices().get(0).getMessage().getContent();
+                        System.out.println("问题" + (i + 1) + "的回答: " + answer);
+                    }
                 } catch (Exception e) {
                     System.err.println("获取回答失败: " + e.getMessage());
                 }

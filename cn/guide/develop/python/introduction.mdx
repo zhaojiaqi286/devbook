@@ -138,10 +138,10 @@ from zai import ZaiClient
 import os
 
 # 从环境变量读取 API Key
-client = ZaiClient(api_key=os.getenv("ZAI_API_KEY"))
+client = ZaiClient(api_key=os.getenv("ZAI_API_KEY")).zhipu
 
 # 或者直接使用（如果已设置环境变量）
-client = ZaiClient()
+client = ZaiClient().zhipu
 ```
 
   </Tab>
@@ -151,27 +151,7 @@ client = ZaiClient()
 from zai import ZaiClient
 
 # 直接设置 API Key
-client = ZaiClient(api_key="your-api-key")
-```
-
-  </Tab>
-  <Tab title="配置文件">
-    
-```python
-from zai import ZaiClient
-
-# 使用配置文件
-client = ZaiClient.from_config("config.json")
-```
-
-配置文件示例 (`config.json`)：
-```json
-{
-  "api_key": "your-api-key",
-  "base_url": "https://api.z.ai/api/paas/v4/",
-  "timeout": 30,
-  "max_retries": 3
-}
+client = ZaiClient(api_key="your-api-key").zhipu
 ```
 
   </Tab>
@@ -183,7 +163,7 @@ client = ZaiClient.from_config("config.json")
 from zai import ZaiClient
 
 # 初始化客户端
-client = ZaiClient(api_key="your-api-key")
+client = ZaiClient(api_key="your-api-key").zhipu
 
 # 创建聊天完成请求
 response = client.chat.completions.create(
@@ -257,7 +237,7 @@ import os
 
 def main():
     # 初始化客户端
-    client = ZaiClient(api_key=os.getenv("ZAI_API_KEY"))
+    client = ZaiClient(api_key=os.getenv("ZAI_API_KEY")).zhipu
     
     print("欢迎使用 Z.ai 聊天机器人！输入 'quit' 退出。")
     
@@ -301,88 +281,14 @@ if __name__ == "__main__":
     main()
 ```
 
-### 异步编程
-
-#### 异步客户端
-
-```python
-import asyncio
-from zai import AsyncZaiClient
-
-async def async_chat_example():
-    # 创建异步客户端
-    client = AsyncZaiClient(api_key="your-api-key")
-    
-    try:
-        # 异步聊天请求
-        response = await client.chat.completions.create(
-            model="glm-4",
-            messages=[
-                {"role": "user", "content": "你好"}
-            ]
-        )
-        
-        print(response.choices[0].message.content)
-        
-    finally:
-        # 关闭客户端
-        await client.close()
-
-# 运行异步函数
-asyncio.run(async_chat_example())
-```
-
-#### 并发处理
-
-```python
-async def process_multiple_requests():
-    client = AsyncZaiClient(api_key="your-api-key")
-    
-    # 准备多个问题
-    questions = [
-        "什么是人工智能？",
-        "Python有什么优势？",
-        "如何学习机器学习？"
-    ]
-    
-    try:
-        # 创建并发任务
-        tasks = []
-        for question in questions:
-            task = client.chat.completions.create(
-                model="glm-4",
-                messages=[{"role": "user", "content": question}]
-            )
-            tasks.append(task)
-        
-        # 等待所有请求完成
-        responses = await asyncio.gather(*tasks)
-        
-        # 处理结果
-        for i, response in enumerate(responses):
-            print(f"问题{i+1}的回答: {response.choices[0].message.content}")
-            
-    finally:
-        await client.close()
-
-# 运行并发示例
-asyncio.run(process_multiple_requests())
-```
-
 ### 错误处理
 
 ```python
-from zai import (
-    ZaiClient,
-    ZaiError,
-    APIError,
-    RateLimitError,
-    AuthenticationError,
-    TimeoutError
-)
+from zai import ZaiClient
+import zai
 
 def robust_chat(message):
-    client = ZaiClient(api_key="your-api-key")
+    client = ZaiClient(api_key="your-api-key").zhipu
     
     try:
         response = client.chat.completions.create(
@@ -391,18 +297,12 @@ def robust_chat(message):
         )
         return response.choices[0].message.content
         
-    except AuthenticationError:
-        return "认证失败，请检查API Key"
-    except RateLimitError:
-        return "请求频率过高，请稍后重试"
-    except TimeoutError:
-        return "请求超时，请稍后重试"
-    except APIError as e:
-        return f"API错误：{e.message}"
-    except ZaiError as e:
-        return f"SDK错误：{e}"
-    except Exception as e:
-        return f"未知错误：{e}"
+    except zai.APIStatusError as err:
+        return f"API状态错误: {err}"
+    except zai.APITimeoutError as err:
+        return f"请求超时: {err}"
+    except Exception as err:
+        return f"其他错误: {err}"
 
 # 使用示例
 result = robust_chat("你好")
@@ -510,7 +410,7 @@ tools = [
 ]
 
 # 使用函数调用
-client = ZaiClient(api_key="your-api-key")
+client = ZaiClient(api_key="your-api-key").zhipu
 
 response = client.chat.completions.create(
     model='glm-4',
@@ -537,6 +437,37 @@ else:
     print(response.choices[0].message.content)
 ```
 
+#### 网络搜索工具
+
+```python
+from zai import ZaiClient
+
+# 初始化客户端
+client = ZaiClient(api_key="your-api-key").zhipu
+
+# 使用网络搜索工具
+response = client.chat.completions.create(
+    model='glm-4',
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': 'What is artificial intelligence?'},
+    ],
+    tools=[
+        {
+            'type': 'web_search',
+            'web_search': {
+                'search_query': 'What is artificial intelligence?',
+                'search_result': True,
+            },
+        }
+    ],
+    temperature=0.5,
+    max_tokens=2000,
+)
+
+print(response)
+```
+
 ### 多模态处理
 
 #### 图像理解
@@ -550,7 +481,7 @@ def encode_image(image_path):
     with open(image_path, 'rb') as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-client = ZaiClient(api_key="your-api-key")
+client = ZaiClient(api_key="your-api-key").zhipu
 
 # 方式1：使用图像URL
 response = client.chat.completions.create(
@@ -629,6 +560,30 @@ response = client.images.generations(
 
 for i, image in enumerate(response.data):
     print(f"图像 {i+1} URL: {image.url}")
+```
+
+#### 视频生成
+
+```python
+from zai import ZaiClient
+
+client = ZaiClient().zhipu
+
+# 提交生成任务
+response = client.videos.generations(
+    model="cogvideox-2",  # 使用的视频生成模型
+    image_url=image_url,  # 提供的图片URL地址或者 Base64 编码
+    prompt="让画面动起来",  
+    quality="speed",  # 输出模式，"quality"为质量优先，"speed"为速度优先
+    with_audio=True,
+    size="1920x1080",  # 视频分辨率，支持最高4K（如: "3840x2160"）
+    fps=30,  # 帧率，可选为30或60
+)
+print(response)
+
+# 获取生成结果
+result = client.videos.retrieve_videos_result(id=response.id)
+print(result)
 ```
 
 ### 文本嵌入

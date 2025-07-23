@@ -68,6 +68,82 @@ GLM-4V-Plus-0111 是智谱新一代视觉理解模型，具备视觉总结 \+ �
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
 <Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
+    client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
+    response = client.chat.completions.create(
+        model="glm-4v-plus-0111",  # 请填写您要调用的模型名称
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "这张图片中有什么？"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": "https://img1.baidu.com/it/u=1369931113,3388870256&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1703696400&t=f3028c7c1dca43a080aeb8239f09cc2f"
+                        }
+                    }
+                ]
+            }
+        ],
+        max_tokens=12000,
+    )
+    print(response.choices[0].message.content)
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    import java.util.Arrays;
+    
+    public class GLM4VPlusExample {
+        public static void main(String[] args) {
+            String apiKey = ""; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model("glm-4v-plus-0111")
+                .messages(Arrays.asList(
+                    ChatMessage.builder()
+                        .role(ChatMessageRole.USER.value())
+                        .content(Arrays.asList(
+                            ChatMessageContent.builder()
+                                .type(ChatMessageContentType.TEXT.value())
+                                .text("这张图片中有什么？")
+                                .build(),
+                            ChatMessageContent.builder()
+                                .type(ChatMessageContentType.IMAGE_URL.value())
+                                .imageUrl(ImageUrl.builder()
+                                    .url("https://img1.baidu.com/it/u=1369931113,3388870256&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1703696400&t=f3028c7c1dca43a080aeb8239f09cc2f")
+                                    .build())
+                                .build()
+                        ))
+                        .build()
+                ))
+                .maxTokens(12000)
+                .build();
+            
+            ChatCompletionResponse response = client.chat().createChatCompletion(request);
+            
+            if (response.isSuccess()) {
+                String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                System.out.println(reply);
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
+    ```
+  </Tab>
   <Tab title="视频理解">
     ### 上传视频URL
 

@@ -23,25 +23,61 @@ description: "智能体图像生成功能详细介绍"
     - 水彩画
     - 油画风格
     - 素描线稿
-    - 科幻未来
     - 古典艺术
   </Card>
   
   <Card title="灵活控制" icon="sliders">
     - 图像尺寸调整
     - 质量等级选择
-    - 批量生成
-    - 风格强度控制
   </Card>
 </CardGroup>
 
 ## 基础用法
 
 <Tabs>
-  <Tab title="简单图像生成">
+  <Tab title="Python">
+```python
+from zai import ZaiClient
 
-### 简单图像生成
+client = ZaiClient(api_key="your_api_key")
 
+# 基础图像生成
+response = client.images.generations(
+    model="cogview-3-plus",
+    prompt="一只可爱的橘猫坐在窗台上，阳光透过窗户洒在它身上，温馨的家居环境",
+    size="1024x1024",
+    quality="standard",
+)
+
+# 获取生成的图像URL
+image_url = response.data[0].url
+print(f"生成的图像URL: {image_url}")
+```
+
+  </Tab>
+  <Tab title="Java">
+```java
+import ai.z.openapi.ZaiClient;
+import ai.z.openapi.service.image.ImageService;
+import ai.z.openapi.service.image.CreateImageRequest;
+import ai.z.openapi.service.image.ImageResponse;
+import ai.z.openapi.core.Constants;
+
+ZaiClient client = ZaiClient.ofZHIPU("your_api_key").build();
+ImageService imageService = client.images();
+
+CreateImageRequest request = CreateImageRequest.builder()
+    .model(Constants.ModelCogView3Plus)
+    .prompt("A beautiful sunset over mountains")
+    .size("1024x1024")
+    .build();
+
+ImageResponse response = imageService.createImage(request);
+System.out.println("图像URL: " + response.getData().getData().get(0).getUrl());
+```
+
+  </Tab>
+  <Tab title="Python (Legacy)">
 ```python
 from zhipuai import ZhipuAI
 
@@ -53,65 +89,12 @@ response = client.images.generations(
     prompt="一只可爱的橘猫坐在窗台上，阳光透过窗户洒在它身上，温馨的家居环境",
     size="1024x1024",
     quality="standard",
-    n=1
 )
 
 # 获取生成的图像URL
 image_url = response.data[0].url
 print(f"生成的图像URL: {image_url}")
 ```
-
-  </Tab>
-  <Tab title="智能体集成">
-
-### 智能体集成
-
-```python
-# 在对话中使用绘图功能
-response = client.chat.completions.create(
-    model="glm-4-plus",
-    messages=[
-        {"role": "user", "content": "请画一幅春天的风景画"}
-    ],
-    tools=[
-        {
-            "type": "drawing",
-            "drawing": {
-                "model": "cogview-3-plus",
-                "size": "1024x1024",
-                "quality": "high"
-            }
-        }
-    ]
-)
-
-print(response.choices[0].message.content)
-```
-
-  </Tab>
-  <Tab title="高级参数配置">
-
-### 高级参数配置
-
-```python
-# 详细参数配置
-response = client.images.generations(
-    model="cogview-3-plus",
-    prompt="一座未来科技城市，高楼大厦，飞行汽车，霓虹灯光，赛博朋克风格",
-    negative_prompt="模糊，低质量，变形",  # 负面提示词
-    size="1024x1024",
-    quality="high",
-    n=2,  # 生成2张图片
-    style="cyberpunk",  # 风格指定
-    seed=12345,  # 随机种子，用于复现
-    steps=50,  # 生成步数
-    guidance_scale=7.5  # 引导强度
-)
-
-for i, image in enumerate(response.data):
-    print(f"图像 {i+1}: {image.url}")
-```
-
   </Tab>
 </Tabs>
 
@@ -122,7 +105,7 @@ for i, image in enumerate(response.data):
 ```python
 class ContentCreationAssistant:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def create_blog_illustration(self, article_title, article_summary):
         """为博客文章创建插图"""
@@ -152,8 +135,7 @@ class ContentCreationAssistant:
             model="cogview-3-plus",
             prompt=image_description,
             size="1024x1024",
-            quality="high",
-            style="professional"
+            quality="hd"
         )
         
         return {
@@ -165,8 +147,8 @@ class ContentCreationAssistant:
         """创建社交媒体配图"""
         platform_specs = {
             "instagram": {"size": "1024x1024", "style": "vibrant"},
-            "twitter": {"size": "1200x675", "style": "clean"},
-            "facebook": {"size": "1200x630", "style": "engaging"}
+            "twitter": {"size": "1200x640", "style": "clean"},
+            "facebook": {"size": "1200x640", "style": "engaging"}
         }
         
         spec = platform_specs.get(platform, platform_specs["instagram"])
@@ -181,8 +163,7 @@ class ContentCreationAssistant:
             model="cogview-3-plus",
             prompt=prompt,
             size=spec["size"],
-            quality="high",
-            style=spec["style"]
+            quality="hd",
         )
         
         return response.data[0].url
@@ -193,6 +174,7 @@ illustration = creator.create_blog_illustration(
     "人工智能的未来发展",
     "探讨AI技术在各个领域的应用前景和挑战"
 )
+
 print(f"插图描述: {illustration['description']}")
 print(f"图像URL: {illustration['image_url']}")
 ```
@@ -202,7 +184,7 @@ print(f"图像URL: {illustration['image_url']}")
 ```python
 class EcommerceImageGenerator:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def create_product_scene(self, product_name, product_description, scene_type="lifestyle"):
         """创建产品场景图"""
@@ -228,8 +210,7 @@ class EcommerceImageGenerator:
             model="cogview-3-plus",
             prompt=prompt,
             size="1024x1024",
-            quality="high",
-            style="commercial"
+            quality="hd",
         )
         
         return response.data[0].url
@@ -246,7 +227,6 @@ class EcommerceImageGenerator:
                 prompt=full_prompt,
                 size="1024x1024",
                 quality="standard",
-                n=1
             )
             
             results.append({
@@ -271,7 +251,7 @@ print(f"产品场景图: {product_image}")
 ```python
 class EducationalImageGenerator:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def create_concept_illustration(self, concept, subject, age_group="adult"):
         """创建概念插图"""
@@ -296,8 +276,7 @@ class EducationalImageGenerator:
             model="cogview-3-plus",
             prompt=prompt,
             size="1024x1024",
-            quality="high",
-            style="educational"
+            quality="hd",
         )
         
         return response.data[0].url
@@ -319,8 +298,7 @@ class EducationalImageGenerator:
             model="cogview-3-plus",
             prompt=prompt,
             size="1200x800",
-            quality="high",
-            style="diagram"
+            quality="hd",
         )
         
         return response.data[0].url
@@ -339,8 +317,7 @@ class EducationalImageGenerator:
             model="cogview-3-plus",
             prompt=prompt,
             size="1024x1024",
-            quality="high",
-            style="historical"
+            quality="hd",
         )
         
         return response.data[0].url
@@ -365,7 +342,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 class BatchImageGenerator:
     def __init__(self, api_key, max_workers=3):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
         self.max_workers = max_workers
     
     def generate_batch(self, prompts, **kwargs):
@@ -426,7 +403,7 @@ for result in results:
 ```python
 class ImageQualityAssessment:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
+        self.client = ZaiClient(api_key=api_key)
     
     def assess_image_quality(self, image_url, criteria=None):
         """评估图像质量"""
@@ -507,8 +484,8 @@ print(f"改进建议: {assessment['suggestions']}")
 ```python
 class PromptOptimizer:
     def __init__(self, api_key):
-        self.client = ZhipuAI(api_key=api_key)
-    
+        self.client = ZaiClient(api_key=api_key)
+
     def optimize_prompt(self, original_prompt, target_style=None, target_quality="high"):
         """优化提示词"""
         optimization_prompt = f"""
@@ -630,6 +607,9 @@ print(optimized)
 import os
 import json
 from datetime import datetime
+from zai import ZaiClient
+
+client = ZaiClient(api_key="your_api_key")
 
 class ImageManager:
     def __init__(self, storage_path="./generated_images"):

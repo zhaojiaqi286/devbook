@@ -118,31 +118,113 @@ GLM-4.1V-Thinking 系列是目前已知10B尺寸级别中性能最强的视觉�
 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
-```Python
-from zhipuai import ZhipuAI
-client = ZhipuAI(api_key="") # 填写您自己的APIKey
-response = client.chat.completions.create(
-    model="glm-4.1v-thinking-flashx",  # 填写需要调用的模型名称
-    messages=[
-       {
-        "role": "user",
-        "content": [
-          {
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
+    client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
+    response = client.chat.completions.create(
+        model="glm-4.1v-thinking-flashx",  # 请填写您要调用的模型名称
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "请帮我解决这个题目，给出详细过程和答案"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": "传入图片的url地址"
+                        }
+                    }
+                ]
+            }
+        ]
+    )
+    print(response.choices[0].message.content)
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    import java.util.Arrays;
+    
+    public class GLM41VThinkingExample {
+        public static void main(String[] args) {
+            String apiKey = ""; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model("glm-4.1v-thinking-flashx")
+                .messages(Arrays.asList(
+                    ChatMessage.builder()
+                        .role(ChatMessageRole.USER.value())
+                        .content(Arrays.asList(
+                            ChatMessageContent.builder()
+                                .type(ChatMessageContentType.TEXT.value())
+                                .text("请帮我解决这个题目，给出详细过程和答案")
+                                .build(),
+                            ChatMessageContent.builder()
+                                .type(ChatMessageContentType.IMAGE_URL.value())
+                                .imageUrl(ImageUrl.builder()
+                                    .url("传入图片的url地址")
+                                    .build())
+                                .build()
+                        ))
+                        .build()
+                ))
+                .build();
+            
+            ChatCompletionResponse response = client.chat().createChatCompletion(request);
+            
+            if (response.isSuccess()) {
+                String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                System.out.println(reply);
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
+    ```
+  </Tab>
+    <Tab title="Python(旧)">
+        ```Python
+        from zhipuai import ZhipuAI
+        client = ZhipuAI(api_key="") # 填写您自己的APIKey
+        response = client.chat.completions.create(
+        model="glm-4.1v-thinking-flashx",  # 填写需要调用的模型名称
+        messages=[
+        {
+            "role": "user",
+            "content": [
+        {
             "type": "text",
             "text": "请帮我解决这个题目，给出详细过程和答案"
-          },
-          {
+        },
+        {
             "type": "image_url",
             "image_url": {
-                "url" : "传入图片的url地址"
-            }
-          }
+            "url" : "传入图片的url地址"
+        }
+        }
+            ]
+        }
         ]
-      }
-    ]
-)
-print(response.choices[0].message)
-```
+        )
+        print(response.choices[0].message)
+        ```
+    </Tab>
+</Tabs>
+
+<Tip>
+  请注意，GLM-4.1V-Thinking 模型支持图片和文本的多模态输入，您可以在 messages 中同时包含文本和图片。
+</Tip>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益
 
