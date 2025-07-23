@@ -127,6 +127,7 @@
               {
                 "group": "平台服务",
                 "pages": [
+                  "cn/guide/platform/intelligent-agent",
                   "cn/guide/platform/prompt",
                   "cn/guide/platform/securityaudit",
                   "cn/guide/platform/model-migration",
