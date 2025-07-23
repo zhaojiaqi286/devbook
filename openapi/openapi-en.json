@@ -4340,8 +4340,65 @@
         "properties": {
           "assistant_id": {
             "type": "string",
-            "description": "Assistant ID, required parameter",
-            "example": "general_translation"
+            "title": "Assistant Selection",
+            "description": "Assistant ID, required parameter. Please select an assistant from the dropdown:\n\n• ChatGLM (Official) - 65940acff94777010aa6b796: Hi~ I'm Qingyan, super happy to meet you! 😺\n• Data Analysis (Official) - 65a265419d72d299a9230616: Analyze data and provide charts\n• Complex Flowchart (Official) - 664dd7bd5bb3a13ba0f81668: Create a flowchart in five seconds\n• Mind Map (Official) - 664e0cade018d633146de0d2: Turn any complex concept into a mind map\n• Prompt Engineer (Official) - 6654898292788e88ce9e7f4c: Super strong structured prompt expert\n• AI Drawing (Official) - 66437ef3d920bdc5c60f338e: Your exclusive drawing partner\n• AI Search (Official) - 659e54b1b8006379b4b2abd6: Connect to all web content, precise search\n• PPT Assistant (Official) - 65d2f07bb2c10188f885bd89: Super practical PPT generator\n• arXiv Paper Speed Reading (Official) - 663058948bb259b7e8a22730: Deep analysis of papers\n• Programmer Assistant Sam (Official) - 65a393b3619c6f13586246cd: Programming development knowledge search engine\n• Web Novel Writer (Official) - 65b356af6924a59d52832e54: Master writing secrets\n• English Grammar Assistant (Official) - 668fdd45405f2e3c9f71f832: Check grammar and explanations",
+            "enum": [
+              "65940acff94777010aa6b796",
+              "65a265419d72d299a9230616",
+              "664dd7bd5bb3a13ba0f81668",
+              "664e0cade018d633146de0d2",
+              "6654898292788e88ce9e7f4c",
+              "66437ef3d920bdc5c60f338e",
+              "659e54b1b8006379b4b2abd6",
+              "65d2f07bb2c10188f885bd89",
+              "663058948bb259b7e8a22730",
+              "65a393b3619c6f13586246cd",
+              "65b356af6924a59d52832e54",
+              "668fdd45405f2e3c9f71f832"
+            ],
+            "x-enum-varnames": [
+              "ChatGLM (Official)",
+              "Data Analysis (Official)",
+              "Complex Flowchart (Official)",
+              "Mind Map (Official)",
+              "Prompt Engineer (Official)",
+              "AI Drawing (Official)",
+              "AI Search (Official)",
+              "PPT Assistant (Official)",
+              "arXiv Paper Speed Reading (Official)",
+              "Programmer Assistant Sam (Official)",
+              "Web Novel Writer (Official)",
+              "English Grammar Assistant (Official)"
+            ],
+            "x-enumNames": [
+              "ChatGLM (Official)",
+              "Data Analysis (Official)",
+              "Complex Flowchart (Official)",
+              "Mind Map (Official)",
+              "Prompt Engineer (Official)",
+              "AI Drawing (Official)",
+              "AI Search (Official)",
+              "PPT Assistant (Official)",
+              "arXiv Paper Speed Reading (Official)",
+              "Programmer Assistant Sam (Official)",
+              "Web Novel Writer (Official)",
+              "English Grammar Assistant (Official)"
+            ],
+            "x-enum-descriptions": [
+              "ChatGLM (Official) - Hi~ I'm Qingyan, super happy to meet you! 😺 Do you have any fun things to share with me recently?",
+              "Data Analysis (Official) - Helps users analyze data and provide charts by analyzing uploaded files or data descriptions. Can also complete file processing through simple coding.",
+              "Complex Flowchart (Official) - A flowchart tool everyone can master, create a flowchart in five seconds to impress colleagues.",
+              "Mind Map (Official) - Say goodbye to organizing troubles, any complex concept can be instantly turned into a mind map.",
+              "Prompt Engineer (Official) - Everyone is a prompt engineer, super strong structured prompt expert, rewrite prompts with one click.",
+              "AI Drawing (Official) - Let imagination fly freely, your exclusive drawing partner, draw until you can't stop.",
+              "AI Search (Official) - Connect to all web content, precise search, intelligent assistant that quickly analyzes and summarizes.",
+              "PPT Assistant (Official) - Super practical PPT generator, supports manual outline editing and automatic chapter content filling.",
+              "arXiv Paper Speed Reading (Official) - Deep analysis of arXiv papers, help you quickly grasp research trends and save precious time.",
+              "Programmer Assistant Sam (Official) - \"Programming development knowledge search engine\", can help programmers solve daily problems.",
+              "Web Novel Writer (Official) - Master writing secrets: one template repeated continuously.",
+              "English Grammar Assistant (Official) - Input words for queries; input sentences to check grammar and get grammar explanations."
+            ],
+            "example": "65940acff94777010aa6b796"
           },
           "conversation_id": {
             "type": "string",
