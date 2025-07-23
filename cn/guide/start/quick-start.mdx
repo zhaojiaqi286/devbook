@@ -5,107 +5,107 @@ description: "智谱AI开放平台快速上手指南"
 
 
 <Tip>
-  本指南将帮助您快速上手智谱AI开放平台，从注册账号到发起第一次API调用，只需几分钟即可完成。
+    本指南将帮助您快速上手智谱AI开放平台，从注册账号到发起第一次API调用，只需几分钟即可完成。
 </Tip>
 
 ## 开始使用
 
 <Steps>
-  <Step title="注册账号">
-    访问[智谱AI开放平台](https://open.bigmodel.cn)，点击右上角的「注册/登录」按钮，按照提示完成账号注册流程。
-    
-    <Frame>
-      <img src="/resource/register.png" alt="注册账号" />
-    </Frame>
-  </Step>
-  
-  <Step title="获取API Key">
-    登录后，在个人中心页面，点击「API Key管理」，创建一个新的API Key。
-    
-    <Warning>
-      请妥善保管您的API Key，不要泄露给他人，也不要直接硬编码在代码中。建议使用环境变量或配置文件来存储API Key。
-    </Warning>
-    
-    <Frame>
-      <img src="/resource/api-key.png" alt="获取API Key" />
-    </Frame>
-  </Step>
-  
-  <Step title="选择模型">
-    智谱AI开放平台提供多种模型，您可以根据自己的需求选择合适的模型。详细的模型介绍请参考[模型概况](/guide/start/model-overview)。
-    
-    <CardGroup cols={2}>
-      <Card title="GLM-4" icon="star">
-        最强大的通用大语言模型，适合复杂任务
-      </Card>
-      <Card title="GLM-4-Air" icon="wind">
-        轻量级模型，平衡性能与速度
-      </Card>
-      <Card title="GLM-4V" icon="eye">
-        多模态模型，支持图像理解
-      </Card>
-      <Card title="CogView-4" icon="image">
-        图像生成模型，支持文本到图像生成
-      </Card>
-    </CardGroup>
-  </Step>
-  
-  <Step title="选择开发方式">
-    智谱AI提供多种开发方式，您可以根据项目需求和技术栈选择最适合的方式：
-    
-    <CardGroup cols={2}>
-        <Card title="HTTP API" icon="globe" href="/cn/guide/develop/http/introduction">
-            标准RESTful API，支持所有编程语言和开发框架
-        </Card>
-        <Card title="Python SDK" icon="python" href="/cn/guide/develop/python/introduction">
-        官方Python开发工具包，提供完整的类型提示和异步支持
-        </Card>
-        <Card title="Java SDK" icon="java" href="/cn/guide/develop/java/introduction">
-        企业级Java开发工具包，支持高并发和高可用性
-        </Card>
-        <Card title="API 参考文档" icon="book" href="/api-reference">
-        完整的API接口文档和参数说明
-        </Card>
-    </CardGroup>
-  </Step>
-  
-  <Step title="发起调用">
-    准备好 `API Key` 和选择模型后，您可以开始发起调用。以下是使用 `HTTP API` 和 `Python SDK` `Java SDK` 的示例：
-    
-    <Tabs>
-      <Tab title="HTTP API">
-        ```bash
-        curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer YOUR_API_KEY" \
-          -d '{
-            "model": "glm-4",
-            "messages": [
-              {
-                "role": "system",
-                "content": "你是一个有用的AI助手。"
-              },
-              {
-                "role": "user",
-                "content": "你好，请介绍一下自己。"
-              }
-            ],
-            "temperature": 0.7,
-            "top_p": 0.8
-          }'
-        ```
-      </Tab>
-      <Tab title="Python SDK">
-        ```python
-        from zai import ZaiClient
-        
-        # 初始化客户端
-        client = ZaiClient(api_key="YOUR_API_KEY")
-        
-        # 创建聊天完成请求
-        response = client.chat.completions.create(
-            model="glm-4",
-            messages=[
+    <Step title="注册账号">
+        访问[智谱AI开放平台](https://open.bigmodel.cn)，点击右上角的「注册/登录」按钮，按照提示完成账号注册流程。
+
+        <Frame>
+            <img src="/resource/register.png" alt="注册账号"/>
+        </Frame>
+    </Step>
+
+    <Step title="获取API Key">
+        登录后，在个人中心页面，点击「API Key管理」，创建一个新的API Key。
+
+        <Warning>
+            请妥善保管您的API Key，不要泄露给他人，也不要直接硬编码在代码中。建议使用环境变量或配置文件来存储API Key。
+        </Warning>
+
+        <Frame>
+            <img src="/resource/api-key.png" alt="获取API Key"/>
+        </Frame>
+    </Step>
+
+    <Step title="选择模型">
+        智谱AI开放平台提供多种模型，您可以根据自己的需求选择合适的模型。详细的模型介绍请参考[模型概况](/guide/start/model-overview)。
+
+        <CardGroup cols={2}>
+            <Card title="GLM-4" icon="star">
+                最强大的通用大语言模型，适合复杂任务
+            </Card>
+            <Card title="GLM-4-Air" icon="wind">
+                轻量级模型，平衡性能与速度
+            </Card>
+            <Card title="GLM-4V" icon="eye">
+                多模态模型，支持图像理解
+            </Card>
+            <Card title="CogView-4" icon="image">
+                图像生成模型，支持文本到图像生成
+            </Card>
+        </CardGroup>
+    </Step>
+
+    <Step title="选择开发方式">
+        智谱AI提供多种开发方式，您可以根据项目需求和技术栈选择最适合的方式：
+
+        <CardGroup cols={2}>
+            <Card title="HTTP API" icon="globe" href="/cn/guide/develop/http/introduction">
+                标准RESTful API，支持所有编程语言和开发框架
+            </Card>
+            <Card title="Python SDK" icon="python" href="/cn/guide/develop/python/introduction">
+                官方Python开发工具包，提供完整的类型提示和异步支持
+            </Card>
+            <Card title="Java SDK" icon="java" href="/cn/guide/develop/java/introduction">
+                企业级Java开发工具包，支持高并发和高可用性
+            </Card>
+            <Card title="API 参考文档" icon="book" href="/api-reference">
+                完整的API接口文档和参数说明
+            </Card>
+        </CardGroup>
+    </Step>
+
+    <Step title="发起调用">
+        准备好 `API Key` 和选择模型后，您可以开始发起调用。以下是使用 `HTTP API` 和 `Python SDK` `Java SDK` 的示例：
+
+        <Tabs>
+            <Tab title="HTTP API">
+                ```bash
+                curl -X POST "https://open.bigmodel.cn/api/paas/v4/chat/completions" \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer YOUR_API_KEY" \
+                -d '{
+                        "model": "glm-4",
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "你是一个有用的AI助手。"
+                            },
+                            {
+                                "role": "user",
+                               "content": "你好，请介绍一下自己。"
+                            }
+                        ],
+                        "temperature": 0.7,
+                        "top_p": 0.8
+                    }'
+                ```
+            </Tab>
+            <Tab title="Python SDK">
+                ```python
+                from zai import ZaiClient
+
+                # 初始化客户端
+                client = ZaiClient(api_key="YOUR_API_KEY", switch_to_zhipu=True)
+
+                # 创建聊天完成请求
+                response = client.chat.completions.create(
+                model="glm-4",
+                messages=[
                 {
                     "role": "system",
                     "content": "你是一个有用的AI助手。"
@@ -114,49 +114,74 @@ description: "智谱AI开放平台快速上手指南"
                     "role": "user",
                     "content": "你好，请介绍一下自己。"
                 }
-            ],
-            temperature=0.7,
-            top_p=0.8
-        )
-        
-        # 获取回复
-        print(response.choices[0].message.content)
-        ```
-      </Tab>
-      <Tab title="Java SDK">
-        ```java
-        import ai.z.openapi.ZaiClient;
-        import ai.z.openapi.service.model.*;
-        import java.util.Arrays;
-        
-        public class QuickStart {
-            public static void main(String[] args) {
+                ],
+                temperature=0.7,
+                top_p=0.8
+                )
+
+                # 获取回复
+                print(response.choices[0].message.content)
+                ```
+            </Tab>
+            <Tab title="Java SDK">
+                ```java
+                import ai.z.openapi.ZaiClient;
+                import ai.z.openapi.service.model.*;
+                import java.util.Arrays;
+
+                public class QuickStart {
+                public static void main(String[] args) {
                 // 初始化客户端
                 ZaiClient client = ZaiClient.builder()
-                    .apiKey("YOUR_API_KEY")
-                    .build();
-                
+                .ofZHIPU()
+                .apiKey("YOUR_API_KEY")
+                .build();
+
                 // 创建聊天完成请求
-                ChatCompletionRequest request = ChatCompletionRequest.builder()
-                    .model("glm-4")
-                    .messages(Arrays.asList(
-                        ChatMessage.userMessage("你好，请介绍一下自己")
-                    ))
-                    .temperature(0.7f)
-                    .topP(0.8f)
-                    .build();
-                
+                ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model("glm-4")
+                .messages(Arrays.asList(
+                ChatMessage.builder()
+                .role(ChatMessageRole.USER.value())
+                .content("Hello, who are you?")
+                .build()
+                ))
+                .stream(false)
+                .temperature(0.7f)
+                .maxTokens(1024)
+                .build();
+
                 // 发送请求
-                ChatCompletionResponse response = client.chatCompletions().create(request);
-                
+                ChatCompletionResponse response = client.chat().createChatCompletion(request);
+
                 // 获取回复
-                System.out.println(response.getChoices().get(0).getMessage().getContent());
+                System.out.println(response.getData().getChoices().get(0).getMessage().getContent());
             }
-        }
-        ```
-      </Tab>
-    </Tabs>
-  </Step>
+            }
+                ```
+            </Tab>
+            <Tab title="Python SDK(旧)">
+                ```python
+                from zhipuai import ZhipuAI
+                client = ZhipuAI(api_key="YOUR_API_KEY")
+                response = client.chat.completions.create(
+                model="glm-4",
+                messages=[
+                {
+                    "role": "system",
+                    "content": "你是一个有用的AI助手。"
+                },
+                {
+                    "role": "user",
+                    "content": "你好，请介绍一下自己。"
+                }
+                ],
+                )
+                print(response.choices[0].message.content)
+                ```
+            </Tab>
+        </Tabs>
+    </Step>
 </Steps>
 
 ## 探索更多功能
@@ -167,7 +192,10 @@ description: "智谱AI开放平台快速上手指南"
     ```json
     {
         "model": "glm-4",
-        "messages": [...],
+        "messages": [{
+            "role": "user",
+            "content": "你好，请介绍一下自己。"
+        }],
         "stream": true
     }
     ```
@@ -188,10 +216,10 @@ description: "智谱AI开放平台快速上手指南"
                         "text": "这张图片是什么?"
                     },
                     {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": "data:image/jpeg;base64,..."
-                        }
+                         "type": "image_url",
+                         "image_url": {
+                         "url": "data:image/jpeg;base64,..."
+                         }
                     }
                 ]
             }
@@ -206,17 +234,35 @@ description: "智谱AI开放平台快速上手指南"
     ```json
     {
         "model": "glm-4",
-        "messages": [...],
-        "tools": [
-            {
+        "messages": [{
+            "type": "text",
+            "text": "帮我查询从2024年1月20日，从北京出发前往上海的航班"
+        }],
+        "tools": [{
                 "type": "function",
                 "function": {
-                    "name": "get_weather",
-                    "description": "获取指定城市的天气信息",
-                    "parameters": {...}
+                    "name": "get_flight_number",
+                    "description": "根据始发地、目的地和日期，查询对应日期的航班号",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "departure": {
+                                "description": "出发地",
+                                "type": "string"
+                            },
+                            "destination": {
+                                "description": "目的地",
+                                "type": "string"
+                            },
+                           "date": {
+                                "description": "日期",
+                                "type": "string",
+                           }
+                        },
+        "required": ["departure","destination","date"]
+                    }
                 }
-            }
-        ]
+        }]
     }
     ```
 </Card>
@@ -224,37 +270,37 @@ description: "智谱AI开放平台快速上手指南"
 ## 常见问题
 
 <AccordionGroup>
-  <Accordion title="如何处理API调用错误？">
-    当API调用出现错误时，服务器会返回相应的HTTP状态码和错误信息。常见的错误包括：
-    
-    - **401 Unauthorized**: API Key无效或已过期
-    - **400 Bad Request**: 请求参数错误
-    - **429 Too Many Requests**: 超出API调用频率限制
-    - **500 Internal Server Error**: 服务器内部错误
-    
-    建议实现适当的错误处理和重试机制，特别是对于429和500错误。
-  </Accordion>
-  
-  <Accordion title="如何优化API调用成本？">
-    以下是一些优化API调用成本的建议：
-    
-    1. 选择适合任务的模型，不同模型的价格不同
-    2. 减少不必要的上下文信息，降低token消耗
-    3. 使用缓存机制，避免重复调用
-    4. 设置合理的max_tokens参数，避免生成过长的回复
-    5. 在开发阶段使用较小的模型进行测试
-  </Accordion>
-  
-  <Accordion title="如何处理长文本输入？">
-    对于超过模型上下文窗口大小的长文本，可以采用以下策略：
-    
-    1. 使用GLM-4-Long等支持更长上下文的模型
-    2. 对文本进行分段处理，然后合并结果
-    3. 使用文本嵌入模型进行相关性检索，只保留最相关的部分
-    4. 对文本进行摘要，提取关键信息后再输入模型
-  </Accordion>
+    <Accordion title="如何处理API调用错误？">
+        当API调用出现错误时，服务器会返回相应的HTTP状态码和错误信息。常见的错误包括：
+
+        - **401 Unauthorized**: API Key无效或已过期
+        - **400 Bad Request**: 请求参数错误
+        - **429 Too Many Requests**: 超出API调用频率限制
+        - **500 Internal Server Error**: 服务器内部错误
+
+        建议实现适当的错误处理和重试机制，特别是对于429和500错误。
+    </Accordion>
+
+    <Accordion title="如何优化API调用成本？">
+        以下是一些优化API调用成本的建议：
+
+        1. 选择适合任务的模型，不同模型的价格不同
+        2. 减少不必要的上下文信息，降低token消耗
+        3. 使用缓存机制，避免重复调用
+        4. 设置合理的max_tokens参数，避免生成过长的回复
+        5. 在开发阶段使用较小的模型进行测试
+    </Accordion>
+
+    <Accordion title="如何处理长文本输入？">
+        对于超过模型上下文窗口大小的长文本，可以采用以下策略：
+
+        1. 使用GLM-4-Long等支持更长上下文的模型
+        2. 对文本进行分段处理，然后合并结果
+        3. 使用文本嵌入模型进行相关性检索，只保留最相关的部分
+        4. 对文本进行摘要，提取关键信息后再输入模型
+    </Accordion>
 </AccordionGroup>
 
 <Tip>
-  如果您在使用过程中遇到任何问题，可以查阅[完整文档](/guide)或联系我们的[技术支持](mailto:support@zhipuai.cn)。
+    如果您在使用过程中遇到任何问题，可以查阅[完整文档](/guide)或联系我们的[技术支持](mailto:support@zhipuai.cn)。
 </Tip>
