@@ -1013,8 +1013,8 @@
         "tags": [
           "Assistant API"
         ],
-        "summary": "List assistant capabilities",
-        "description": "Query the list of features and capabilities supported by the assistant.",
+        "summary": "Query Assistant List",
+        "description": "Query the list of specified assistants, including detailed configurations, tools, and metadata.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1024,7 +1024,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AssistantSupportRequest"
+                "$ref": "#/components/schemas/AssistantListRequest"
               }
             }
           },
@@ -1059,8 +1059,8 @@
         "tags": [
           "Assistant API"
         ],
-        "summary": "Get conversation usage stats",
-        "description": "Query usage statistics for assistant conversations.",
+        "summary": "Query Assistant Conversation List",
+        "description": "Query the conversation list for a specified assistant, with support for pagination.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AcceptLanguage"
@@ -1070,7 +1070,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ConversationUsageRequest"
+                "$ref": "#/components/schemas/ConversationListRequest"
               }
             }
           },
@@ -1082,7 +1082,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConversationUsageResponse"
+                  "type": "object",
+                "properties": {
+                  "success": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "code": {
+                    "type": "integer",
+                    "example": 200
+                  },
+                  "msg": {
+                    "type": "string",
+                    "example": "Operation successful"
+                  },
+                  "data": {
+                    "$ref": "#/components/schemas/ConversationListResponse"
+                  }
+                }
                 }
               }
             }
@@ -4321,34 +4338,169 @@
       "AssistantRequest": {
         "type": "object",
         "properties": {
+          "assistant_id": {
+            "type": "string",
+            "description": "Assistant ID, required parameter",
+            "example": "general_translation"
+          },
+          "conversation_id": {
+            "type": "string",
+            "description": "Conversation ID, optional parameter for continuing previous conversations"
+          },
           "model": {
             "type": "string",
-            "description": "使用的模型名称"
+            "description": "Model name to use",
+            "default": "glm-4-assistant"
           },
           "messages": {
             "type": "array",
+            "description": "List of conversation messages",
             "items": {
-              "$ref": "#/components/schemas/ChatCompletionRequestMessage"
+              "type": "object",
+              "required": ["role", "content"],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "Role of the message author",
+                  "enum": ["user", "assistant", "system"],
+                  "example": "user"
+                },
+                "content": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Message text content",
+                      "example": "Hello"
+                    },
+                    {
+                      "type": "array",
+                      "description": "Multimodal message content supporting text, images, etc.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["text", "image_url"],
+                            "description": "Content type"
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "Text content"
+                          },
+                          "image_url": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "description": "Image URL"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             },
-            "description": "对话消息列表"
+            "minItems": 1
           },
           "tools": {
+            "type": "array",
+            "description": "List of available tools",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["function", "retrieval", "web_search"],
+                  "description": "Tool type"
+                },
+                "function": {
+                  "type": "object",
+                  "description": "Function tool definition",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Function name"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Function description"
+                    },
+                    "parameters": {
+                      "type": "object",
+                      "description": "Function parameters definition"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Whether to enable streaming response",
+            "default": false
+          },
+          "request_id": {
+            "type": "string",
+            "description": "Request task ID, length must be between 6 to 64 characters",
+            "minLength": 6,
+            "maxLength": 64
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Unique ID of the end user, length must be between 6 to 128 characters",
+            "minLength": 6,
+            "maxLength": 128
+          },
+          "do_sample": {
+            "type": "boolean",
+            "description": "Whether to use stable output"
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "Top-k sampling parameter"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "Maximum number of output tokens"
+          },
+          "attachments": {
             "type": "array",
             "items": {
               "type": "object"
             },
-            "description": "可用工具列表"
+            "description": "List of attachments"
           },
-          "user_id": {
-            "type": "string",
-            "description": "用户ID"
+          "metadata": {
+            "type": "object",
+            "description": "Metadata information",
+            "additionalProperties": true
           },
-          "request_id": {
-            "type": "string",
-            "description": "请求ID"
+          "extra_parameters": {
+            "type": "object",
+            "description": "Extra parameters for specific assistant configurations",
+            "properties": {
+              "translate": {
+                "type": "object",
+                "description": "Translation parameters",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "Source language"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Target language"
+                  }
+                }
+              }
+            }
           }
         },
         "required": [
+          "assistant_id",
           "model",
           "messages"
         ]
@@ -4405,83 +4557,183 @@
           }
         }
       },
-      "AssistantSupportRequest": {
+      "AssistantListRequest": {
         "type": "object",
         "properties": {
-          "user_id": {
-            "type": "string",
-            "description": "用户ID"
-          }
-        }
-      },
-      "AssistantSupportResponse": {
-        "type": "object",
-        "properties": {
-          "capabilities": {
+          "assistant_id_list": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "支持的能力列表"
+            "description": "List of assistant IDs. If empty, query all available assistants",
+            "example": ["65940acff94777010aa6b796", "assistant_2"]
+          }
+        }
+      },
+      "AssistantInfo": {
+        "type": "object",
+        "properties": {
+          "assistant_id": {
+            "type": "string",
+            "description": "Assistant ID",
+            "example": "65940acff94777010aa6b796"
           },
-          "models": {
+          "name": {
+            "type": "string",
+            "description": "Assistant name",
+            "example": "General Assistant"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Assistant avatar URL",
+            "example": "https://example.com/avatar.png"
+          },
+          "description": {
+            "type": "string",
+            "description": "Assistant description",
+            "example": "A general AI assistant that can answer various questions"
+          },
+          "tools": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "支持的模型列表"
-          }
-        }
-      },
-      "ConversationUsageRequest": {
-        "type": "object",
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "description": "用户ID"
+            "description": "List of tools supported by the assistant",
+            "example": ["web_search", "code_interpreter"]
           },
-          "start_date": {
-            "type": "string",
-            "format": "date",
-            "description": "开始日期"
-          },
-          "end_date": {
-            "type": "string",
-            "format": "date",
-            "description": "结束日期"
-          }
-        }
-      },
-      "ConversationUsageResponse": {
-        "type": "object",
-        "properties": {
-          "total_conversations": {
-            "type": "integer",
-            "description": "总对话数"
-          },
-          "total_messages": {
-            "type": "integer",
-            "description": "总消息数"
-          },
-          "usage_by_date": {
+          "tags": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "date": {
+                "key": {
                   "type": "string",
-                  "format": "date"
+                  "description": "Tag key",
+                  "example": "category"
                 },
-                "conversations": {
-                  "type": "integer"
-                },
-                "messages": {
-                  "type": "integer"
+                "label": {
+                  "type": "string",
+                  "description": "Tag value",
+                  "example": "General Assistant"
                 }
               }
-            }
+            },
+            "description": "List of assistant tags"
+          },
+          "status": {
+            "type": "string",
+            "description": "Assistant status",
+            "example": "active"
+          },
+          "starter_prompts": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Assistant starter prompts"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Update time",
+            "example": "2024-01-01T00:00:00Z"
+          }
+        },
+        "required": ["assistant_id", "name"]
+      },
+      "ConversationListRequest": {
+        "type": "object",
+        "required": ["assistant_id"],
+        "properties": {
+          "assistant_id": {
+            "type": "string",
+            "description": "Assistant ID",
+            "example": "65940acff94777010aa6b796"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page number, starting from 1",
+            "minimum": 1,
+            "default": 1,
+            "example": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Page size",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 5,
+            "example": 10
           }
         }
+      },
+      "ConversationListResponse": {
+        "type": "object",
+        "properties": {
+          "assistant_id": {
+            "type": "string",
+            "description": "Assistant ID",
+            "example": "65940acff94777010aa6b796"
+          },
+          "conversation_list": {
+            "type": "array",
+            "description": "Conversation list",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Conversation ID",
+                  "example": "conv_123456"
+                },
+                "assistant_id": {
+                  "type": "string",
+                  "description": "Assistant ID",
+                  "example": "65940acff94777010aa6b796"
+                },
+                "create_time": {
+                  "type": "string",
+                  "description": "Creation time",
+                  "example": "2024-01-01T10:00:00Z"
+                },
+                "update_time": {
+                  "type": "string",
+                  "description": "Update time",
+                  "example": "2024-01-01T10:30:00Z"
+                },
+                "usage": {
+                  "type": "object",
+                  "description": "Usage statistics",
+                  "properties": {
+                    "prompt_tokens": {
+                      "type": "integer",
+                      "description": "Input token count"
+                    },
+                    "completion_tokens": {
+                      "type": "integer",
+                      "description": "Output token count"
+                    },
+                    "total_tokens": {
+                      "type": "integer",
+                      "description": "Total token count"
+                    }
+                  }
+                }
+              },
+              "required": ["id", "assistant_id"]
+            }
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there is more data",
+            "example": true
+          }
+        },
+        "required": ["assistant_id", "conversation_list", "has_more"]
       },
       "BatchCreateRequest": {
         "type": "object",

@@ -122,7 +122,7 @@ devbook/
   - `/paas/v4/tools` - 综合网络搜索
 
 - **助手 API**
-  - `/paas/v4/assistant` - 助手对话
+  - `/paas/v4/assistant` - 助手对话（需要 assistant_id 参数）
   - `/paas/v4/assistant/list` - 查询助手支持能力
   - `/paas/v4/assistant/conversation/list` - 查询助手对话统计
 
