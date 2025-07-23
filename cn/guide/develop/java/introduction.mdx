@@ -170,7 +170,7 @@ public class QuickStart {
     public static void main(String[] args) {
         // 直接设置 API Key
         ZaiClient client = ZaiClient.builder().ofZHIPU()
-            .apiKey("your.api.key.your.api.secret")
+            .apiKey("YOUR_API_KEY")
             .build();
     }
 }
@@ -191,7 +191,7 @@ public class BasicChat {
     public static void main(String[] args) {
         // 初始化客户端
         ZaiClient client = ZaiClient.builder().ofZHIPU()
-            .apiKey("your.api.key.your.api.secret")
+            .apiKey("YOUR_API_KEY")
             .build();
         
         // 创建聊天完成请求
@@ -230,7 +230,7 @@ import java.util.Arrays;
 public class StreamingChat {
     public static void main(String[] args) {
         ZaiClient client = ZaiClient.builder().ofZHIPU()
-            .apiKey("your.api.key.your.api.secret")
+            .apiKey("YOUR_API_KEY")
             .build();
         
         // 创建流式聊天请求

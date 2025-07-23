@@ -65,17 +65,60 @@ CogView-4 是智谱首个支持生成汉字的开源文生图模型，在语义�
 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
-```python
-from zhipuai import ZhipuAI
-client = ZhipuAI(api_key="")
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
+    client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
+    response = client.images.generations(
+        model="cogview-4",  # 请填写您要调用的模型名称
+        prompt="一只可爱的小猫咪，坐在阳光明媚的窗台上，背景是蓝天白云",
+    )
+    print(response.data[0].url)
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import com.zhipu.oapi.ClientV4;
+    import com.zhipu.oapi.Constants;
+    import com.zhipu.oapi.service.v4.model.*;
+    import java.util.ArrayList;
+    import java.util.List;
+    
+    public class CogView4Example {
+        public static void main(String[] args) {
+            String apiKey = ""; // 请填写您自己的APIKey
+            ClientV4 client = new ClientV4.Builder(apiKey).build();
+            
+            ImageRequest imageRequest = ImageRequest.builder()
+                    .model("cogview-4")
+                    .prompt("一只可爱的小猫咪，坐在阳光明媚的窗台上，背景是蓝天白云")
+                    .build();
+            
+            ModelApiResponse invokeModelApiResp = client.invokeModelApi(imageRequest);
+            System.out.println(invokeModelApiResp.getData());
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="Python(旧)">
+    ```python
+      from zhipuai import ZhipuAI
+      client = ZhipuAI(api_key="")
 
-response = client.images.generations(
-    model="cogView-4-250304", #填写需要调用的模型编码
-    prompt="在干燥的沙漠环境中，一棵孤独的仙人掌在夕阳的余晖中显得格外醒目。这幅油画捕捉了仙人掌坚韧的生命力和沙漠中的壮丽景色，色彩饱满且表现力强烈。",
-    size="1440x720"
-)
-print(response.data[0].url)
-```
+      response = client.images.generations(
+      model="cogView-4-250304", #填写需要调用的模型编码
+      prompt="在干燥的沙漠环境中，一棵孤独的仙人掌在夕阳的余晖中显得格外醒目。这幅油画捕捉了仙人掌坚韧的生命力和沙漠中的壮丽景色，色彩饱满且表现力强烈。",
+      size="1440x720"
+      )
+      print(response.data[0].url)
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+  请注意，CogView-4 模型的输出是图片 URL，您需要通过 URL 下载图片。
+</Tip>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益
 

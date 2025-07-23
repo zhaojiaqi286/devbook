@@ -62,54 +62,112 @@ GLM-4-FlashX-250414 是免费语言模型 GLM-4-Flash 的增强版本，具有�
 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
+以下是一个完整的调用示例，帮助您快速上手 GLM-4-FlashX 模型。
+
 <Tabs>
-  <Tab title="输入示例">
-    ```python
-    from zhipuai import ZhipuAI
-    client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
-    response = client.chat.completions.create(
-    model="glm-4-flashx-250414",  # 请填写您要调用的模型名称
-    messages=[
-    {"role": "system",
-        "content": "你是会议摘要生成AI，需从会议对话中精准提取核心议题、发言逻辑及决策结论，生成包含议程回顾、待办事项、风险点提示的结构化摘要。"},
-    {"role": "user",
-        "content": "以下是跨境电商Q3营销战略部署会的对话记录：运营总监开场表示今天主要讨论Q3营销计划，重点解决旺季流量转化与供应链协同问题，并请市场部汇报前期数据。市场部经理称Q2东南亚市场流量占比提升至35%，但转化率仅2.1%，低于欧美市场的4.5%，主要问题是本地化内容不足，如印尼站用户反馈商品详情页缺乏方言版使用说明，建议Q3增加小语种KOL合作，预算申请200万美金。供应链主管提出需同步调整库存策略，东南亚仓目前周转率1.2次/月，低于目标值1.5次，若增加促销活动需提前30天备货，否则可能断货，还提到欧美仓清关时效不稳定，上周5个集装箱延迟72小时，导致2000单发货延误。客服总监指出用户投诉中物流延迟占比从Q1的15%上升至Q2的28%，尤其泰国、越南地区，建议在营销页面增加物流时效预警模块，同时开通本地客服热线缓解咨询压力。运营总监同意市场部的KOL合作方案，要求市场部本周内细化执行计划；要求供应链部针对东南亚仓库存周转率和欧美仓清关问题，分别制定优化方案，3天内同步给运营团队；责成客服部在Q3前完成物流预警模块开发及本地热线开通，并跟进用户反馈。最后会议确定Q3营销重点为东南亚市场本地化运营，目标将转化率提升至3%以上，各部门需在3个工作日内提交具体行动计划。"},
-    
-    ],
-    )
-    print(response)
-    ```
-  </Tab>
-  <Tab title="输出示例">
-    ```response
-    Completion(model='glm-4-flashx-250414', created=1749096323, choices=[CompletionChoice
-    (index=0, finish_reason='stop', message=CompletionMessage(content='### 跨境电商Q3营销战略部署会摘
-    要\n\n#### **议程回顾**\n1. **核心议题**：Q3营销计划部署，重点解决旺季流量转化与供应链协同问题。\n2. *
-    *数据汇报**：\n   - 市场部：Q2东南亚市场流量占比35%，转化率2.1%（低于欧美市场的4.5%），主要问题为本地化
-    内容不足。\n   - 客服总监：物流延迟投诉占比上升至28%（泰国、越南地区尤为突出）。\n3. **问题与建议**：\n
-    - 市场部：建议Q3增加小语种KOL合作（预算200万美金），解决本地化内容不足问题。\n   - 供应链主管：东南亚
-    仓周转率1.2次/月（低于目标1.5次），需提前30天备货；欧美仓清关时效不稳定（上周5个集装箱延迟72小时，延
-    误2000单）。\n   - 客服总监：建议营销页面增加物流时效预警模块，开通本地客服热线。\n\n#### **待办事项
-    **\n1. **市场部**：\n   - 本周内细化KOL合作执行计划。\n   - 提升东南亚市场本地化内容（如印尼站方言
-    版使用说明）。\n2. **供应链部**：\n   - 3天内制定东南亚仓库存周转率优化方案。\n   - 3天内制定欧美
-    仓清关问题优化方案，同步给运营团队。\n3. **客服部**：\n   - Q3前完成物流预警模块开发。\n   - Q3前
-    开通本地客服热线，缓解咨询压力。\n4. **运营总监**：\n   - 跟进各部门执行计划，确保Q3目标达成。\n\n
-    #### **风险点提示**\n1. **供应链风险**：\n   - 东南亚仓库存周转率低可能导致断货。\n   - 欧美仓清关
-    延误影响发货时效，需提前30天备货。\n2. **市场风险**：\n   - 本地化内容不足导致转化率低，需快速提升。
-    \n   - KOL合作预算200万美金，需确保ROI达标。\n3. **物流风险**：\n   - 物流延迟投诉占比上升，需优化
-    物流时效预警模块。\n   - 本地客服热线开通后需确保响应效率，避免二次投诉。\n\n#### **决策结论**\n-
-    **Q3营销重点**：东南亚市场本地化运营，目标转化率提升至3%以上。\n- **时间节点**：\n  - 各部门3个工作
-    日内提交具体行动计划。\n  - 市场部本周内细化KOL合作计划。\n  - 供应链部3天内提交库存与清关优化方案。
-    \n  - 客服部Q3前完成物流预警模块及本地热线开通。\n\n---\n\n**摘要总结**：本次会议明确了Q3营销的核心
-    方向与重点问题，各部门需快速响应并制定优化方案，确保流量转化与供应链协同效率提升。需特别关注库存周转率
-    、清关时效及物流体验，以实现转化率目标。',
-    role='assistant', tool_calls=None))],
-    request_id='20250605120513eb02bb25540242c1',
-    id='20250605120513eb02bb25540242c1',
-    usage=CompletionUsage(prompt_tokens=372, completion_tokens=638, total_tokens=1010))
-    
-    ```
-  </Tab>
+    <Tab title="Python">
+        ```python
+        from zai import ZaiClient
+
+        # 初始化客户端
+        client = ZaiClient(api_key="your-api-key").zhipu
+
+        # 创建聊天完成请求
+        response = client.chat.completions.create(
+            model="glm-4-flashx",
+            messages=[
+                {"role": "user", "content": "请帮我写一个快速排序算法的Python实现"}
+            ]
+        )
+
+        # 获取回复
+        print(response.choices[0].message.content)
+        ```
+    </Tab>
+    <Tab title="Java">
+        ```java
+        import ai.z.openapi.ZaiClient;
+        import ai.z.openapi.service.model.*;
+        import ai.z.openapi.core.Constants;
+        import java.util.Arrays;
+
+        public class BasicChat {
+            public static void main(String[] args) {
+                // 初始化客户端
+                ZaiClient client = ZaiClient.builder().ofZHIPU()
+                    .apiKey("your-api-key")
+                    .build();
+
+                // 创建聊天完成请求
+                ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                    .model("glm-4-flashx")
+                    .messages(Arrays.asList(
+                        ChatMessage.builder()
+                            .role(ChatMessageRole.USER.value())
+                            .content("请帮我写一个快速排序算法的Python实现")
+                            .build()
+                    ))
+                    .build();
+
+                // 发送请求
+                ChatCompletionResponse response = client.chat().createChatCompletion(request);
+
+                // 获取回复
+                if (response.isSuccess()) {
+                    String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                    System.out.println("AI回复: " + reply);
+                } else {
+                    System.err.println("错误: " + response.getMsg());
+                }
+            }
+        }
+        ```
+    </Tab>
+    <Tab title="Python(旧)">
+        ```python
+        from zhipuai import ZhipuAI
+        
+        client = ZhipuAI(api_key="") # 填写您自己的APIKey
+        response = client.chat.completions.create(
+            model="glm-4-flashx",  # 填写需要调用的模型编码
+            messages=[
+                {"role": "system", "content": "你是一个编程专家，擅长算法设计和代码实现，能够提供清晰、高效的代码解决方案。"},
+                {"role": "user", "content": "请帮我写一个快速排序算法的Python实现"}
+            ],
+        )
+        print(response.choices[0].message)
+        ```
+    </Tab>
+    <Tab title="输出示例">
+        ```response
+        Completion(model='glm-4-flashx-250414', created=1749096323, choices=[CompletionChoice
+        (index=0, finish_reason='stop', message=CompletionMessage(content='### 跨境电商Q3营销战略部署会摘
+        要\n\n#### **议程回顾**\n1. **核心议题**：Q3营销计划部署，重点解决旺季流量转化与供应链协同问题。\n2. *
+        *数据汇报**：\n   - 市场部：Q2东南亚市场流量占比35%，转化率2.1%（低于欧美市场的4.5%），主要问题为本地化
+        内容不足。\n   - 客服总监：物流延迟投诉占比上升至28%（泰国、越南地区尤为突出）。\n3. **问题与建议**：\n
+        - 市场部：建议Q3增加小语种KOL合作（预算200万美金），解决本地化内容不足问题。\n   - 供应链主管：东南亚
+        仓周转率1.2次/月（低于目标1.5次），需提前30天备货；欧美仓清关时效不稳定（上周5个集装箱延迟72小时，延
+        误2000单）。\n   - 客服总监：建议营销页面增加物流时效预警模块，开通本地客服热线。\n\n#### **待办事项
+        **\n1. **市场部**：\n   - 本周内细化KOL合作执行计划。\n   - 提升东南亚市场本地化内容（如印尼站方言
+        版使用说明）。\n2. **供应链部**：\n   - 3天内制定东南亚仓库存周转率优化方案。\n   - 3天内制定欧美
+        仓清关问题优化方案，同步给运营团队。\n3. **客服部**：\n   - Q3前完成物流预警模块开发。\n   - Q3前
+        开通本地客服热线，缓解咨询压力。\n4. **运营总监**：\n   - 跟进各部门执行计划，确保Q3目标达成。\n\n
+        #### **风险点提示**\n1. **供应链风险**：\n   - 东南亚仓库存周转率低可能导致断货。\n   - 欧美仓清关
+        延误影响发货时效，需提前30天备货。\n2. **市场风险**：\n   - 本地化内容不足导致转化率低，需快速提升。
+        \n   - KOL合作预算200万美金，需确保ROI达标。\n3. **物流风险**：\n   - 物流延迟投诉占比上升，需优化
+        物流时效预警模块。\n   - 本地客服热线开通后需确保响应效率，避免二次投诉。\n\n#### **决策结论**\n-
+        **Q3营销重点**：东南亚市场本地化运营，目标转化率提升至3%以上。\n- **时间节点**：\n  - 各部门3个工作
+        日内提交具体行动计划。\n  - 市场部本周内细化KOL合作计划。\n  - 供应链部3天内提交库存与清关优化方案。
+        \n  - 客服部Q3前完成物流预警模块及本地热线开通。\n\n---\n\n**摘要总结**：本次会议明确了Q3营销的核心
+        方向与重点问题，各部门需快速响应并制定优化方案，确保流量转化与供应链协同效率提升。需特别关注库存周转率
+        、清关时效及物流体验，以实现转化率目标。',
+        role='assistant', tool_calls=None))],
+        request_id='20250605120513eb02bb25540242c1',
+        id='20250605120513eb02bb25540242c1',
+        usage=CompletionUsage(prompt_tokens=372, completion_tokens=638, total_tokens=1010))
+
+        ```
+    </Tab>
 </Tabs>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益

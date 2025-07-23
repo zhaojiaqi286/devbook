@@ -56,24 +56,75 @@ GLM-Z1-AirX 是目前国内最快的推理模型，实测推理速度突破 200 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
 <Tabs>
-  <Tab title="输入示例">
+  <Tab title="Python">
     ```python
     from zhipuai import ZhipuAI
     client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
     response = client.chat.completions.create(
-    model="glm-z1-airx",  # 请填写您要调用的模型名称
-    messages=[
-    {"role": "user", "content": "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"}
-    ],
-    max_tokens=12000,
-    
+        model="glm-z1-airx",  # 请填写您要调用的模型名称
+        messages=[
+            {"role": "user", "content": "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"}
+        ],
+        max_tokens=12000,
     )
-    print(response)
+    print(response.choices[0].message.content)
     ```
   </Tab>
-  <Tab title="输出示例">
-    <Tip>
-      推理模型会在返回内容中使用\<think\>\</think\>标记推理内容。在完成推理思考后，模型会生成最终的答案。
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    import java.util.Arrays;
+    
+    public class GLMZAirXExample {
+        public static void main(String[] args) {
+            String apiKey = ""; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model("glm-z1-airx")
+                .messages(Arrays.asList(
+                    ChatMessage.builder()
+                        .role(ChatMessageRole.USER.value())
+                        .content("一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:")
+                        .build()
+                ))
+                .maxTokens(12000)
+                .build();
+            
+            ChatCompletionResponse response = client.chat().createChatCompletion(request);
+            
+            if (response.isSuccess()) {
+                String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                System.out.println(reply);
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="Python(旧)">
+    ```python
+    import zhipuai
+    zhipuai.api_key = ""  # 请填写您自己的APIKey
+    
+    response = zhipuai.model_api.invoke(
+        model="glm-z1-airx",
+        prompt=[
+            {"role": "user", "content": "一个袋子中有5个红球和3个蓝球,随机抽取2个球,抽到至少1个红球的概率为:"}
+        ],
+        max_tokens=12000
+    )
+    print(response['data']['choices'][0]['content'])
+    ```
+  </Tab>
+    <Tab title="输出示例">
+        <Tip>
+            推理模型会在返回内容中使用\<think\>\</think\>标记推理内容。在完成推理思考后，模型会生成最终的答案。
     </Tip>
     ```response
     Completion(model='glm-z1-airx', created=1744623134, choices=
@@ -134,8 +185,12 @@ GLM-Z1-AirX 是目前国内最快的推理模型，实测推理速度突破 200 
     request_id='20250414173205c954d6f87ff8438c', id='20250414173205c954d6f87ff8438c',
     usage=CompletionUsage(prompt_tokens=36, completion_tokens=1839, total_tokens=1875))
     ```
-  </Tab>
+</Tab>
 </Tabs>
+
+<Tip>
+  推理模型会在返回内容中使用\<think\>\</think\>标记推理内容。在完成推理思考后，模型会生成最终的答案。
+</Tip>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益
 

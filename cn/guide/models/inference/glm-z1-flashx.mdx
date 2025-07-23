@@ -56,18 +56,68 @@ GLM-Z1-FlashX  是免费推理模型 GLM-Z1-Flash 的增强版本，具有超快
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
 <Tabs>
-  <Tab title="输入示例">
+  <Tab title="Python">
     ```python
     from zhipuai import ZhipuAI
     client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
     response = client.chat.completions.create(
-    model="glm-z1-flashx",  # 请填写您要调用的模型名称
-    messages=[
-    {"role": "system", "content": "你是专业报告撰写 AI，能够自动整合行业数据、政策文件、学术文献等多源信息，生成结构规范的研究报告、可行性分析或市场调研报告，支持批量处理报告生成任务。报告需包含清晰的目录、数据图表、参考文献等，语言严谨且逻辑连贯。"},
-    {"role": "user", "content": "请生成一份关于 2024-2025 年全球新能源汽车电池回收行业的市场调研报告，要求涵盖市场规模、政策法规、技术发展、竞争格局及未来趋势，数据需引用权威来源，格式符合学术规范。"}
-    ],
+        model="glm-z1-flashx",  # 请填写您要调用的模型名称
+        messages=[
+        {"role": "system", "content": "你是专业报告撰写 AI，能够自动整合行业数据、政策文件、学术文献等多源信息，生成结构规范的研究报告、可行性分析或市场调研报告，支持批量处理报告生成任务。报告需包含清晰的目录、数据图表、参考文献等，语言严谨且逻辑连贯。"},
+        {"role": "user", "content": "请生成一份关于 2024-2025 年全球新能源汽车电池回收行业的市场调研报告，要求涵盖市场规模、政策法规、技术发展、竞争格局及未来趋势，数据需引用权威来源，格式符合学术规范。"}
+      ]
     )
     print(response)
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    import java.util.Arrays;
+    
+    public class GLMZFlashXExample {
+        public static void main(String[] args) {
+            String apiKey = ""; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                .model("glm-z1-flashx")
+                .messages(Arrays.asList(
+                    ChatMessage.builder()
+                        .role(ChatMessageRole.USER.value())
+                        .content("请生成一份关于 2024-2025 年全球新能源汽车电池回收行业的市场调研报告，要求涵盖市场规模、政策法规、技术发展、竞争格局及未来趋势，数据需引用权威来源，格式符合学术规范。")
+                        .build()
+                ))
+                .build();
+            
+            ChatCompletionResponse response = client.chat().createChatCompletion(request);
+            
+            if (response.isSuccess()) {
+                String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                System.out.println(reply);
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="Python(旧)">
+    ```python
+      from zhipuai import ZhipuAI
+      client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
+      response = client.chat.completions.create(
+      model="glm-z1-flashx",  # 请填写您要调用的模型名称
+      messages=[
+      {"role": "system", "content": "你是专业报告撰写 AI，能够自动整合行业数据、政策文件、学术文献等多源信息，生成结构规范的研究报告、可行性分析或市场调研报告，支持批量处理报告生成任务。报告需包含清晰的目录、数据图表、参考文献等，语言严谨且逻辑连贯。"},
+      {"role": "user", "content": "请生成一份关于 2024-2025 年全球新能源汽车电池回收行业的市场调研报告，要求涵盖市场规模、政策法规、技术发展、竞争格局及未来趋势，数据需引用权威来源，格式符合学术规范。"}
+      ],
+      )
+      print(response)
     ```
   </Tab>
   <Tab title="输出示例">

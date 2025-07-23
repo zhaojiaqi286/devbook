@@ -53,53 +53,115 @@ GLM-4-AirX 是 GLM-4-Air 的高性能版本 ，继承 GLM-4 基座模型的多�
 
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
+以下是一个完整的调用示例，帮助您快速上手 GLM-4-AirX 模型。
+
 <Tabs>
-  <Tab title="输入示例">
-    ```python
-    from zhipuai import ZhipuAI
-    client = ZhipuAI(api_key="")  # 请填写您自己的APIKey
-    response = client.chat.completions.create(
-    model="glm-4-airx",  # 请填写您要调用的模型名称
-    messages=[
-    {"role": "user", "content": "结合概率统计与线性代数：计算二维随机变量的协方差矩阵，并判断矩阵正定性"},
-    ],
-    )
-    print(response)
-    ```
-  </Tab>
-  <Tab title="输出示例">
-    ```response
-    Completion(model='glm-4-airx', created=1749095539,
-    choices=[CompletionChoice(index=0, finish_reason='stop',
-    message=CompletionMessage(content='要计算二维随机变量 \\(X\\) 和 \\(Y\\) 的协方差矩阵，
-    我们首先需要知道这两个随机变量的协方差 \\( \\text{Cov}(X, Y) \\) 和各自的方差 \\( \\text{Var}(X)
-    \\) 和 \\( \\text{Var}(Y) \\)。协方差矩阵是一个 \\(2 \\times 2\\) 的矩阵，其形式如下：\n\n\\[\n
-    \\begin{bmatrix}\n\\text{Var}(X) & \\text{Cov}(X, Y) \\\\\n\\text{Cov}(Y, X) & \\text{Var}(
-    Y)\n\\end{bmatrix}\n\\]\n\n其中，由于协方差是对称的，即 \\( \\text{Cov}(X, Y) = \\text{Cov}(Y, X
-    ) \\)。\n\n以下是计算协方差矩阵的一般步骤：\n\n1. **计算 \\(X\\) 和 \\(Y\\) 的期望值 \\(E(X)\\)
-    和 \\(E(Y)\\)**：\n   \\[\n   E(X) = \\sum_{i=1}^{n} x_i P(x_i)\n   \\]\n   \\[\n
-    E(Y) = \\sum_{i=1}^{n} y_i P(y_i)\n   \\]\n   其中，\\(P(x_i)\\) 和 \\(P(y_i)\\)
-    分别是 \\(X\\) 和 \\(Y\\) 的概率分布。\n\n2. **计算 \\(X\\) 和 \\(Y\\) 的方差
-    \\( \\text{Var}(X) \\) 和 \\( \\text{Var}(Y) \\)**：\n   \\[\n   \\text{Var}
-    (X) = E(X^2) - (E(X))^2\n   \\]\n   \\[\n   \\text{Var}(Y) = E(Y^2) - (E(Y))^2\n   \\]\n
-    其中，\\(E(X^2)\\) 和 \\(E(Y^2)\\) 分别是 \\(X^2\\) 和 \\(Y^2\\) 的期望值。
-    \n\n3. **计算 \\(X\\) 和 \\(Y\\) 的协方差 \\( \\text{Cov}(X, Y) \\)**：\n
-    \\[\n   \\text{Cov}(X, Y) = E(XY) - E(X)E(Y)\n   \\]\n   其中，\\(E(XY)\\) 是
-    \\(X\\) 和 \\(Y\\) 的乘积的期望值。\n\n4. **将这些值填入协方差矩阵**：\n   \\[\n   \\text
-    {协方差矩阵} = \\begin{bmatrix}\n   \\text{Var}(X) & \\text{Cov}(X, Y) \\\\\n
-    \\text{Cov}(Y, X) & \\text{Var}(Y)\n   \\end{bmatrix}\n   \\]\n\n接下来，判断矩阵的正定性：
-    \n\n一个 \\(2 \\times 2\\) 的矩阵 \\(A\\) 是正定的，当且仅当它的所有主子式都是正的。对于 \\(2 \
-    \times 2\\) 的协方差矩阵，我们只需要检查以下两个条件：\n\n1. **矩阵的对角线元素（即方差）必须都是正的*
-    *：\n   \\[\n   \\text{Var}(X) > 0\n   \\]\n   \\[\n   \\text{Var}(Y) > 0\n   \\]\n\n2. *
-    *矩阵的行列式必须也是正的**：\n   \\[\n   \\text{det}(\\text{协方差矩阵}) = \\text{Var}(X)
-    \\cdot \\text{Var}(Y) - \\text{Cov}(X, Y)^2 > 0\n   \\]\n\n如果这两个条件都满足，那么协方差
-    矩阵是正定的。这意味着随机变量 \\(X\\) 和 \\(Y\\) 是正相关的，并且它们各自具有非零的方差。',
-    role='assistant', tool_calls=None))],
-    request_id='2025060511521018031186965b4072',
-    id='2025060511521018031186965b4072',
-    usage=CompletionUsage(prompt_tokens=26, completion_tokens=786, total_tokens=812))
-    ```
-  </Tab>
+    <Tab title="Python">
+        ```python
+        from zai import ZaiClient
+
+        # 初始化客户端
+        client = ZaiClient(api_key="your-api-key").zhipu
+
+        # 创建聊天完成请求
+        response = client.chat.completions.create(
+            model="glm-4-airx",
+            messages=[
+                {"role": "user", "content": "结合概率统计与线性代数：计算二维随机变量的协方差矩阵，并判断矩阵正定性"}
+            ]
+        )
+
+        # 获取回复
+        print(response.choices[0].message.content)
+        ```
+    </Tab>
+    <Tab title="Java">
+        ```java
+        import ai.z.openapi.ZaiClient;
+        import ai.z.openapi.service.model.*;
+        import ai.z.openapi.core.Constants;
+        import java.util.Arrays;
+
+        public class BasicChat {
+            public static void main(String[] args) {
+                // 初始化客户端
+                ZaiClient client = ZaiClient.builder().ofZHIPU()
+                    .apiKey("your-api-key")
+                    .build();
+
+                // 创建聊天完成请求
+                ChatCompletionCreateParams request = ChatCompletionCreateParams.builder()
+                    .model("glm-4-airx")
+                    .messages(Arrays.asList(
+                        ChatMessage.builder()
+                            .role(ChatMessageRole.USER.value())
+                            .content("结合概率统计与线性代数：计算二维随机变量的协方差矩阵，并判断矩阵正定性")
+                            .build()
+                    ))
+                    .build();
+
+                // 发送请求
+                ChatCompletionResponse response = client.chat().createChatCompletion(request);
+
+                // 获取回复
+                if (response.isSuccess()) {
+                    String reply = response.getData().getChoices().get(0).getMessage().getContent();
+                    System.out.println("AI回复: " + reply);
+                } else {
+                    System.err.println("错误: " + response.getMsg());
+                }
+            }
+        }
+        ```
+    </Tab>
+    <Tab title="Python(旧)">
+        ```python
+        from zhipuai import ZhipuAI
+        
+        client = ZhipuAI(api_key="") # 填写您自己的APIKey
+        response = client.chat.completions.create(
+            model="glm-4-airx",  # 填写需要调用的模型编码
+            messages=[
+                {"role": "system", "content": "你是一个数学专家，擅长概率统计和线性代数，能够清晰地解释复杂的数学概念。"},
+                {"role": "user", "content": "结合概率统计与线性代数：计算二维随机变量的协方差矩阵，并判断矩阵正定性"}
+            ],
+        )
+        print(response.choices[0].message)
+        ```
+    </Tab>
+    <Tab title="输出示例">
+        ```response
+        Completion(model='glm-4-airx', created=1749095539,
+        choices=[CompletionChoice(index=0, finish_reason='stop',
+        message=CompletionMessage(content='要计算二维随机变量 \\(X\\) 和 \\(Y\\) 的协方差矩阵，
+        我们首先需要知道这两个随机变量的协方差 \\( \\text{Cov}(X, Y) \\) 和各自的方差 \\( \\text{Var}(X)
+        \\) 和 \\( \\text{Var}(Y) \\)。协方差矩阵是一个 \\(2 \\times 2\\) 的矩阵，其形式如下：\n\n\\[\n
+        \\begin{bmatrix}\n\\text{Var}(X) & \\text{Cov}(X, Y) \\\\\n\\text{Cov}(Y, X) & \\text{Var}(
+        Y)\n\\end{bmatrix}\n\\]\n\n其中，由于协方差是对称的，即 \\( \\text{Cov}(X, Y) = \\text{Cov}(Y, X
+        ) \\)。\n\n以下是计算协方差矩阵的一般步骤：\n\n1. **计算 \\(X\\) 和 \\(Y\\) 的期望值 \\(E(X)\\)
+        和 \\(E(Y)\\)**：\n   \\[\n   E(X) = \\sum_{i=1}^{n} x_i P(x_i)\n   \\]\n   \\[\n
+        E(Y) = \\sum_{i=1}^{n} y_i P(y_i)\n   \\]\n   其中，\\(P(x_i)\\) 和 \\(P(y_i)\\)
+        分别是 \\(X\\) 和 \\(Y\\) 的概率分布。\n\n2. **计算 \\(X\\) 和 \\(Y\\) 的方差
+        \\( \\text{Var}(X) \\) 和 \\( \\text{Var}(Y) \\)**：\n   \\[\n   \\text{Var}
+        (X) = E(X^2) - (E(X))^2\n   \\]\n   \\[\n   \\text{Var}(Y) = E(Y^2) - (E(Y))^2\n   \\]\n
+        其中，\\(E(X^2)\\) 和 \\(E(Y^2)\\) 分别是 \\(X^2\\) 和 \\(Y^2\\) 的期望值。
+        \n\n3. **计算 \\(X\\) 和 \\(Y\\) 的协方差 \\( \\text{Cov}(X, Y) \\)**：\n
+        \\[\n   \\text{Cov}(X, Y) = E(XY) - E(X)E(Y)\n   \\]\n   其中，\\(E(XY)\\) 是
+        \\(X\\) 和 \\(Y\\) 的乘积的期望值。\n\n4. **将这些值填入协方差矩阵**：\n   \\[\n   \\text
+        {协方差矩阵} = \\begin{bmatrix}\n   \\text{Var}(X) & \\text{Cov}(X, Y) \\\\\n
+        \\text{Cov}(Y, X) & \\text{Var}(Y)\n   \\end{bmatrix}\n   \\]\n\n接下来，判断矩阵的正定性：
+        \n\n一个 \\(2 \\times 2\\) 的矩阵 \\(A\\) 是正定的，当且仅当它的所有主子式都是正的。对于 \\(2 \
+        \times 2\\) 的协方差矩阵，我们只需要检查以下两个条件：\n\n1. **矩阵的对角线元素（即方差）必须都是正的*
+        *：\n   \\[\n   \\text{Var}(X) > 0\n   \\]\n   \\[\n   \\text{Var}(Y) > 0\n   \\]\n\n2. *
+        *矩阵的行列式必须也是正的**：\n   \\[\n   \\text{det}(\\text{协方差矩阵}) = \\text{Var}(X)
+        \\cdot \\text{Var}(Y) - \\text{Cov}(X, Y)^2 > 0\n   \\]\n\n如果这两个条件都满足，那么协方差
+        矩阵是正定的。这意味着随机变量 \\(X\\) 和 \\(Y\\) 是正相关的，并且它们各自具有非零的方差。',
+        role='assistant', tool_calls=None))],
+        request_id='2025060511521018031186965b4072',
+        id='2025060511521018031186965b4072',
+        usage=CompletionUsage(prompt_tokens=26, completion_tokens=786, total_tokens=812))
+        ```
+    </Tab>
 </Tabs>
 
 ## <Icon icon="square-user" iconType="solid" color="#134CFF" size={28} />   用户并发权益

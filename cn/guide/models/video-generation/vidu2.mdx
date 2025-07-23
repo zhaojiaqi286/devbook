@@ -127,52 +127,126 @@ Vidu 2 视频生成大模型，平衡速度与质量，主攻图生视频、首�
 ## <Icon icon="rectangle-code" iconType="solid" color="#134CFF" size={28} />   调用示例
 
 <Tabs>
-  <Tab title="图生视频">
-    ```SQL
-    curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
-    --header 'Authorization: {you apikey}' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-    "model":"vidu2-image",
-    "image_url":"https://example.com/path/to/your/image.jpg",
-    "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
-    "duration":4,
-    "size":"720x480",
-    "movement_amplitude":"auto"
-    }'
+  <Tab title="Python">
+    ```python
+    from zhipuai import ZhipuAI
+    
+    client = ZhipuAI(api_key="your_api_key")  # 请填写您自己的APIKey
+    
+    # 图生视频示例
+    response = client.videos.generations(
+        model="vidu2-image",
+        image_url="https://example.com/path/to/your/image.jpg",
+        prompt="比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
+        duration=4,
+        size="720x480",
+        movement_amplitude="auto"
+    )
+    
+    print(response)
     ```
   </Tab>
-  <Tab title="首尾帧">
-    ```SQL
-    curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
-    --header 'Authorization: {you apikey}' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-    "model":"vidu2-start-end",
-    "image_url":["https://example.com/path/to/your/image1.jpg","https://example.com/path/to/your/image2.jpg"],
-    "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
-    "duration":4,
-    "size":"720x480",
-    "movement_amplitude":"auto"
-    }'
+  <Tab title="Java">
+    ```java
+    import ai.z.openapi.ZaiClient;
+    import ai.z.openapi.service.model.*;
+    import ai.z.openapi.core.Constants;
+    
+    public class Vidu2Example {
+        public static void main(String[] args) {
+            String apiKey = "your_api_key"; // 请填写您自己的APIKey
+            ZaiClient client = ZaiClient.builder().ofZHIPU()
+                .apiKey(apiKey)
+                .build();
+            
+            VideoGenerationCreateParams request = VideoGenerationCreateParams.builder()
+                .model("vidu2-image")
+                .imageUrl("https://example.com/path/to/your/image.jpg")
+                .prompt("比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。")
+                .duration(4)
+                .size("720x480")
+                .movementAmplitude("auto")
+                .build();
+            
+            VideoGenerationResponse response = client.videos().createVideoGeneration(request);
+            
+            if (response.isSuccess()) {
+                System.out.println(response.getData());
+            } else {
+                System.err.println("错误: " + response.getMsg());
+            }
+        }
+    }
     ```
   </Tab>
-  <Tab title="参考生视频">
-    ```SQL
-    curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
-    --header 'Authorization: {you apikey}' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-    "model":"vidu2-reference",
-    "image_url":["https://example.com/path/to/your/image1.jpg","https://example.com/path/to/your/image2.jpg","https://example.com/path/to/your/image3.jpg"],
-    "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
-    "duration":4,
-    "aspect_ratio":"16:9",
-    "size":"720x480",
-    "movement_amplitude":"auto",
-    "with_audio":true
-    }'
+  <Tab title="旧版 Python">
+    ```python
+    import zhipuai
+    
+    zhipuai.api_key = "your_api_key"  # 请填写您自己的APIKey
+    
+    response = zhipuai.model_api.invoke(
+        model="vidu2-image",
+        image_url="https://example.com/path/to/your/image.jpg",
+        prompt="比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
+        duration=4,
+        size="720x480",
+        movement_amplitude="auto"
+    )
+    
+    print(response)
     ```
+  </Tab>
+  <Tab title="原始调用示例">
+    <Tabs>
+      <Tab title="图生视频">
+        ```SQL
+        curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
+        --header 'Authorization: {you apikey}' \
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+        "model":"vidu2-image",
+        "image_url":"https://example.com/path/to/your/image.jpg",
+        "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
+        "duration":4,
+        "size":"720x480",
+        "movement_amplitude":"auto"
+        }'
+        ```
+      </Tab>
+      <Tab title="首尾帧">
+        ```SQL
+        curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
+        --header 'Authorization: {you apikey}' \
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+        "model":"vidu2-start-end",
+        "image_url":["https://example.com/path/to/your/image1.jpg","https://example.com/path/to/your/image2.jpg"],
+        "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
+        "duration":4,
+        "size":"720x480",
+        "movement_amplitude":"auto"
+        }'
+        ```
+      </Tab>
+      <Tab title="参考生视频">
+        ```SQL
+        curl --location --request POST 'https://open.bigmodel.cn/api/paas/v4/videos/generations' \
+        --header 'Authorization: {you apikey}' \
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+        "model":"vidu2-reference",
+        "image_url":["https://example.com/path/to/your/image1.jpg","https://example.com/path/to/your/image2.jpg","https://example.com/path/to/your/image3.jpg"],
+        "prompt":"比得兔开小汽车，游走在马路上，脸上的表情充满开心喜悦。",
+        "duration":4,
+        "aspect_ratio":"16:9",
+        "size":"720x480",
+        "movement_amplitude":"auto",
+        "with_audio":true
+        }'
+        ```
+      </Tab>
+    </Tabs>
   </Tab>
 </Tabs>
 
